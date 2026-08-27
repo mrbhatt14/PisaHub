@@ -37,13 +37,13 @@
       tagline: "First hello of the semester — icebreakers, chai and new faces.",
       date: "2026-02-10T18:00:00",
       location: "Kessel Student Center, Pace University",
-      registerLink: "https://settersync.com/pisa/orientation-mixer",
-      poster: "https://picsum.photos/seed/pisa-orientation/900/640",
+      registerLink: "https://settersyncnyc.pace.edu/organization/pisa",
+      poster: "img/events/orientation/poster.jpg",
       gallery: [
-        "https://picsum.photos/seed/pisa-orientation-1/800/600",
-        "https://picsum.photos/seed/pisa-orientation-2/800/600",
-        "https://picsum.photos/seed/pisa-orientation-3/800/600",
-        "https://picsum.photos/seed/pisa-orientation-4/800/600"
+        "img/events/orientation/gallery-1.jpg",
+        "img/events/orientation/gallery-2.jpg",
+        "img/events/orientation/gallery-3.jpg",
+        "img/events/orientation/gallery-4.jpg"
       ],
       description: "Our very first mixer of the spring semester — a low-key evening of introductions, snacks and sign-ups that set the tone for everything PISA built afterward."
     },
@@ -53,14 +53,14 @@
       tagline: "Where it all started: chai, samosas and two hundred new friends.",
       date: "2026-08-18T17:00:00",
       location: "One Pace Plaza Lobby, New York",
-      registerLink: "https://settersync.com/pisa/welcome-kickoff",
-      poster: "https://picsum.photos/seed/pisa-beginning/900/640",
+      registerLink: "https://settersyncnyc.pace.edu/organization/pisa",
+      poster: "img/events/beginning/poster.jpg",
       gallery: [
-        "https://picsum.photos/seed/pisa-begin-1/800/600",
-        "https://picsum.photos/seed/pisa-begin-2/800/600",
-        "https://picsum.photos/seed/pisa-begin-3/800/600",
-        "https://picsum.photos/seed/pisa-begin-4/800/600",
-        "https://picsum.photos/seed/pisa-begin-5/800/600"
+        "img/events/beginning/gallery-1.jpg",
+        "img/events/beginning/gallery-2.jpg",
+        "img/events/beginning/gallery-3.jpg",
+        "img/events/beginning/gallery-4.jpg",
+        "img/events/beginning/gallery-5.jpg"
       ],
       description: "The kickoff that opened Fall 2026 — new members, returning faces, and the first taste of what the semester would become."
     },
@@ -71,140 +71,219 @@
       date: "2026-08-24T09:00:00",
       endDate: "2026-08-24T20:00:00",
       location: "Meet at One Pace Plaza Lobby",
-      registerLink: "https://settersync.com/pisa/akshardham-visit",
-      poster: "https://picsum.photos/seed/pisa-akshardham/900/640",
+      registerLink: "https://settersyncnyc.pace.edu/organization/pisa",
+      poster: "img/events/akshardham/poster.jpg",
       gallery: [
-        "https://picsum.photos/seed/pisa-aksh-1/800/600",
-        "https://picsum.photos/seed/pisa-aksh-2/800/600",
-        "https://picsum.photos/seed/pisa-aksh-3/800/600"
+        "img/events/akshardham/gallery-1.jpg",
+        "img/events/akshardham/gallery-2.jpg",
+        "img/events/akshardham/gallery-3.jpg"
       ],
       description: "A full-day cultural excursion to one of the largest Hindu temple complexes in the world — coach transport, guided tour and a shared meal included."
     },
     {
       id: "milan",
-      title: "Milan — A Bollywood Welcome Night",
-      tagline: "Culture. Community. Connection.",
+      title: "The PISA Premiere",
+      tagline: "The Bollywood-inspired welcome that opens every semester.",
       date: "2026-09-08T15:30:00",
       endDate: "2026-09-08T22:00:00",
       location: "Pace University, New York",
-      registerLink: "https://settersync.com/pisa/milan",
-      poster: "https://picsum.photos/seed/pisa-milan/900/640",
+      registerLink: "https://settersyncnyc.pace.edu/organization/pisa",
+      poster: "img/events/milan/poster.jpg",
       gallery: [
-        "https://picsum.photos/seed/pisa-milan-1/800/600",
-        "https://picsum.photos/seed/pisa-milan-2/800/600",
-        "https://picsum.photos/seed/pisa-milan-3/800/600"
+        "img/events/milan/gallery-1.jpg",
+        "img/events/milan/gallery-2.jpg",
+        "img/events/milan/gallery-3.jpg"
       ],
-      description: "Our biggest welcome night of the year — music, dance and a first taste of PISA for every new student at Pace."
+      description: "The opening celebration of every semester — a Bollywood-inspired welcome featuring music, dance, food, introductions, and the unveiling of PISA's semester team and vision."
     },
     {
       id: "garba",
-      title: "Garba Night",
+      title: "Navratri Garba Night",
       tagline: "Dance. Dandiya. Delight.",
       date: "2026-10-13T17:00:00",
       endDate: "2026-10-13T23:00:00",
       location: "Pace University, New York",
-      registerLink: "https://settersync.com/pisa/garba-night",
-      poster: "https://picsum.photos/seed/pisa-garba/900/640",
+      registerLink: "https://settersyncnyc.pace.edu/organization/pisa",
+      poster: "img/events/garba/poster.jpg",
       gallery: [
-        "https://picsum.photos/seed/pisa-garba-1/800/600",
-        "https://picsum.photos/seed/pisa-garba-2/800/600",
-        "https://picsum.photos/seed/pisa-garba-3/800/600"
+        "img/events/garba/gallery-1.jpg",
+        "img/events/garba/gallery-2.jpg",
+        "img/events/garba/gallery-3.jpg"
       ],
       description: "Two nights of dandiya sticks, circles of dancers and the loudest dhol on campus. Runs October 13 & 20."
     },
     {
       id: "diwali",
-      title: "Diwali 2K26",
+      title: "Prakāshā — Grand Diwali 2026",
       tagline: "Lights, laddoos and the biggest night of the semester.",
       date: "2026-11-08T18:00:00",
       endDate: "2026-11-08T23:30:00",
       location: "Pace University, New York",
-      registerLink: "https://settersync.com/pisa/diwali-2k26",
-      poster: "https://picsum.photos/seed/pisa-diwali/900/640",
+      registerLink: "https://settersyncnyc.pace.edu/organization/pisa",
+      poster: "img/events/diwali-2k26/poster.jpg",
       gallery: [
-        "https://picsum.photos/seed/pisa-diwali-1/800/600",
-        "https://picsum.photos/seed/pisa-diwali-2/800/600",
-        "https://picsum.photos/seed/pisa-diwali-3/800/600"
+        "img/events/diwali-2k26/gallery-1.jpg",
+        "img/events/diwali-2k26/gallery-2.jpg",
+        "img/events/diwali-2k26/gallery-3.jpg"
       ],
       description: "The festival of lights, PISA-style — diyas, a full dinner spread and a dance floor that doesn't stop."
     },
-
-    /* ---- past semesters (populate Our Journey & the Gallery) ---- */
+    {
+      id: "holi-2023",
+      title: "Rang De Pace — Holi 2023",
+      tagline: "A courtyard drenched in color.",
+      date: "2023-03-08T13:00:00",
+      endDate: "2023-03-08T17:00:00",
+      location: "One Pace Plaza Courtyard, New York",
+      poster: "img/events/holi-2023/poster.jpg",
+      gallery: [
+        "img/events/holi-2023/gallery-1.jpg",
+        "img/events/holi-2023/gallery-2.jpg",
+        "img/events/holi-2023/gallery-3.jpg",
+        "img/events/holi-2023/gallery-4.jpg",
+        "img/events/holi-2023/gallery-5.jpg",
+        "img/events/holi-2023/gallery-6.jpg"
+      ],
+      description: "PISA's Holi celebration in the One Pace Plaza courtyard — color powders, music and food, with other campus organizations joining in."
+    },
+    {
+      id: "bollyween-2023",
+      title: "Bollyween 2023",
+      tagline: "A Bollywood twist on Halloween night.",
+      date: "2023-10-27T19:00:00",
+      endDate: "2023-10-27T23:00:00",
+      location: "Pace University, New York",
+      poster: "img/events/bollyween-2023/poster.jpg",
+      gallery: [
+        "img/events/bollyween-2023/gallery-1.jpg",
+        "img/events/bollyween-2023/gallery-2.jpg",
+        "img/events/bollyween-2023/gallery-3.jpg",
+        "img/events/bollyween-2023/gallery-4.jpg",
+        "img/events/bollyween-2023/gallery-5.jpg"
+      ],
+      description: "PISA's Bollywood-meets-Halloween party — costumes, dancing and a night of desi music on campus."
+    },
+    {
+      id: "diwali-2023",
+      title: "Prakāshā — Grand Diwali 2023",
+      tagline: "The festival of lights at Pace.",
+      date: "2023-11-11T18:00:00",
+      endDate: "2023-11-11T23:00:00",
+      location: "Pace University, New York",
+      poster: "img/events/diwali-2023/poster.jpg",
+      gallery: [
+        "img/events/diwali-2023/gallery-1.jpg",
+        "img/events/diwali-2023/gallery-2.jpg",
+        "img/events/diwali-2023/gallery-3.jpg",
+        "img/events/diwali-2023/gallery-4.jpg",
+        "img/events/diwali-2023/gallery-5.jpg",
+        "img/events/diwali-2023/gallery-6.jpg"
+      ],
+      description: "The annual Diwali celebration — diyas, food, music and performances bringing the Pace community together for the festival of lights."
+    },
+    {
+      id: "navratri-2024",
+      title: "Navratri Garba 2024",
+      tagline: "Nine nights, one circle.",
+      date: "2024-10-05T18:00:00",
+      endDate: "2024-10-05T23:00:00",
+      location: "Pace University, New York",
+      poster: "img/events/navratri-2024/poster.jpg",
+      gallery: [
+        "img/events/navratri-2024/gallery-1.jpg",
+        "img/events/navratri-2024/gallery-2.jpg",
+        "img/events/navratri-2024/gallery-3.jpg",
+        "img/events/navratri-2024/gallery-4.jpg",
+        "img/events/navratri-2024/gallery-5.jpg",
+        "img/events/navratri-2024/gallery-6.jpg"
+      ],
+      description: "A night of garba and dandiya to mark Navratri — spinning chaniya cholis, live beats and a growing circle of dancers."
+    },
+    {
+      id: "diwali-2024",
+      title: "Prakāshā — Grand Diwali 2024",
+      tagline: "The plaza aglow with diyas.",
+      date: "2024-11-01T18:00:00",
+      endDate: "2024-11-01T23:30:00",
+      location: "One Pace Plaza, New York",
+      poster: "img/events/diwali-2024/poster.jpg",
+      gallery: [
+        "img/events/diwali-2024/gallery-1.jpg",
+        "img/events/diwali-2024/gallery-2.jpg",
+        "img/events/diwali-2024/gallery-3.jpg",
+        "img/events/diwali-2024/gallery-4.jpg",
+        "img/events/diwali-2024/gallery-5.jpg",
+        "img/events/diwali-2024/gallery-6.jpg",
+        "img/events/diwali-2024/gallery-7.jpg"
+      ],
+      description: "PISA's Diwali 2024 — a full evening of lights, dinner, performances and dancing for the whole Pace community."
+    },
     {
       id: "holi-2025",
-      title: "Holi Rangotsav 2025",
-      tagline: "A riot of color on the Pace plaza lawn.",
+      title: "Rang De Pace — Holi 2025",
+      tagline: "Color, dhol and spring on the plaza.",
       date: "2025-03-14T13:00:00",
       endDate: "2025-03-14T17:00:00",
-      location: "One Pace Plaza Lawn, New York",
-      registerLink: "https://settersync.com/pisa/holi-2025",
-      poster: "https://picsum.photos/seed/pisa-holi25/900/640",
+      location: "One Pace Plaza Courtyard, New York",
+      poster: "img/events/holi-2025/poster.jpg",
       gallery: [
-        "https://picsum.photos/seed/pisa-holi25-1/800/600",
-        "https://picsum.photos/seed/pisa-holi25-2/800/600",
-        "https://picsum.photos/seed/pisa-holi25-3/800/600",
-        "https://picsum.photos/seed/pisa-holi25-4/800/600",
-        "https://picsum.photos/seed/pisa-holi25-5/800/600",
-        "https://picsum.photos/seed/pisa-holi25-6/800/600"
+        "img/events/holi-2025/gallery-1.jpg",
+        "img/events/holi-2025/gallery-2.jpg",
+        "img/events/holi-2025/gallery-3.jpg",
+        "img/events/holi-2025/gallery-4.jpg",
+        "img/events/holi-2025/gallery-5.jpg",
+        "img/events/holi-2025/gallery-6.jpg"
       ],
-      description: "Our first outdoor Holi — clouds of gulaal, dhol beats and the whole community drenched in color under a spring sky."
+      description: "Our spring Holi — clouds of gulaal, dhol beats and the whole community out in the courtyard to welcome the season."
     },
     {
-      id: "basant-2025",
-      title: "Basant Spring Formal 2025",
-      tagline: "An elegant close to the spring semester.",
-      date: "2025-04-19T18:30:00",
-      endDate: "2025-04-19T23:00:00",
-      location: "Kessel Student Center, Pace University",
-      registerLink: "https://settersync.com/pisa/basant-2025",
-      poster: "https://picsum.photos/seed/pisa-basant25/900/640",
-      gallery: [
-        "https://picsum.photos/seed/pisa-basant25-1/800/600",
-        "https://picsum.photos/seed/pisa-basant25-2/800/600",
-        "https://picsum.photos/seed/pisa-basant25-3/800/600",
-        "https://picsum.photos/seed/pisa-basant25-4/800/600",
-        "https://picsum.photos/seed/pisa-basant25-5/800/600"
-      ],
-      description: "A dressed-up evening of dinner, awards and dancing to send off the graduating class of spring 2025."
-    },
-    {
-      id: "navratri-2025",
-      title: "Navratri Garba 2025",
-      tagline: "Nine nights, one unforgettable circle.",
-      date: "2025-10-03T18:00:00",
-      endDate: "2025-10-03T23:00:00",
+      id: "independence-2025",
+      title: "Independence Day Celebration 2025",
+      tagline: "Different skies, same heartbeat.",
+      date: "2025-08-15T17:00:00",
       location: "Pace University, New York",
-      registerLink: "https://settersync.com/pisa/navratri-2025",
-      poster: "https://picsum.photos/seed/pisa-navratri25/900/640",
+      poster: "img/events/independence-2025/poster.jpg",
       gallery: [
-        "https://picsum.photos/seed/pisa-nav25-1/800/600",
-        "https://picsum.photos/seed/pisa-nav25-2/800/600",
-        "https://picsum.photos/seed/pisa-nav25-3/800/600",
-        "https://picsum.photos/seed/pisa-nav25-4/800/600",
-        "https://picsum.photos/seed/pisa-nav25-5/800/600",
-        "https://picsum.photos/seed/pisa-nav25-6/800/600"
+        "img/events/independence-2025/gallery-1.jpg",
+        "img/events/independence-2025/gallery-2.jpg",
+        "img/events/independence-2025/gallery-3.jpg",
+        "img/events/independence-2025/gallery-4.jpg"
       ],
-      description: "The fall semester kicked off with dandiya sticks, spinning chaniya cholis and the largest garba circle PISA had ever hosted."
+      description: "Marking India's Independence Day at Pace — a get-together for the community far from home, but always together."
     },
     {
-      id: "diwali-2025",
-      title: "Diwali 2K25",
-      tagline: "The night the plaza glowed.",
-      date: "2025-11-01T18:00:00",
-      endDate: "2025-11-01T23:30:00",
-      location: "One Pace Plaza, New York",
-      registerLink: "https://settersync.com/pisa/diwali-2025",
-      poster: "https://picsum.photos/seed/pisa-diwali25/900/640",
+      id: "mock-wedding-2026",
+      title: "Indian Mock Wedding",
+      tagline: "A full Indian wedding, staged on campus.",
+      date: "2026-04-04T16:00:00",
+      endDate: "2026-04-04T22:00:00",
+      location: "Pace University, New York",
+      poster: "img/events/mock-wedding-2026/poster.jpg",
       gallery: [
-        "https://picsum.photos/seed/pisa-diw25-1/800/600",
-        "https://picsum.photos/seed/pisa-diw25-2/800/600",
-        "https://picsum.photos/seed/pisa-diw25-3/800/600",
-        "https://picsum.photos/seed/pisa-diw25-4/800/600",
-        "https://picsum.photos/seed/pisa-diw25-5/800/600",
-        "https://picsum.photos/seed/pisa-diw25-6/800/600",
-        "https://picsum.photos/seed/pisa-diw25-7/800/600"
+        "img/events/mock-wedding-2026/gallery-1.jpg",
+        "img/events/mock-wedding-2026/gallery-2.jpg",
+        "img/events/mock-wedding-2026/gallery-3.jpg",
+        "img/events/mock-wedding-2026/gallery-4.jpg",
+        "img/events/mock-wedding-2026/gallery-5.jpg",
+        "img/events/mock-wedding-2026/gallery-6.jpg"
       ],
-      description: "Hundreds of diyas, a catered dinner and a packed dance floor — the celebration that set the bar for every Diwali since."
+      description: "A large-scale Indian Mock Wedding experience presented in Spring 2026 — showcasing the traditions, rituals, fashion, music, food and celebrations of an Indian wedding."
+    },
+    {
+      id: "yoga-day-2026",
+      title: "International Yoga Day",
+      tagline: "Yoga and Indian wellness, together.",
+      date: "2026-06-21T09:00:00",
+      endDate: "2026-06-21T11:00:00",
+      location: "Pace University, New York",
+      poster: "img/events/yoga-day-2026/poster.jpg",
+      gallery: [
+        "img/events/yoga-day-2026/gallery-1.jpg",
+        "img/events/yoga-day-2026/gallery-2.jpg",
+        "img/events/yoga-day-2026/gallery-3.jpg",
+        "img/events/yoga-day-2026/gallery-4.jpg"
+      ],
+      description: "Our annual International Yoga Day experience brings students, faculty, staff and professors together through yoga and Indian wellness traditions."
     }
   ];
 
@@ -528,9 +607,20 @@
      HISTORY / TIMELINE PAGE
   =========================================================== */
   let timelineRendered = false;
-  function renderTimeline() {
-    const history = EVENTS.filter((e) => getStatus(e) === "closed").sort((a, b) => new Date(a.date) - new Date(b.date));
+  let historySelectBuilt = false;
+  function historySemesters() {
+    const closed = EVENTS.filter((e) => getStatus(e) === "closed");
+    return sortSemestersDesc(closed.map((e) => semesterOf(e.date)));
+  }
+
+  function paintTimeline(sem) {
+    const history = EVENTS
+      .filter((e) => getStatus(e) === "closed")
+      .filter((e) => sem === "all" || semesterOf(e.date) === sem)
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
     const wrap = $("#timeline");
+    const meta = $("#historySemMeta");
+    if (meta) meta.textContent = `${history.length} event${history.length === 1 ? "" : "s"}`;
 
     if (!history.length) {
       wrap.innerHTML = `<p style="text-align:center;color:var(--brown-mid)">No completed events yet — once an event's date passes, it will automatically appear here with its full story.</p>`;
@@ -594,6 +684,20 @@
     }, { threshold: 0.2, rootMargin: "0px 0px -12% 0px" });
     items.forEach((it) => tlObserver.observe(it));
   }
+
+  function renderTimeline() {
+    const semesters = historySemesters();
+    const select = $("#historySemSelect");
+    if (select && !historySelectBuilt) {
+      select.innerHTML = `<option value="all">All semesters</option>`
+        + semesters.map((s) => `<option value="${s}">${s}</option>`).join("");
+      select.addEventListener("change", () => paintTimeline(select.value));
+      historySelectBuilt = true;
+    }
+    const active = select ? select.value || "all" : "all";
+    if (select) select.value = active;
+    paintTimeline(active);
+  }
   let tlObserver = null;
 
   /* ===========================================================
@@ -629,20 +733,22 @@
      GALLERY PAGE — all event photos, filtered by semester
   =========================================================== */
   let gallerySelectBuilt = false;
-  function galleryEventsBySemester() {
+  function galleryEventsByYear() {
     const withPhotos = EVENTS.filter((e) => Array.isArray(e.gallery) && e.gallery.length);
     const groups = {};
     withPhotos.forEach((ev) => {
-      const sem = semesterOf(ev.date);
-      (groups[sem] = groups[sem] || []).push(ev);
+      const yr = String(new Date(ev.date).getFullYear());
+      (groups[yr] = groups[yr] || []).push(ev);
     });
     Object.values(groups).forEach((list) => list.sort((a, b) => new Date(b.date) - new Date(a.date)));
     return groups;
   }
 
-  function paintGallery(sem) {
-    const groups = galleryEventsBySemester();
-    const events = groups[sem] || [];
+  function paintGallery(year) {
+    const groups = galleryEventsByYear();
+    const events = year === "all"
+      ? Object.keys(groups).sort((a, b) => Number(b) - Number(a)).flatMap((y) => groups[y])
+      : (groups[year] || []);
     const grid = $("#galleryContent");
     const count = events.reduce((n, ev) => n + ev.gallery.length, 0);
     $("#gallerySemMeta").textContent = `${events.length} event${events.length === 1 ? "" : "s"} · ${count} photo${count === 1 ? "" : "s"}`;
@@ -672,18 +778,19 @@
   }
 
   function renderGallery() {
-    const groups = galleryEventsBySemester();
-    const semesters = sortSemestersDesc(Object.keys(groups));
-    const select = $("#gallerySemSelect");
+    const groups = galleryEventsByYear();
+    const years = Object.keys(groups).sort((a, b) => Number(b) - Number(a));
+    const select = $("#galleryYearSelect");
     if (select && !gallerySelectBuilt) {
-      select.innerHTML = semesters.map((s) => `<option value="${s}">${s}</option>`).join("");
+      select.innerHTML = `<option value="all">All years</option>`
+        + years.map((y) => `<option value="${y}">${y}</option>`).join("");
       select.addEventListener("change", () => {
         $("#galleryContent").classList.remove("is-in");
         paintGallery(select.value);
       });
       gallerySelectBuilt = true;
     }
-    const active = select ? select.value || semesters[0] : semesters[0];
+    const active = select ? select.value || years[0] : years[0];
     if (select) select.value = active;
     paintGallery(active);
   }
