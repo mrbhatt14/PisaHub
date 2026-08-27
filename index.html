@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PISA Hub — Pace Indian Student Association</title>
+  <meta name="description"
+    content="The digital home of PISA — Pace Indian Student Association. Discover events, meet the team, volunteer, and relive our journey.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap"
+    rel="stylesheet">
+
+  <link rel="icon" type="image/png" href="img/pisa-favicon.png">
+  <link rel="apple-touch-icon" href="img/pisa-favicon.png">
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <!-- ============ ambient jali texture layer ============ -->
+  <div class="jali-veil" aria-hidden="true"></div>
+
+
+  <!-- ============ NAV ============ -->
+  <header class="nav" id="mainNav">
+    <a href="#home" class="nav__brand" data-route="home" aria-label="PISA Hub — home">
+      <img class="nav__logo" src="img/pisa-logo.png" alt="PISA — Pace Indian Student Association">
+    </a>
+
+    <nav class="nav__links" id="navLinks">
+      <a href="#home" data-route="home">Home</a>
+      <a href="#events" data-route="events">Live Events</a>
+      <a href="#history" data-route="history">Our Journey</a>
+      <a href="#gallery" data-route="gallery">Gallery</a>
+      <a href="#team" data-route="team">Team</a>
+      <a href="#volunteer" data-route="volunteer">Volunteer</a>
+    </nav>
+
+    <div class="nav__right">
+      <a href="#volunteer" class="nav__cta" data-route="volunteer">Get Involved →</a>
+
+      <button class="nav__burger" id="navBurger" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- mobile menu panel -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#home" data-route="home">Home</a>
+    <a href="#events" data-route="events">Live Events</a>
+    <a href="#history" data-route="history">Our Journey</a>
+    <a href="#gallery" data-route="gallery">Gallery</a>
+    <a href="#team" data-route="team">Team</a>
+    <a href="#volunteer" data-route="volunteer">Volunteer</a>
+    <a href="#home" data-route="home" class="mobile-menu__connect">Connect →</a>
+  </div>
+
+  <main id="mainContent">
+
+    <!-- =========================================================
+     PAGE: HOME
+========================================================= -->
+    <section class="page page--home is-active" id="page-home" data-page="home">
+
+      <!-- ---------- GATE HERO (scroll-driven opening) ---------- -->
+      <section class="gate-hero" id="gateHero">
+        <div class="gate-hero__sticky" id="gateSticky">
+
+          <!-- backdrop: One Pace Plaza, actual building photo -->
+          <div class="gate-hero__backdrop" id="gateBackdrop">
+            <img class="gate-hero__building" src="img/pace-building.jpg"
+              alt="One Pace Plaza — Pace University, New York City" loading="eager" decoding="async">
+            <div class="gate-hero__threshold" aria-hidden="true"></div>
+          </div>
+
+          <!-- warm daylight spilling in from beyond the gate as it opens -->
+          <div class="gate-hero__glow" aria-hidden="true"></div>
+
+          <!-- gate leaves: two halves of the Ganesh Pol gate, Amer Fort (Jaipur) -->
+          <div class="gate-leaf gate-leaf--left" id="leafLeft" aria-hidden="true"><span class="gate-leaf__edge"></span>
+          </div>
+          <div class="gate-leaf gate-leaf--right" id="leafRight" aria-hidden="true"><span
+              class="gate-leaf__edge"></span></div>
+
+          <div class="gate-hero__caption" id="gateCaption">
+            <!-- <p class="eyebrow">PACE UNIVERSITY · ONE PACE PLAZA · NEW YORK CITY</p> -->
+            <h1>Step through <em>PISA</em></h1>
+            <p class="gate-hero__sub">Culture, community and connection — right at the heart of Pace.</p>
+          </div>
+        </div>
+        <div class="gate-hero__spacer"></div>
+      </section>
+
+      <!-- ---------- HERO STATEMENT (revealed once gate is open) ---------- -->
+      <section class="hero-statement">
+        <p class="eyebrow eyebrow--center">NOW → JOIN → EXPERIENCE → REMEMBER</p>
+        <h2 class="reveal-up">Where every Pace festival<br><em>feels like home.</em></h2>
+        <div class="hero-statement__cta">
+          <a href="#events" class="btn btn--primary" data-route="events">Explore What's Happening</a>
+          <a href="#team" class="btn btn--ghost" data-route="team">Meet PISA</a>
+        </div>
+
+        <div class="hero-stats">
+          <div class="hero-stat"><span class="hero-stat__num">500+</span><span class="hero-stat__label">Members &amp;
+              growing</span></div>
+          <div class="hero-stat"><span class="hero-stat__num">20+</span><span class="hero-stat__label">Events a
+              year</span></div>
+          <div class="hero-stat"><span class="hero-stat__num">50+</span><span class="hero-stat__label">Student
+              volunteers</span></div>
+          <div class="hero-stat"><span class="hero-stat__num">1</span><span class="hero-stat__label">Home away from
+              home</span></div>
+        </div>
+      </section>
+
+      <!-- ---------- HAPPENING NEXT ---------- -->
+      <section class="happening-next" id="happeningNext">
+        <p class="eyebrow">HAPPENING NEXT</p>
+        <div class="happening-card" id="happeningCard">
+          <!-- injected by JS from events data -->
+        </div>
+      </section>
+
+      <!-- ---------- UPCOMING GRID ---------- -->
+      <section class="upcoming" id="upcomingSection">
+        <div class="section-head">
+          <p class="eyebrow">UPCOMING</p>
+          <h2>What's on the calendar</h2>
+          <a href="#events" class="text-link" data-route="events">See all live events →</a>
+        </div>
+        <div class="upcoming__grid" id="upcomingGrid"><!-- injected --></div>
+      </section>
+
+      <!-- ---------- ABOUT TEASER ---------- -->
+      <section class="about-teaser">
+        <div class="about-teaser__art" aria-hidden="true">
+          <svg viewBox="0 0 200 200">
+            <circle cx="100" cy="100" r="98" fill="none" stroke="#C96A22" stroke-width="1" />
+            <circle cx="100" cy="100" r="70" fill="none" stroke="#5C7A54" stroke-width="1" />
+          </svg>
+        </div>
+        <div class="about-teaser__text">
+          <p class="eyebrow">ABOUT PISA</p>
+          <h2>Not a club. <em>A community</em> that returns, semester after semester.</h2>
+          <p>The Pace Indian Student Association brings the color, food, music and warmth of India to One Pace Plaza —
+            building a home away from home for every student who walks through our doors, whether they're from Mumbai or
+            Manhattan.</p>
+          <a href="#team" class="text-link" data-route="team">Meet the people behind PISA →</a>
+        </div>
+      </section>
+
+      <!-- ---------- JOURNEY TEASER ---------- -->
+      <section class="journey-teaser">
+        <div class="section-head section-head--center">
+          <p class="eyebrow">OUR JOURNEY</p>
+          <h2>Every semester leaves a story behind.</h2>
+        </div>
+        <div class="journey-teaser__strip" id="journeyStrip"><!-- injected --></div>
+        <a href="#history" class="btn btn--outline" data-route="history">Walk Through Our Journey</a>
+      </section>
+
+      <!-- ---------- CONNECT ---------- -->
+      <section class="connect" id="connect">
+        <div class="section-head section-head--center">
+          <p class="eyebrow">STAY CONNECTED</p>
+          <h2>One doorway to every official PISA platform.</h2>
+        </div>
+        <div class="connect__grid">
+          <a class="connect__card" href="https://instagram.com/paceindianstudentassociation" target="_blank"
+            rel="noopener">
+            <span class="connect__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                <rect x="3" y="3" width="18" height="18" rx="5" />
+                <circle cx="12" cy="12" r="4.2" />
+                <circle cx="17.3" cy="6.7" r="1.1" fill="currentColor" stroke="none" />
+              </svg></span>
+            <span>Instagram</span><i>↗</i>
+          </a>
+          <a class="connect__card" href="https://linkedin.com" target="_blank" rel="noopener">
+            <span class="connect__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                <rect x="3" y="3" width="18" height="18" rx="3" />
+                <line x1="7.5" y1="10" x2="7.5" y2="17" />
+                <circle cx="7.5" cy="6.7" r="0.9" fill="currentColor" stroke="none" />
+                <path d="M11.5 17v-4.2c0-1.6 1-2.6 2.4-2.6 1.4 0 2.1 1 2.1 2.6V17" />
+              </svg></span>
+            <span>LinkedIn</span><i>↗</i>
+          </a>
+          <a class="connect__card" href="https://settersync.com" target="_blank" rel="noopener">
+            <span class="connect__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                <path d="M10 14a4.8 4.8 0 0 0 7 0l2.5-2.5a4.9 4.9 0 0 0-7-7L11 6" />
+                <path d="M14 10a4.8 4.8 0 0 0-7 0L4.5 12.5a4.9 4.9 0 0 0 7 7L13 18" />
+              </svg></span>
+            <span>Settersync</span><i>↗</i>
+          </a>
+          <a class="connect__card" href="mailto:pisa@pace.edu">
+            <span class="connect__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                <rect x="3" y="5" width="18" height="14" rx="2.4" />
+                <path d="M4 7l8 6 8-6" />
+              </svg></span>
+            <span>Official Email</span><i>↗</i>
+          </a>
+        </div>
+      </section>
+
+    </section>
+
+    <!-- =========================================================
+     PAGE: OUR JOURNEY / HISTORY
+========================================================= -->
+    <section class="page page--history" id="page-history" data-page="history">
+      <header class="page-banner page-banner--history">
+        <p class="eyebrow eyebrow--on-dark">02 · OUR JOURNEY</p>
+        <h1>The story PISA has<br><em>been writing</em></h1>
+        <p class="page-banner__sub">Every completed event lives here — photos, highlights and the people who made it
+          happen.</p>
+      </header>
+
+      <div class="timeline-wrap">
+        <div class="timeline" id="timeline"><!-- injected by JS, grouped by semester --></div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+     PAGE: TEAM
+========================================================= -->
+    <section class="page page--team" id="page-team" data-page="team">
+      <header class="page-banner page-banner--team" id="teamBanner">
+        <div class="page-banner__photo-row" id="teamPhotoRow"><!-- injected small photo stack --></div>
+        <p class="eyebrow eyebrow--on-dark">MEET PISA</p>
+        <h1>The people behind<br><em>the community.</em></h1>
+        <label class="sem-select sem-select--on-dark">
+          <span class="sem-select__label">Viewing</span>
+          <span class="sem-select__field">
+            <select id="teamSemSelect" aria-label="Choose a semester"></select>
+            <i aria-hidden="true">▾</i>
+          </span>
+        </label>
+      </header>
+
+      <section class="team-section">
+        <p class="eyebrow eyebrow--center">EXECUTIVE BOARD</p>
+        <div class="team-grid team-grid--exec" id="teamExecGrid"><!-- injected --></div>
+      </section>
+
+      <section class="team-section team-section--committee">
+        <p class="eyebrow eyebrow--center">COMMITTEES</p>
+        <div class="team-grid team-grid--committee" id="teamCommitteeGrid"><!-- injected --></div>
+      </section>
+
+      <section class="team-cta">
+        <p>For collaborations & inquiries</p>
+        <a href="mailto:pisa@pace.edu" class="btn btn--primary">Get in Touch →</a>
+      </section>
+    </section>
+
+    <!-- =========================================================
+     PAGE: VOLUNTEER
+========================================================= -->
+    <section class="page page--volunteer" id="page-volunteer" data-page="volunteer">
+      <header class="page-banner page-banner--volunteer">
+        <p class="eyebrow eyebrow--on-dark">JOIN</p>
+        <h1>Volunteer for <em>PISA</em></h1>
+        <p class="page-banner__sub">Get involved in 1–2 taps. Every event runs on students who show up for each other.
+        </p>
+        <a href="#volunteerForm" class="btn btn--primary" id="scrollToForm">Register to Volunteer ↓</a>
+      </header>
+
+      <section class="volunteer-roles">
+        <div class="section-head section-head--center">
+          <p class="eyebrow">WAYS TO PARTICIPATE</p>
+          <h2>Find the role that fits you</h2>
+        </div>
+        <div class="roles-grid" id="rolesGrid"><!-- injected --></div>
+      </section>
+
+      <section class="volunteer-form-section" id="volunteerForm">
+        <div class="section-head section-head--center">
+          <p class="eyebrow">REGISTER</p>
+          <h2>Tell us how you'd like to help</h2>
+        </div>
+
+        <form class="volunteer-form" id="volForm" novalidate>
+          <div class="form-row">
+            <div class="form-field">
+              <label for="volName">Full name</label>
+              <input type="text" id="volName" name="name" required placeholder="Your name">
+            </div>
+            <div class="form-field">
+              <label for="volEmail">Pace email</label>
+              <input type="email" id="volEmail" name="email" required placeholder="you@pace.edu">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="volPhone">Phone number</label>
+              <input type="tel" id="volPhone" name="phone" placeholder="(optional)">
+            </div>
+            <div class="form-field">
+              <label for="volYear">Class year</label>
+              <select id="volYear" name="year">
+                <option value="">Select</option>
+                <option>Freshman</option>
+                <option>Sophomore</option>
+                <option>Junior</option>
+                <option>Senior</option>
+                <option>Graduate</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label>I'd like to help as a... <span class="hint">(select all that apply)</span></label>
+            <div class="checkbox-grid" id="checkboxGrid"><!-- injected from roles data --></div>
+          </div>
+
+          <div class="form-field">
+            <label for="volAvailability">Availability</label>
+            <select id="volAvailability" name="availability">
+              <option>Weekdays</option>
+              <option>Weekends</option>
+              <option>Both</option>
+              <option>Event-day only</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="volWhy">Why do you want to volunteer with PISA?</label>
+            <textarea id="volWhy" name="why" rows="4" placeholder="Tell us a little about yourself..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn--primary btn--wide">Submit Registration →</button>
+          <p class="form-note">This is a demo form. Wire it up to Google Forms, Settersync or your backend of choice —
+            see README.</p>
+        </form>
+
+        <div class="form-success" id="formSuccess">
+          <span class="form-success__mark">✓</span>
+          <h3>You're on the list!</h3>
+          <p>Thank you for stepping up for PISA. A board member will reach out with next steps shortly.</p>
+          <button class="btn btn--ghost" id="formReset">Submit another response</button>
+        </div>
+      </section>
+    </section>
+
+    <!-- =========================================================
+     PAGE: LIVE EVENTS
+========================================================= -->
+    <section class="page page--events" id="page-events" data-page="events">
+      <header class="page-banner page-banner--events">
+        <p class="eyebrow eyebrow--on-dark">EVENT LIFECYCLE · UPCOMING → LIVE → COMPLETED → ARCHIVED</p>
+        <h1>Live <em>Events</em></h1>
+        <p class="page-banner__sub">Everything currently open for registration. Once an event's date passes, it
+          automatically retires into Our Journey.</p>
+      </header>
+
+      <section class="events-list" id="eventsList"><!-- injected countdown cards --></section>
+    </section>
+
+    <!-- =========================================================
+     PAGE: GALLERY
+========================================================= -->
+    <section class="page page--gallery" id="page-gallery" data-page="gallery">
+      <header class="page-banner page-banner--gallery">
+        <p class="eyebrow eyebrow--on-dark">MOMENTS · SEMESTER BY SEMESTER</p>
+        <h1>The PISA <em>Gallery</em></h1>
+        <p class="page-banner__sub">Every event we've thrown, captured. Pick a semester and relive it, event by event.
+        </p>
+      </header>
+
+      <div class="gallery-wrap">
+        <div class="gallery-toolbar">
+          <label class="sem-select">
+            <span class="sem-select__label">Semester</span>
+            <span class="sem-select__field">
+              <select id="gallerySemSelect" aria-label="Choose a semester"></select>
+              <i aria-hidden="true">▾</i>
+            </span>
+          </label>
+          <p class="gallery-meta" id="gallerySemMeta"></p>
+        </div>
+        <div class="gallery-content" id="galleryContent"><!-- injected, grouped by event --></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =========================================================
+    GALLERY MODAL (used by History timeline)
+========================================================= -->
+  <div class="modal" id="galleryModal" aria-hidden="true">
+    <div class="modal__backdrop" id="modalBackdrop"></div>
+    <div class="modal__panel">
+      <button class="modal__close" id="modalClose" aria-label="Close">✕</button>
+      <div class="modal__header">
+        <p class="eyebrow" id="modalEyebrow"></p>
+        <h3 id="modalTitle"></h3>
+        <p id="modalMeta" class="modal__meta"></p>
+      </div>
+      <div class="carousel" id="carousel">
+        <div class="carousel__track" id="carouselTrack"><!-- injected slides --></div>
+        <button class="carousel__nav carousel__nav--prev" id="carouselPrev" aria-label="Previous photo">‹</button>
+        <button class="carousel__nav carousel__nav--next" id="carouselNext" aria-label="Next photo">›</button>
+        <div class="carousel__dots" id="carouselDots"></div>
+      </div>
+      <p class="modal__desc" id="modalDesc"></p>
+    </div>
+  </div>
+
+  <!-- =========================================================
+    FOOTER
+========================================================= -->
+  <footer class="site-footer">
+    <div class="site-footer__top">
+      <div class="site-footer__brand">
+        <span class="footer-logo">
+          <img src="img/pisa-logo.png" alt="PISA — Pace Indian Student Association">
+        </span>
+        <p>PISA Hub — your home for everything PISA.<br>Pace University · One Pace Plaza · New York, NY</p>
+      </div>
+      <div class="site-footer__links">
+        <div>
+          <h4>Explore</h4>
+          <a href="#home" data-route="home">Home</a>
+          <a href="#events" data-route="events">Live Events</a>
+          <a href="#history" data-route="history">Our Journey</a>
+          <a href="#gallery" data-route="gallery">Gallery</a>
+          <a href="#team" data-route="team">Team</a>
+          <a href="#volunteer" data-route="volunteer">Volunteer</a>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <a href="https://instagram.com" target="_blank" rel="noopener">Instagram ↗</a>
+          <a href="https://linkedin.com" target="_blank" rel="noopener">LinkedIn ↗</a>
+          <a href="https://settersync.com" target="_blank" rel="noopener">Settersync ↗</a>
+          <a href="mailto:pisa@pace.edu">Official Email ↗</a>
+        </div>
+      </div>
+    </div>
+    <div class="site-footer__bottom">
+      <p>Discover. Connect. Belong.</p>
+      <p>&copy; <span id="year"></span> PISA — Pace Indian Student Association</p>
+    </div>
+  </footer>
+
+  <!-- polished custom cursor (desktop) — shaped like the macOS arrow pointer -->
+  <div class="cursor-dot" id="cursorDot" aria-hidden="true">
+    <svg viewBox="0 0 28 28">
+      <path d="M3.5 2.5 L3.5 22 L9 17.5 L13 25.5 L16.5 24 L12.5 16 L20.5 16 Z" />
+    </svg>
+  </div>
+  <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+
+  <!-- timed / exit-intent messages -->
+  <div class="toast-wrap" id="toastWrap" aria-live="polite"></div>
+
+  <script src="js/main.js"></script>
+</body>
+
+</html>
