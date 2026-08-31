@@ -87,7 +87,7 @@
       date: "2026-09-08T15:30:00",
       endDate: "2026-09-08T22:00:00",
       location: "Pace University, New York",
-      registerLink: "https://settersyncnyc.pace.edu/organization/pisa",
+      registerLink: "https://settersyncnyc.pace.edu/event/12643233",
       poster: "img/events/milan/poster.jpg",
       showPoster: true,
       gallery: [
@@ -333,7 +333,7 @@
         {
           title: "Executive Board",
           members: [
-            { name: "Dilan", role: "President", photo: "img/team/dilan.jpg", photoSeed: "dilan-president", instagram: "#", linkedin: "#" },
+            { name: "Dilan", role: "President", photo: "img/team/dilan.jpg", focus: "50% 20%", photoSeed: "dilan-president", instagram: "#", linkedin: "#" },
             { name: "Shivam", role: "Vice President", photo: "img/team/shivam.jpg", photoSeed: "shivam-vice-president", instagram: "#", linkedin: "#" },
             { name: "Gurleen", role: "Secretary", photo: "img/team/gurleen.jpg", focus: "50% 20%", photoSeed: "gurleen-secretary", instagram: "#", linkedin: "#" }
           ]
@@ -639,8 +639,9 @@
     // Journey strip (most recent 5 history items)
     const history = EVENTS
       .filter((e) => getStatus(e) === "closed")
+      .filter((e) => new Date(e.date).getFullYear() >= 2025)
       .filter((e) => e.poster || (e.gallery && e.gallery[0]))
-      .sort((a, b) => new Date(a.date) - new Date(b.date));
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
     const strip = $("#journeyStrip");
     strip.innerHTML = history.map((ev, i) => `
       <a class="journey-card" href="#history" data-route="history">
@@ -681,15 +682,16 @@
   let timelineRendered = false;
   let historySelectBuilt = false;
   function historySemesters() {
-    const closed = EVENTS.filter((e) => getStatus(e) === "closed");
+    const closed = EVENTS.filter((e) => getStatus(e) === "closed" && new Date(e.date).getFullYear() >= 2025);
     return sortSemestersDesc(closed.map((e) => semesterOf(e.date)));
   }
 
   function paintTimeline(sem) {
     const history = EVENTS
       .filter((e) => getStatus(e) === "closed")
+      .filter((e) => new Date(e.date).getFullYear() >= 2025)
       .filter((e) => sem === "all" || semesterOf(e.date) === sem)
-      .sort((a, b) => new Date(a.date) - new Date(b.date));
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
     const wrap = $("#timeline");
     const meta = $("#historySemMeta");
     if (meta) meta.textContent = `${history.length} event${history.length === 1 ? "" : "s"}`;
@@ -816,7 +818,8 @@
   =========================================================== */
   let gallerySelectBuilt = false;
   function galleryEventsByYear() {
-    const withPhotos = EVENTS.filter((e) => Array.isArray(e.gallery) && e.gallery.length);
+    // Only events that have already happened (closed) — no upcoming events.
+    const withPhotos = EVENTS.filter((e) => getStatus(e) === "closed" && Array.isArray(e.gallery) && e.gallery.length);
     const groups = {};
     withPhotos.forEach((ev) => {
       const yr = String(new Date(ev.date).getFullYear());
