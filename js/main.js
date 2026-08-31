@@ -89,6 +89,7 @@
       location: "Pace University, New York",
       registerLink: "https://settersyncnyc.pace.edu/organization/pisa",
       poster: "img/events/milan/poster.jpg",
+      showPoster: true,
       gallery: [
         "img/events/milan/gallery-1.jpg",
         "img/events/milan/gallery-2.jpg",
@@ -184,7 +185,7 @@
     {
       id: "navratri-2024",
       title: "Navratri Garba 2024",
-      tagline: "Nine nights, one circle.",
+      tagline: "Our first-ever Navratri — 350+ in one circle.",
       date: "2024-10-05T18:00:00",
       endDate: "2024-10-05T23:00:00",
       location: "Pace University, New York",
@@ -197,12 +198,12 @@
         "img/events/navratri-2024/gallery-5.jpg",
         "img/events/navratri-2024/gallery-6.jpg"
       ],
-      description: "A night of garba and dandiya to mark Navratri — spinning chaniya cholis, live beats and a growing circle of dancers."
+      description: "PISA's first-ever Navratri celebration — a night of garba and dandiya that drew more than 350 people, with spinning chaniya cholis, live beats and an ever-growing circle of dancers."
     },
     {
       id: "diwali-2024",
       title: "Prakāshā — Grand Diwali 2024",
-      tagline: "The plaza aglow with diyas.",
+      tagline: "500+ guests and a plaza aglow with diyas.",
       date: "2024-11-01T18:00:00",
       endDate: "2024-11-01T23:30:00",
       location: "One Pace Plaza, New York",
@@ -216,7 +217,7 @@
         "img/events/diwali-2024/gallery-6.jpg",
         "img/events/diwali-2024/gallery-7.jpg"
       ],
-      description: "PISA's Diwali 2024 — a full evening of lights, dinner, performances and dancing for the whole Pace community."
+      description: "PISA's flagship Diwali — a 500+ guest celebration of lights with cultural performances, a full dinner spread, decorations and dancing for students, faculty and guests alike."
     },
     {
       id: "holi-2025",
@@ -284,6 +285,39 @@
         "img/events/yoga-day-2026/gallery-4.jpg"
       ],
       description: "Our annual International Yoga Day experience brings students, faculty, staff and professors together through yoga and Indian wellness traditions."
+    },
+    {
+      id: "holi-2022",
+      title: "Holi at Pace 2022",
+      tagline: "The Festival of Colors on the Frankfort Lot.",
+      date: "2022-03-25T13:00:00",
+      endDate: "2022-03-25T17:00:00",
+      location: "Frankfort Lot, One Pace Plaza, New York",
+      registerLink: "https://settersyncnyc.pace.edu/organization/pisa",
+      gallery: [],
+      description: "PISA's Festival of Colors at the Frankfort Lot, One Pace Plaza — clouds of color powder, Indian food and music bringing the NYC campus together to welcome spring."
+    },
+    {
+      id: "navratri-2025",
+      title: "Navratri Night — Dandiya & Garba",
+      tagline: "Nine nights of music, dance and dandiya.",
+      date: "2025-09-26T18:00:00",
+      endDate: "2025-09-26T23:00:00",
+      location: "Pace University, New York",
+      registerLink: "https://settersyncnyc.pace.edu/organization/pisa",
+      gallery: [],
+      description: "A Navratri night of Dandiya and Garba — traditional music, spinning dandiya sticks and the whole Pace community dancing together to celebrate the nine nights."
+    },
+    {
+      id: "independence-2026",
+      title: "Independence Day at the Consulate General of India",
+      tagline: "Marking the tricolor in the heart of New York.",
+      date: "2026-08-15T10:00:00",
+      endDate: "2026-08-15T14:00:00",
+      location: "Consulate General of India, New York",
+      registerLink: "https://settersyncnyc.pace.edu/organization/pisa",
+      gallery: [],
+      description: "PISA joined India's Independence Day celebration at the Consulate General of India in New York — a proud morning marking the tricolor alongside the wider Indian community in the city."
     }
   ];
 
@@ -295,17 +329,39 @@
   /* Teams are keyed by semester so members can be browsed term-by-term. */
   const TEAMS_BY_SEM = {
     "Fall 2026": {
-      exec: [
-        { name: "Pritha Arora", role: "President", quote: "Trust the process.", photoSeed: "pritha-arora-president", instagram: "https://instagram.com", linkedin: "https://linkedin.com" },
-        { name: "Add Name", role: "Vice President", quote: "Add a quote.", photoSeed: "vp-f26", instagram: "#", linkedin: "#" },
-        { name: "Add Name", role: "Secretary", quote: "Add a quote.", photoSeed: "sec-f26", instagram: "#", linkedin: "#" },
-        { name: "Add Name", role: "Treasurer", quote: "Add a quote.", photoSeed: "trs-f26", instagram: "#", linkedin: "#" }
-      ],
-      committee: [
-        { name: "Add Name", role: "Marketing Lead", photoSeed: "mkt-f26", instagram: "#", linkedin: "#" },
-        { name: "Add Name", role: "Events Lead", photoSeed: "evt-f26", instagram: "#", linkedin: "#" },
-        { name: "Add Name", role: "Outreach Lead", photoSeed: "out-f26", instagram: "#", linkedin: "#" },
-        { name: "Add Name", role: "Operations Lead", photoSeed: "ops-f26", instagram: "#", linkedin: "#" }
+      groups: [
+        {
+          title: "Executive Board",
+          members: [
+            { name: "Dilan", role: "President", photo: "img/team/dilan.jpg", photoSeed: "dilan-president", instagram: "#", linkedin: "#" },
+            { name: "Shivam", role: "Vice President", photo: "img/team/shivam.jpg", photoSeed: "shivam-vice-president", instagram: "#", linkedin: "#" },
+            { name: "Gurleen", role: "Secretary", photo: "img/team/gurleen.jpg", focus: "50% 20%", photoSeed: "gurleen-secretary", instagram: "#", linkedin: "#" }
+          ]
+        },
+        {
+          title: "Directors",
+          members: [
+            { name: "Pritha", role: "Director of Events", photo: "img/team/pritha.jpg", photoSeed: "pritha-director-events", instagram: "#", linkedin: "#" },
+            { name: "Sriya", role: "Director of Marketing", photo: "img/team/sriya.jpg", photoSeed: "sriya-director-marketing", instagram: "#", linkedin: "#" }
+          ]
+        },
+        {
+          title: "Events Team",
+          members: [
+            { name: "Pransu", role: "Cultural Coordinator", photo: "img/team/pransu.jpg", photoSeed: "pransu-cultural-coordinator", instagram: "#", linkedin: "#" },
+            { name: "Rahul", role: "Logistical Coordinator", photo: "img/team/rahul.jpg", photoSeed: "rahul-logistical-coordinator", instagram: "#", linkedin: "#" },
+            { name: "Vighnesh", role: "Events Associate", photo: "img/team/vighnesh.jpg", photoSeed: "vighnesh-events-associate", instagram: "#", linkedin: "#" },
+            { name: "Priyanshi", role: "Events Associate", photo: "img/team/priyanshi.jpg", photoSeed: "priyanshi-events-associate", instagram: "#", linkedin: "#" },
+            { name: "Sreeya", role: "Events Associate", photo: "img/team/sreeya.jpg", photoSeed: "sreeya-events-associate", instagram: "#", linkedin: "#" }
+          ]
+        },
+        {
+          title: "Media & Outreach",
+          members: [
+            { name: "Mansi", role: "Photographer & Videographer", photo: "img/team/mansi.jpg", photoSeed: "mansi-photographer-videographer", instagram: "#", linkedin: "#" },
+            { name: "Anshitha", role: "PISA Ambassador", photo: "img/team/anshitha.jpg", photoSeed: "anshitha-pisa-ambassador", instagram: "#", linkedin: "#" }
+          ]
+        }
       ]
     },
     "Fall 2025": {
@@ -391,7 +447,7 @@
   function teamCardMarkup(member, small) {
     return `
       <article class="team-card">
-        <div class="team-card__photo"><img src="${avatarUrl(member.photoSeed)}" alt="${member.name}" loading="lazy"></div>
+        <div class="team-card__photo"><img src="${member.photo || avatarUrl(member.photoSeed)}" alt="${member.name}" loading="lazy"${member.focus ? ` style="object-position:${member.focus}"` : ""}></div>
         <span class="team-card__role">${member.role}</span>
         <div class="team-card__body">
           <h3>${member.name}</h3>
@@ -531,6 +587,19 @@
     $$(".reveal-up", root).forEach((el) => revealObserver.observe(el));
   }
 
+  /* Poster markup for upcoming / live events. Only events flagged
+     showPoster display a real poster; the rest get a branded
+     "poster coming soon" placeholder so the layout stays intact. */
+  function upcomingPosterMarkup(ev) {
+    if (ev.showPoster && ev.poster) {
+      return `<img class="poster-fit" src="${ev.poster}" alt="${ev.title}" loading="lazy">`;
+    }
+    return `<div class="poster-tba">
+        <span class="poster-tba__title">${ev.title}</span>
+        <span class="poster-tba__tag">Poster coming soon</span>
+      </div>`;
+  }
+
   /* ===========================================================
      HOME PAGE RENDER
   =========================================================== */
@@ -557,7 +626,7 @@
             <a class="btn btn--ghost" href="#events" data-route="events">View Details</a>
           </div>
         </div>
-        <div class="happening-card__visual"><img src="${next.poster}" alt="${next.title}" loading="lazy"></div>`;
+        <div class="happening-card__visual">${upcomingPosterMarkup(next)}</div>`;
     } else {
       card.innerHTML = `<p>No upcoming events right now — check back soon.</p>`;
     }
@@ -568,11 +637,14 @@
       upcoming.slice(0, 3).map((ev) => eventCardMarkup(ev)).join("");
 
     // Journey strip (most recent 5 history items)
-    const history = EVENTS.filter((e) => getStatus(e) === "closed").sort((a, b) => new Date(a.date) - new Date(b.date));
+    const history = EVENTS
+      .filter((e) => getStatus(e) === "closed")
+      .filter((e) => e.poster || (e.gallery && e.gallery[0]))
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
     const strip = $("#journeyStrip");
     strip.innerHTML = history.map((ev, i) => `
       <a class="journey-card" href="#history" data-route="history">
-        <div class="journey-card__img"><img src="${ev.poster}" alt="${ev.title}" loading="lazy"></div>
+        <div class="journey-card__img"><img src="${ev.poster || ev.gallery[0]}" alt="${ev.title}" loading="lazy"></div>
         <div class="journey-card__body">
           <span class="num">0${i + 1}</span>
           <h4>${ev.title}</h4>
@@ -588,7 +660,7 @@
     return `
       <article class="event-card">
         <div class="event-card__img">
-          <img src="${ev.poster}" alt="${ev.title}" loading="lazy">
+          ${upcomingPosterMarkup(ev)}
           <span class="status-chip status-chip--${status}">${statusLabel}</span>
         </div>
         <div class="event-card__body">
@@ -707,13 +779,23 @@
   function paintTeam(sem) {
     const team = TEAMS_BY_SEM[sem];
     if (!team) return;
-    const exec = team.exec || [];
-    const committee = team.committee || [];
-    $("#teamExecGrid").innerHTML = exec.map((m) => teamCardMarkup(m)).join("");
-    $("#teamCommitteeGrid").innerHTML = committee.length
-      ? committee.map((m) => teamCardMarkup(m)).join("")
-      : `<p style="color:var(--brown-mid)">Committee roster for this term is being finalized.</p>`;
-    $("#teamPhotoRow").innerHTML = exec.map((m) => `<div class="stack-photo"><img src="${avatarUrl(m.photoSeed)}" alt="${m.name}"></div>`).join("");
+    /* Prefer an explicit `groups` list; fall back to the older exec/committee shape. */
+    const groups = team.groups || [
+      { title: "Executive Board", members: team.exec || [] },
+      { title: "Committees", members: team.committee || [] }
+    ];
+    $("#teamGroups").innerHTML = groups.map((g, i) => {
+      const members = g.members || [];
+      const grid = members.length
+        ? members.map((m) => teamCardMarkup(m)).join("")
+        : `<p style="color:var(--brown-mid)">Roster for this group is being finalized.</p>`;
+      const fewClass = members.length && members.length <= 2 ? " team-grid--few" : "";
+      return `
+        <section class="team-section${i === 0 ? "" : " team-section--committee"}">
+          <p class="eyebrow eyebrow--center">${g.title.toUpperCase()}</p>
+          <div class="team-grid team-grid--committee${fewClass}">${grid}</div>
+        </section>`;
+    }).join("");
   }
 
   function renderTeam() {
@@ -858,7 +940,7 @@
 
     wrap.innerHTML = list.map((ev) => `
       <article class="live-card" data-id="${ev.id}">
-        <div class="live-card__img"><img src="${ev.poster}" alt="${ev.title}" loading="lazy"></div>
+        <div class="live-card__img">${upcomingPosterMarkup(ev)}</div>
         <div class="live-card__body">
           <div class="live-card__top">
             <span class="status-chip status-chip--${getStatus(ev)}" data-status-chip="${ev.id}">${getStatus(ev) === "live" ? "Live Now" : "Open for Registration"}</span>

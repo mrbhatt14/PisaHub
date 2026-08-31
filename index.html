@@ -149,7 +149,7 @@
         <div class="about-teaser__text">
           <p class="eyebrow">ABOUT PISA</p>
           <h2>More than a club. <em>A community</em> — since 2008.</h2>
-          <p>The Pace Indian Student Association is a Lubin School of Business graduate student-led community at Pace
+          <p>The Pace Indian Student Association is a student-led community at Pace
             University, dedicated to bringing Indian students together, celebrating Indian culture, and creating a home
             away from home. Through cultural celebrations, social experiences, networking and guidance, PISA helps
             students connect, belong and create lasting memories together.</p>
@@ -243,7 +243,10 @@
 ========================================================= -->
     <section class="page page--team" id="page-team" data-page="team">
       <header class="page-banner page-banner--team" id="teamBanner">
-        <div class="page-banner__photo-row" id="teamPhotoRow"><!-- injected small photo stack --></div>
+        <figure class="team-banner-photo" id="teamBannerPhoto">
+          <img src="img/team/team-photo.jpg" alt="The PISA team" loading="eager"
+            onerror="this.closest('.team-banner-photo').style.display='none'">
+        </figure>
         <p class="eyebrow eyebrow--on-dark">MEET PISA</p>
         <h1>The people behind<br><em>the community.</em></h1>
         <label class="sem-select sem-select--on-dark">
@@ -255,15 +258,7 @@
         </label>
       </header>
 
-      <section class="team-section">
-        <p class="eyebrow eyebrow--center">EXECUTIVE BOARD</p>
-        <div class="team-grid team-grid--exec" id="teamExecGrid"><!-- injected --></div>
-      </section>
-
-      <section class="team-section team-section--committee">
-        <p class="eyebrow eyebrow--center">COMMITTEES</p>
-        <div class="team-grid team-grid--committee" id="teamCommitteeGrid"><!-- injected --></div>
-      </section>
+      <div id="teamGroups"><!-- injected: one section per team group --></div>
 
       <section class="team-cta">
         <p>For collaborations & inquiries</p>
