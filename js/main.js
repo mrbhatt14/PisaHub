@@ -538,7 +538,7 @@
   /* ===========================================================
      ROUTER
   =========================================================== */
-  const ROUTES = ["home", "history", "team", "volunteer", "events", "gallery"];
+  const ROUTES = ["home", "about", "history", "team", "volunteer", "events", "gallery"];
   let currentRoute = "home";
 
   function resolveRoute() {
@@ -613,10 +613,23 @@
     burger.setAttribute("aria-expanded", "false");
     mobileMenu.classList.remove("is-open");
   }
-  burger.addEventListener("click", () => {
+  burger.addEventListener("click", (e) => {
+    e.stopPropagation();
     const open = burger.classList.toggle("is-open");
     burger.setAttribute("aria-expanded", String(open));
     mobileMenu.classList.toggle("is-open", open);
+  });
+  // the floating card is compact, so dismiss it on outside tap / scroll / Escape
+  document.addEventListener("click", (e) => {
+    if (!mobileMenu.classList.contains("is-open")) return;
+    if (mobileMenu.contains(e.target) || burger.contains(e.target)) return;
+    closeMobileMenu();
+  });
+  window.addEventListener("scroll", () => {
+    if (mobileMenu.classList.contains("is-open")) closeMobileMenu();
+  }, { passive: true });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && mobileMenu.classList.contains("is-open")) closeMobileMenu();
   });
 
   /* ===========================================================
@@ -683,11 +696,74 @@
   }
 
   /* ===========================================================
+     BOARDING-PASS HERO
+  =========================================================== */
+  // Turn a location string into a short "airport code" for the stub.
+  function gateCode(location = "") {
+    const loc = location.toLowerCase();
+    if (loc.includes("pace")) return "PACE";
+    if (loc.includes("consulate")) return "CGI";
+    if (loc.includes("kessel")) return "KSSL";
+    const word = (location.match(/[A-Za-z]{3,}/) || ["PISA"])[0];
+    return word.slice(0, 4).toUpperCase();
+  }
+
+  function paintBoardingPass(next) {
+    const setText = (id, val) => { const el = $("#" + id); if (el) el.textContent = val; };
+    if (next) {
+      setText("bpFlight", next.title);
+      setText("bpBoarding", `${fmtDate(next.date)} · ${fmtTime(next.date)}`);
+      setText("bpGate", next.location);
+      setText("bpGateShort", gateCode(next.location));
+      setText("bpCode", `PISA · ${new Date(next.date).getFullYear()}`);
+    } else {
+      setText("bpFlight", "New season loading…");
+      setText("bpBoarding", "Announced soon");
+      setText("bpGate", "Pace University, NY");
+      setText("bpGateShort", "PACE");
+    }
+  }
+
+  // Cursor-driven 3D tilt on the pass (desktop, motion-safe).
+  function initBoardingPassTilt() {
+    const wrap = $("#passWrap");
+    const pass = $("#boardingPass");
+    if (!wrap || !pass) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!window.matchMedia("(hover:hover) and (pointer:fine)").matches) return;
+
+    let raf = null;
+    const onMove = (e) => {
+      const r = pass.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width;   // 0..1
+      const py = (e.clientY - r.top) / r.height;   // 0..1
+      if (raf) cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        pass.style.animation = "none";
+        pass.style.setProperty("--ry", `${(px - 0.5) * 16}deg`);
+        pass.style.setProperty("--rx", `${(0.5 - py) * 14}deg`);
+      });
+    };
+    const reset = () => {
+      if (raf) cancelAnimationFrame(raf);
+      pass.style.setProperty("--ry", "0deg");
+      pass.style.setProperty("--rx", "0deg");
+      // hand control back to the idle float
+      pass.style.animation = "";
+    };
+    wrap.addEventListener("mousemove", onMove);
+    wrap.addEventListener("mouseleave", reset);
+  }
+
+  /* ===========================================================
      HOME PAGE RENDER
   =========================================================== */
   function renderHome() {
     const upcoming = EVENTS.filter((e) => getStatus(e) !== "closed").sort((a, b) => new Date(a.date) - new Date(b.date));
     const next = upcoming[0];
+
+    // Boarding-pass hero - wire fields to the real next departure
+    paintBoardingPass(next);
 
     // Happening Next
     const card = $("#happeningCard");
@@ -1253,46 +1329,42 @@
       .sort((a, b) => new Date(a.date) - new Date(b.date))[0];
   }
 
-  // both popups spotlight the latest upcoming event with a Register button
-  function upcomingToast(kind) {
+  // a single popup: register for the latest upcoming event
+  function initEngagementToasts() {
     const ev = nextUpcomingEvent();
-    if (ev) {
-      const when = `${fmtDate(ev.date)} · ${fmtTime(ev.date)}`;
+    if (!ev || !ev.registerLink) return;   // nothing open to register for
+    const when = `${fmtDate(ev.date)} · ${fmtTime(ev.date)}`;
+    setTimeout(() => {
       showToast({
-        emoji: kind === "long" ? "🎉" : "👋",
-        title: kind === "long" ? `Don't miss ${ev.title}!` : "Leaving so soon?",
-        msg: kind === "long"
-          ? `You're clearly into PISA - our next event, ${ev.title}, is ${when}. Grab your spot.`
-          : `Register for ${ev.title} (${when}) before you go.`,
-        ctaText: "Register now →", ctaHref: ev.registerLink, dur: 12000
+        emoji: "🎉",
+        title: `Register for ${ev.title}`,
+        msg: `${ev.tagline} — ${when}. Grab your spot.`,
+        ctaText: "Register now →", ctaHref: ev.registerLink, dur: 14000
       });
-    } else {
-      showToast({
-        emoji: kind === "long" ? "🎉" : "👋",
-        title: kind === "long" ? "Still exploring? Love that." : "Leaving so soon?",
-        msg: "Catch up on everything PISA has coming up next.",
-        ctaText: "See events →", route: "events", dur: 10000
-      });
-    }
+    }, 6000);
   }
 
-  function initEngagementToasts() {
-    const start = Date.now();
-    let longShown = false, exitShown = false;
+  /* ===========================================================
+     INTRO - logo zooms in and fades into the site (~2.6s, CSS-driven)
+  =========================================================== */
+  function initIntro() {
+    const intro = $("#intro");
+    if (!intro) return;
+    const html = document.documentElement;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    // reward the curious (5s for demo; use 10*60*1000 for 10 minutes)
-    setTimeout(() => {
-      if (longShown) return; longShown = true;
-      upcomingToast("long");
-    }, 5 * 1000);
+    const finish = () => {
+      intro.classList.add("is-hidden");
+      html.style.overflow = "";
+      document.body.style.overflow = "";
+    };
 
-    // catch quick leavers: cursor darts off the top edge (2s window for demo; use 2*60*1000)
-    document.addEventListener("mouseout", (e) => {
-      if (exitShown || e.clientY > 0 || e.relatedTarget) return;
-      if (Date.now() - start > 2 * 1000) return;
-      exitShown = true;
-      upcomingToast("exit");
-    });
+    if (reduce) { finish(); return; }
+
+    // hold the page still while the logo plays, then remove the overlay
+    html.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+    setTimeout(finish, 2650);
   }
 
   function initTeamPolaroidShake() {
@@ -1321,6 +1393,7 @@
      INIT
   =========================================================== */
   document.addEventListener("DOMContentLoaded", () => {
+    initIntro();
     $("#year").textContent = new Date().getFullYear();
     resetScrollPosition();
     updateGateProgress();
@@ -1329,6 +1402,7 @@
     requestAnimationFrame(resetScrollPosition);
     observeReveals();
     initCursor();
+    initBoardingPassTilt();
     initEngagementToasts();
     initTeamPolaroidShake();
   });

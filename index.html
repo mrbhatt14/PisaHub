@@ -27,6 +27,11 @@
   <!-- ============ ambient jali texture layer ============ -->
   <div class="jali-veil" aria-hidden="true"></div>
 
+  <!-- ============ INTRO: logo zooms in and fades into the site ============ -->
+  <div class="intro" id="intro" role="presentation">
+    <img class="intro__logo" src="img/pisa-logo.png" alt="PISA - Pace Indian Student Association">
+  </div>
+
 
   <!-- ============ NAV ============ -->
   <header class="nav" id="mainNav">
@@ -36,6 +41,7 @@
 
     <nav class="nav__links" id="navLinks">
       <a href="#home" data-route="home">Home</a>
+      <a href="#about" data-route="about">About</a>
       <a href="#events" data-route="events">Live Events</a>
       <a href="#history" data-route="history">Our Journey</a>
       <a href="#gallery" data-route="gallery">Gallery</a>
@@ -55,12 +61,13 @@
   <!-- mobile menu panel -->
   <div class="mobile-menu" id="mobileMenu">
     <a href="#home" data-route="home">Home</a>
+    <a href="#about" data-route="about">About</a>
     <a href="#events" data-route="events">Live Events</a>
     <a href="#history" data-route="history">Our Journey</a>
-    <a href="#gallery" data-routheste="gallery">Gallery</a>
+    <a href="#gallery" data-route="gallery">Gallery</a>
     <a href="#team" data-route="team">Team</a>
     <a href="#volunteer" data-route="volunteer">Volunteer</a>
-    <a href="#home" data-route="home" class="mobile-menu__connect">Connect →</a>
+    <a href="#volunteer" data-route="volunteer" class="mobile-menu__connect">Get Involved →</a>
   </div>
 
   <main id="mainContent">
@@ -70,53 +77,108 @@
 ========================================================= -->
     <section class="page page--home is-active" id="page-home" data-page="home">
 
-      <!-- ---------- GATE HERO (scroll-driven opening) ---------- -->
-      <section class="gate-hero" id="gateHero">
-        <div class="gate-hero__sticky" id="gateSticky">
+      <!-- ---------- BOARDING-PASS HERO ---------- -->
+      <section class="board-hero" id="boardHero">
+        <!-- ambient departures-at-night backdrop -->
+        <div class="board-hero__sky" aria-hidden="true"></div>
+        <div class="board-hero__grid-lines" aria-hidden="true"></div>
+        <!-- a stray dotted flight path arcing behind the pass -->
+        <svg class="board-hero__path" viewBox="0 0 1200 600" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M-40 470 C 300 470 360 150 640 150 S 980 200 1240 90" fill="none"
+            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        </svg>
 
-          <!-- backdrop: One Pace Plaza, actual building photo -->
-          <div class="gate-hero__backdrop" id="gateBackdrop">
-            <img class="gate-hero__building" src="img/pace-building.jpg"
-              alt="One Pace Plaza - Pace University, New York City" loading="eager" decoding="async">
-            <div class="gate-hero__threshold" aria-hidden="true"></div>
+        <div class="board-hero__inner">
+
+          <!-- lead copy -->
+          <div class="board-hero__lead">
+            <p class="board-hero__kicker"><span class="board-hero__ping"></span>Now boarding · Pace University · NYC</p>
+            <h1 class="board-hero__title">Homesick ?<br><em>We saved you a seat.</em></h1>
+            <p class="board-hero__sub">Culture, community and connection right at the heart of Pace. Grab your
+              boarding pass and step into PISA.</p>
+            <div class="board-hero__cta">
+              <a href="#events" class="btn btn--primary" data-route="events">Explore What's Happening</a>
+              <a href="#team" class="btn board-hero__ghost" data-route="team">Meet PISA</a>
+            </div>
+
+            <div class="board-hero__stats">
+              <div class="board-stat"><span class="board-stat__num">30+</span><span class="board-stat__label">Members &amp; growing</span></div>
+              <div class="board-stat"><span class="board-stat__num">20+</span><span class="board-stat__label">Events a year</span></div>
+              <div class="board-stat"><span class="board-stat__num">2008</span><span class="board-stat__label">Celebrating together since</span></div>
+            </div>
           </div>
 
-          <!-- warm daylight spilling in from beyond the gate as it opens -->
-          <div class="gate-hero__glow" aria-hidden="true"></div>
+          <!-- the pass itself -->
+          <div class="board-hero__passwrap" id="passWrap">
+            <div class="boarding-pass" id="boardingPass">
+              <span class="boarding-pass__flag" aria-hidden="true"></span>
+              <div class="boarding-pass__shine" aria-hidden="true"></div>
 
-          <!-- gate leaves: two halves of the Ganesh Pol gate, Amer Fort (Jaipur) -->
-          <div class="gate-leaf gate-leaf--left" id="leafLeft" aria-hidden="true"><span class="gate-leaf__edge"></span>
+              <!-- main body -->
+              <div class="boarding-pass__main">
+                <!-- faint mandala watermark -->
+                <svg class="bp-mandala" viewBox="0 0 100 100" aria-hidden="true">
+                  <g fill="none" stroke="currentColor" stroke-width="1">
+                    <circle cx="50" cy="50" r="46"/><circle cx="50" cy="50" r="34"/><circle cx="50" cy="50" r="20"/>
+                    <g>
+                      <ellipse cx="50" cy="24" rx="6" ry="14"/><ellipse cx="50" cy="76" rx="6" ry="14"/>
+                      <ellipse cx="24" cy="50" rx="14" ry="6"/><ellipse cx="76" cy="50" rx="14" ry="6"/>
+                      <ellipse cx="31" cy="31" rx="6" ry="14" transform="rotate(45 31 31)"/>
+                      <ellipse cx="69" cy="69" rx="6" ry="14" transform="rotate(45 69 69)"/>
+                      <ellipse cx="69" cy="31" rx="6" ry="14" transform="rotate(-45 69 31)"/>
+                      <ellipse cx="31" cy="69" rx="6" ry="14" transform="rotate(-45 31 69)"/>
+                    </g>
+                  </g>
+                </svg>
+
+                <div class="bp-brand">
+                  <span class="bp-brand__mark">
+                    <img src="img/pisa-logo.png" alt="PISA">
+                  </span>
+                  <span class="bp-brand__text">
+                    <strong>PISA</strong>
+                    <small>Pace Indian Student Association</small>
+                  </span>
+                  <span class="bp-brand__tag">Boarding Pass</span>
+                </div>
+
+                <div class="bp-route">
+                  <div class="bp-code">PACE<span>New York, USA</span></div>
+                  <div class="bp-plane" aria-hidden="true">
+                    <span class="bp-plane__line"></span>
+                  </div>
+                  <div class="bp-code bp-code--to">APNA<span>Home, always</span></div>
+                </div>
+
+                <div class="bp-grid">
+                  <div class="bp-field"><small>Passenger</small><b>You + your people</b></div>
+                  <div class="bp-field"><small>Next departure</small><b id="bpFlight">The PISA Premiere</b></div>
+                  <div class="bp-field"><small>Boarding</small><b id="bpBoarding">Sep 8, 2026 · 3:30 PM</b></div>
+                  <div class="bp-field"><small>Gate</small><b id="bpGate">Pace University, NY</b></div>
+                  <div class="bp-field"><small>Baggage</small><b>Bring your culture</b></div>
+                  <div class="bp-field"><small>Status</small><b class="bp-confirmed"><span class="bp-confirmed__dot"></span>Confirmed</b></div>
+                </div>
+              </div>
+
+              <!-- tear-off stub -->
+              <div class="boarding-pass__stub">
+                <span class="bp-seq" aria-hidden="true">No. 002008</span>
+                <span class="bp-stamp" aria-hidden="true">Swagat ✦ Welcome</span>
+                <div class="bp-stub-top">
+                  <div class="bp-field"><small>Pass</small><b id="bpCode">PISA · 2026</b></div>
+                  <div class="bp-field"><small>Seat</small><b>YOU-1A</b></div>
+                  <div class="bp-field"><small>Gate</small><b id="bpGateShort">PACE</b></div>
+                </div>
+                <div class="bp-scan">
+                  <div class="bp-foil" aria-hidden="true"></div>
+                  <div class="bp-barcode" aria-hidden="true"></div>
+                </div>
+                <span class="bp-stub-foot">SCAN TO JOIN · EST. 2008</span>
+              </div>
+            </div>
+            <p class="board-hero__hint" aria-hidden="true">Hover the pass ✦ it tilts with you</p>
           </div>
-          <div class="gate-leaf gate-leaf--right" id="leafRight" aria-hidden="true"><span
-              class="gate-leaf__edge"></span></div>
 
-          <div class="gate-hero__caption" id="gateCaption">
-            <!-- <p class="eyebrow">PACE UNIVERSITY · ONE PACE PLAZA · NEW YORK CITY</p> -->
-            <h1>Step through <em>PISA</em></h1>
-            <p class="gate-hero__sub">Culture, community and connection - right at the heart of Pace.</p>
-          </div>
-        </div>
-        <div class="gate-hero__spacer"></div>
-      </section>
-
-      <!-- ---------- HERO STATEMENT (revealed once gate is open) ---------- -->
-      <section class="hero-statement">
-        <p class="eyebrow eyebrow--center">NOW → JOIN → EXPERIENCE → REMEMBER</p>
-        <h2 class="reveal-up">Where every Pace festival<br><em>feels like home.</em></h2>
-        <div class="hero-statement__cta">
-          <a href="#events" class="btn btn--primary" data-route="events">Explore What's Happening</a>
-          <a href="#team" class="btn btn--ghost" data-route="team">Meet PISA</a>
-        </div>
-
-        <div class="hero-stats">
-          <div class="hero-stat"><span class="hero-stat__num">500+</span><span class="hero-stat__label">Members &amp;
-              growing</span></div>
-          <div class="hero-stat"><span class="hero-stat__num">20+</span><span class="hero-stat__label">Events a
-              year</span></div>
-          <div class="hero-stat"><span class="hero-stat__num">50+</span><span class="hero-stat__label">Student
-              volunteers</span></div>
-          <div class="hero-stat"><span class="hero-stat__num">1</span><span class="hero-stat__label">Home away from
-              home</span></div>
         </div>
       </section>
     
@@ -143,11 +205,12 @@
 
       <!-- ---------- ABOUT TEASER ---------- -->
       <section class="about-teaser" id="about">
-        <div class="about-teaser__art" aria-hidden="true">
-          <svg viewBox="0 0 200 200">
-            <circle cx="100" cy="100" r="98" fill="none" stroke="#C96A22" stroke-width="1" />
-            <circle cx="100" cy="100" r="70" fill="none" stroke="#5C7A54" stroke-width="1" />
-          </svg>
+        <div class="about-teaser__art">
+          <figure class="about-photo">
+            <img src="img/team/Holi Banner.png" alt="PISA students celebrating Holi together at Pace"
+              loading="lazy" onerror="this.closest('.about-photo').classList.add('is-missing')">
+            <figcaption class="about-photo__tag">Rang De Pace · Holi</figcaption>
+          </figure>
         </div>
         <div class="about-teaser__text">
           <p class="eyebrow">ABOUT PISA</p>
@@ -213,6 +276,108 @@
         </div>
       </section>
 
+    </section>
+
+    <!-- =========================================================
+     PAGE: ABOUT US
+========================================================= -->
+    <section class="page page--about" id="page-about" data-page="about">
+      <header class="page-banner page-banner--about">
+        <div class="about-banner__inner">
+          <p class="eyebrow eyebrow--on-dark">ABOUT PISA · EST. 2008</p>
+          <h1>Where every Pace festival<br><em>feels like home.</em></h1>
+          <!-- <p class="page-banner__sub">Celebrate. Connect. Belong.</p> -->
+        </div>
+      </header>
+
+      <section class="about-intro">
+        <div class="about-intro__head">
+          <p class="eyebrow">WHO WE ARE</p>
+          <h2>More than a club.<br><em>A community</em> — since 2008.</h2>
+        </div>
+        <div class="about-intro__body">
+          <p class="about-intro__lead">The Pace Indian Student Association (PISA) is a Lubin School of Business
+            graduate student-led community at Pace University — dedicated to bringing Indian students together,
+            celebrating Indian culture, and creating a sense of home away from home.</p>
+          <p>Through cultural celebrations, social experiences, networking, guidance, collaborations, and community
+            initiatives, PISA helps students connect, belong, and create lasting memories together. Established in 2008,
+            PISA has become an integral part of the Pace University community.</p>
+        </div>
+      </section>
+
+      <section class="about-values">
+        <div class="section-head about-values__head">
+          <div>
+            <p class="eyebrow">MORE THAN A CLUB, A COMMUNITY</p>
+            <h2>What PISA is built on</h2>
+          </div>
+          <p class="about-values__lead">Five ideas shape everything we do — from the biggest festival on campus to the
+            smallest first hello.</p>
+        </div>
+        <div class="values-grid">
+          <article class="value-card">
+            <span class="value-card__num">01</span>
+            <h3>Culture</h3>
+            <p>Celebrating India's diverse festivals, traditions, music, dance, food, fashion and heritage — and sharing
+              it with the wider Pace community.</p>
+          </article>
+          <article class="value-card">
+            <span class="value-card__num">02</span>
+            <h3>Community</h3>
+            <p>Creating spaces for students to meet, make friends, celebrate together and build meaningful connections at
+              Pace.</p>
+          </article>
+          <article class="value-card">
+            <span class="value-card__num">03</span>
+            <h3>Support &amp; Guidance</h3>
+            <p>Connecting students with peers, alumni and community members for experiences, resources and guidance as
+              they navigate university and life in New York.</p>
+          </article>
+          <article class="value-card">
+            <span class="value-card__num">04</span>
+            <h3>Networking</h3>
+            <p>Opportunities to connect with alumni, professionals, community leaders and organizations — relationships
+              that extend well beyond Pace.</p>
+          </article>
+          <article class="value-card value-card--wide">
+            <span class="value-card__num">05</span>
+            <h3>Belonging</h3>
+            <p>At the heart of PISA is one simple idea: everyone deserves to feel at home. We bring students together
+              across backgrounds to find their people, celebrate who they are, and make memories that last beyond
+              university.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="about-beyond">
+        <div class="about-beyond__inner">
+          <div class="about-beyond__head">
+            <p class="eyebrow eyebrow--on-dark">CONNECTED BEYOND PACE</p>
+            <h2>Rooted at Pace.<br><em>Connected to New York.</em></h2>
+          </div>
+          <div class="about-beyond__body">
+            <p>PISA's community extends beyond the university campus. We've built meaningful relationships with the
+              Consulate General of India in New York, representatives of the New York State Assembly, Pace University
+              leadership, faculty, alumni and the wider Indian-American community — bringing public officials and
+              community representatives into PISA's celebrations. PISA is part of a community much bigger than our
+              campus.</p>
+            <p class="about-beyond__mantra">Vasudhaiva Kutumbakam — <em>“the world is one family.”</em></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="about-cta">
+        <div class="about-cta__inner">
+          <div class="about-cta__text">
+            <p class="eyebrow">JOIN US</p>
+            <h2>Find your home at Pace.</h2>
+          </div>
+          <div class="about-cta__btns">
+            <a href="#team" class="btn btn--primary" data-route="team">Meet the Team →</a>
+            <a href="#volunteer" class="btn btn--outline" data-route="volunteer">Get Involved</a>
+          </div>
+        </div>
+      </section>
     </section>
 
     <!-- =========================================================
@@ -373,7 +538,6 @@
 ========================================================= -->
     <section class="page page--events" id="page-events" data-page="events">
       <header class="page-banner page-banner--events">
-        <p class="eyebrow eyebrow--on-dark">EVENT LIFECYCLE · UPCOMING → LIVE → COMPLETED → ARCHIVED</p>
         <h1>Live <em>Events</em></h1>
         <p class="page-banner__sub">Everything currently open for registration. Once an event's date passes, it
           automatically retires into Our Journey.</p>
@@ -450,7 +614,7 @@
         <div>
           <h4>Main</h4>
           <a href="#home" data-route="home">Home</a>
-          <a href="#home" data-route="home" data-scroll-target="about">About Us</a>
+          <a href="#about" data-route="about">About Us</a>
         </div>
         <div>
           <h4>Events</h4>
