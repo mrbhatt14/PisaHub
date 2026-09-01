@@ -1,5 +1,5 @@
 /* =========================================================
-   PISA HUB — design tokens
+   PISA HUB - design tokens
 ========================================================= */
 :root{
   /* --- adaptive tokens (flip between light & dark) --- */
@@ -29,7 +29,7 @@
 }
 
 /* =========================================================
-   DARK THEME — only the adaptive tokens change
+   DARK THEME - only the adaptive tokens change
 ========================================================= */
 :root[data-theme="dark"]{
   --ivory:      #1A1420;   /* deep warm plum-espresso base */
@@ -129,7 +129,7 @@ svg{ display:block; }
 /* =========================================================
    NAV
 ========================================================= */
-/* floating frosted-glass "island" nav — lifts off the page, warm-tinted (never plain white) */
+/* floating frosted-glass "island" nav - lifts off the page, warm-tinted (never plain white) */
 .nav{
   position:fixed; top:.7rem; left:50%; transform:translateX(-50%); z-index:60;
   width:min(1320px, calc(100% - 1.4rem));
@@ -289,7 +289,7 @@ svg{ display:block; }
   transform:scale(calc(1.02 + var(--gp) * 0.12));  /* dolly-in (photo is high-res) */
   will-change:transform;
 }
-/* no darkening overlays on the hero image — keep it clean and bright */
+/* no darkening overlays on the hero image - keep it clean and bright */
 .gate-hero__threshold{ display:none; }
 /* restrained shaft of daylight at the seam as the gate parts */
 .gate-hero__glow{
@@ -326,7 +326,7 @@ svg{ display:block; }
   text-shadow:none;
   transform-style:preserve-3d;
 }
-/* marker-style highlight hugging each line so the text pops — no glass, no shadow */
+/* marker-style highlight hugging each line so the text pops - no glass, no shadow */
 .gate-hero__caption .eyebrow,
 .gate-hero__caption h1,
 .gate-hero__caption .gate-hero__sub{
@@ -425,7 +425,7 @@ svg{ display:block; }
 .event-card__img img{ width:100%; height:100%; object-fit:cover; transition:transform .6s var(--ease); }
 .event-card:hover .event-card__img img{ transform:scale(1.06); }
 
-/* Posters flagged to show in full (no crop) — the whole image fits,
+/* Posters flagged to show in full (no crop) - the whole image fits,
    with a dark backdrop filling any letterbox space. */
 .poster-fit{ object-fit:contain !important; background:#140a08; }
 
@@ -442,7 +442,7 @@ svg{ display:block; }
   font-family:var(--font-mono); font-size:.62rem; letter-spacing:.14em; text-transform:uppercase;
   color:var(--sand); border:1px solid rgba(246,241,230,.3); border-radius:999px; padding:.4em .9em;
 }
-/* the happening-card visual isn't position:relative-filled the same way — make placeholder sit static there */
+/* the happening-card visual isn't position:relative-filled the same way - make placeholder sit static there */
 .happening-card__visual .poster-tba{ position:absolute; }
 .status-chip{
   position:absolute; top:.8rem; left:.8rem; font-family:var(--font-mono); font-size:.68rem; letter-spacing:.06em;
@@ -520,14 +520,117 @@ svg{ display:block; }
 .page-banner h1 em{ color:var(--saffron); }
 .page-banner__sub{ max-width:520px; margin:0 auto; color:var(--sand); font-size:1.05rem; }
 .page-banner--history{ background:linear-gradient(160deg,#2E2013,#4A3620); }
-.page-banner--team{ padding-top:6rem; }
+.page-banner--team{ padding-top:5.5rem; padding-bottom:3rem; }
 .page-banner--volunteer .btn{ margin-top:1.6rem; }
+.page-banner--team h1{ font-size:clamp(2rem,4.6vw,3.15rem); }
 
-.team-banner-photo{
-  max-width:640px; margin:0 auto 2.2rem; border-radius:20px; overflow:hidden;
-  border:4px solid var(--brown); box-shadow:0 18px 40px -14px rgba(0,0,0,.5);
+.team-banner-polaroids{
+  display:grid;
+  grid-template-columns:minmax(0, 1.05fr) minmax(0, .95fr);
+  align-items:start;
+  gap:clamp(1rem,2.6vw,1.8rem);
+  width:min(840px, 90vw);
+  margin:1.6rem auto 1rem;
+  padding:.7rem .4rem 0;
 }
-.team-banner-photo img{ display:block; width:100%; height:auto; }
+.team-polaroid{
+  position:relative;
+  margin:0;
+  padding:clamp(.45rem,.8vw,.7rem);
+  background:var(--ivory-soft);
+  border-radius:4px;
+  box-shadow:0 28px 54px -22px rgba(0,0,0,.75), 0 0 0 1px rgba(46,32,19,.18);
+  transform-origin:center;
+  will-change:transform;
+  cursor:pointer;
+}
+.team-polaroid:focus-visible{
+  outline:3px solid var(--saffron);
+  outline-offset:8px;
+}
+.team-polaroid::before{
+  content:'';
+  position:absolute;
+  top:calc(clamp(.55rem,1vw,.85rem) * -1.05);
+  left:50%;
+  width:66px;
+  height:24px;
+  border-radius:2px;
+  background:rgba(217,199,160,.9);
+  box-shadow:0 5px 12px rgba(0,0,0,.16);
+  transform:translateX(-50%) rotate(-1deg);
+  z-index:2;
+}
+.team-polaroid img{
+  display:block;
+  width:100%;
+  aspect-ratio:16/9;
+  object-fit:cover;
+  background:var(--sand-soft);
+}
+.team-polaroid--main{
+  justify-self:end;
+  animation:polaroidFloatMain 6.8s ease-in-out infinite;
+}
+.team-polaroid--holi{
+  justify-self:start;
+  margin-top:1.1rem;
+  animation:polaroidFloatHoli 7.4s ease-in-out .7s infinite;
+}
+.team-polaroid--holi::before{
+  background:rgba(92,122,84,.88);
+  transform:translateX(-50%) rotate(1.5deg);
+}
+.team-polaroid--holi img{
+  aspect-ratio:4/3;
+}
+@media (hover:hover) and (pointer:fine){
+  .team-polaroid--main:hover{
+    animation:polaroidShakeMain .58s ease-in-out infinite;
+  }
+  .team-polaroid--holi:hover{
+    animation:polaroidShakeHoli .58s ease-in-out infinite;
+  }
+}
+.team-polaroid--main.is-shaking{
+  animation:polaroidShakeMain .55s ease-in-out;
+}
+.team-polaroid--holi.is-shaking{
+  animation:polaroidShakeHoli .55s ease-in-out;
+}
+.team-toolbar{
+  max-width:var(--container);
+  margin:0 auto;
+  padding:2rem 1.5rem 0;
+  display:flex;
+  justify-content:flex-start;
+}
+@keyframes polaroidFloatMain{
+  0%,100%{ transform:translateY(0) rotate(-2.3deg); }
+  35%{ transform:translateY(-10px) rotate(-1.4deg); }
+  70%{ transform:translateY(5px) rotate(-3deg); }
+}
+@keyframes polaroidFloatHoli{
+  0%,100%{ transform:translateY(0) rotate(2.4deg); }
+  40%{ transform:translateY(8px) rotate(1.5deg); }
+  76%{ transform:translateY(-9px) rotate(3.1deg); }
+}
+@keyframes polaroidShakeMain{
+  0%,100%{ transform:translateY(0) rotate(-2.3deg); }
+  15%{ transform:translateX(-6px) translateY(-2px) rotate(-4.4deg); }
+  30%{ transform:translateX(6px) translateY(2px) rotate(.2deg); }
+  45%{ transform:translateX(-5px) translateY(1px) rotate(-3.8deg); }
+  60%{ transform:translateX(4px) translateY(-1px) rotate(-.4deg); }
+  75%{ transform:translateX(-2px) translateY(1px) rotate(-2.9deg); }
+}
+@keyframes polaroidShakeHoli{
+  0%,100%{ transform:translateY(0) rotate(2.4deg); }
+  15%{ transform:translateX(6px) translateY(2px) rotate(4.5deg); }
+  30%{ transform:translateX(-6px) translateY(-1px) rotate(.1deg); }
+  45%{ transform:translateX(5px) translateY(1px) rotate(4deg); }
+  60%{ transform:translateX(-4px) translateY(-2px) rotate(.7deg); }
+  75%{ transform:translateX(2px) translateY(1px) rotate(2.9deg); }
+}
 
 /* =========================================================
    TIMELINE (History)
@@ -604,7 +707,7 @@ svg{ display:block; }
 /* =========================================================
    TEAM
 ========================================================= */
-.team-section{ max-width:var(--container); margin:0 auto; padding:5rem 1.5rem 1rem; }
+.team-section{ max-width:var(--container); margin:0 auto; padding:2.8rem 1.5rem 1rem; }
 .team-section--committee{ padding-top:1rem; padding-bottom:5rem; }
 .team-grid{ display:grid; gap:1.6rem; margin-top:2.4rem; }
 .team-grid--exec{ grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); }
@@ -709,6 +812,9 @@ svg{ display:block; }
 .live-card__img img{ width:100%; height:100%; object-fit:cover; }
 .live-card__body{ padding:2rem clamp(1.4rem,3vw,2.6rem); display:flex; flex-direction:column; gap:1rem; }
 .live-card__top{ display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+/* .status-chip is position:absolute by default (for overlaying a poster image);
+   here it sits in a plain flex row with no image to overlay, so keep it in flow. */
+.live-card__top .status-chip{ position:static; }
 .live-card__body h3{ font-size:1.5rem; }
 .live-card__tagline{ color:var(--brown-mid); margin:0; }
 .live-card__meta{ display:flex; flex-wrap:wrap; gap:1.2rem; font-family:var(--font-mono); font-size:.82rem; color:var(--brown-mid); }
@@ -766,25 +872,43 @@ svg{ display:block; }
 /* =========================================================
    FOOTER
 ========================================================= */
-.site-footer{ background:var(--brown); color:var(--sand); padding:4.5rem 1.5rem 2rem; }
-.site-footer__top{ max-width:var(--container); margin:0 auto; display:flex; justify-content:space-between; gap:3rem; flex-wrap:wrap; padding-bottom:3rem; border-bottom:1px solid rgba(217,199,160,.18); }
-.site-footer__brand{ display:flex; flex-direction:column; gap:1.1rem; max-width:320px; }
-.footer-logo{ display:inline-flex; align-self:flex-start; }
-/* the wordmark art is dark — flip it to a clean light mark (no plate) so it reads on the dark footer */
-.footer-logo img{
-  height:72px; width:auto; display:block;
-  filter:brightness(0) invert(1) drop-shadow(0 2px 10px rgba(224,138,60,.4));
-  opacity:.95;
+.site-footer{ background:var(--brown); color:var(--sand); padding:2rem 1.5rem 1.1rem; }
+.site-footer__top{
+  max-width:var(--container); margin:0 auto; display:grid; grid-template-columns:minmax(260px,.9fr) minmax(520px,1.35fr);
+  align-items:flex-start; gap:2rem; padding-bottom:1.4rem; border-bottom:1px solid rgba(217,199,160,.18);
 }
-.site-footer__brand p{ font-size:.85rem; margin:0; }
-.site-footer__links{ display:flex; gap:3.5rem; }
-.site-footer__links h4{ font-family:var(--font-mono); font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--ivory-soft); margin-bottom:1rem; }
-.site-footer__links a{ display:block; font-size:.88rem; margin-bottom:.7rem; opacity:.85; transition:opacity .25s; }
+.site-footer__brand{ display:flex; align-items:center; gap:1rem; max-width:420px; }
+.footer-logo{
+  display:inline-flex; align-self:flex-start; flex-shrink:0;
+  background:rgba(251,248,241,.96); border:1px solid rgba(224,138,60,.34);
+  border-radius:14px; padding:.36rem .62rem;
+  box-shadow:0 10px 26px -16px rgba(0,0,0,.75);
+}
+.footer-logo img{
+  height:44px; width:auto; display:block;
+  filter:none;
+  opacity:1;
+}
+.site-footer__brand-copy strong{ display:block; color:var(--ivory-soft); font-size:.95rem; line-height:1.2; margin-bottom:.18rem; }
+.site-footer__brand-copy span{ display:block; font-size:.82rem; line-height:1.35; color:var(--sand); }
+.site-footer__links{
+  display:grid; grid-template-columns:repeat(4, max-content); justify-content:end;
+  gap:clamp(1.25rem,3vw,2.4rem); justify-self:end;
+}
+.site-footer__links h4{ font-family:var(--font-mono); font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; color:var(--ivory-soft); margin:0 0 .65rem; }
+.site-footer__links a{ display:block; font-size:.82rem; line-height:1.25; margin-bottom:.45rem; opacity:.85; transition:opacity .25s; }
 .site-footer__links a:hover{ opacity:1; color:var(--saffron); }
-.site-footer__bottom{ max-width:var(--container); margin:0 auto; display:flex; justify-content:space-between; padding-top:1.6rem; font-family:var(--font-mono); font-size:.75rem; opacity:.7; flex-wrap:wrap; gap:.6rem; }
+.site-footer__bottom{ max-width:var(--container); margin:0 auto; display:flex; justify-content:space-between; padding-top:.95rem; font-family:var(--font-mono); font-size:.7rem; opacity:.7; flex-wrap:wrap; gap:.6rem; }
+
+@media (max-width:920px){
+  .site-footer__top{ grid-template-columns:1fr; }
+  .site-footer__links{ justify-content:start; justify-self:start; grid-template-columns:repeat(4, minmax(0, max-content)); }
+}
 
 @media (max-width:640px){
-  .site-footer__top{ flex-direction:column; }
+  .site-footer__top{ display:flex; flex-direction:column; }
+  .site-footer__brand{ align-items:flex-start; }
+  .site-footer__links{ width:100%; grid-template-columns:repeat(2, minmax(0,1fr)); justify-content:start; justify-self:stretch; gap:1.4rem 1.8rem; }
   .live-card{ grid-template-columns:1fr; }
   .live-card__img{ min-height:200px; }
 }
@@ -869,7 +993,7 @@ svg{ display:block; }
 @media (max-width:560px){ .gallery-masonry{ columns:2 130px; } }
 
 /* =========================================================
-   DARK MODE — richer, layered look (not flat black)
+   DARK MODE - richer, layered look (not flat black)
 ========================================================= */
 :root[data-theme="dark"] body{
   background-color:#1A1420;
@@ -936,10 +1060,10 @@ svg{ display:block; }
   transition:opacity .3s, width .25s var(--ease), height .25s var(--ease), background .25s, border-color .25s;
 }
 body.cursor-on .cursor-dot{ opacity:1; }
-.cursor-ring.is-hover{ opacity:1; width:54px; height:54px; background:rgba(224,138,60,.16); border-color:var(--saffron); }
+body.cursor-on .cursor-ring.is-hover{ opacity:1; width:54px; height:54px; background:rgba(224,138,60,.16); border-color:var(--saffron); }
 @media (pointer:fine){
   body.cursor-on, body.cursor-on a, body.cursor-on button, body.cursor-on label,
-  body.cursor-on select, body.cursor-on .gallery-tile, body.cursor-on [data-route]{ cursor:none; }
+  body.cursor-on select, body.cursor-on .gallery-tile, body.cursor-on .team-polaroid, body.cursor-on [data-route]{ cursor:none; }
   body.cursor-on input, body.cursor-on textarea{ cursor:text; }
 }
 @media (max-width:860px){ .cursor-dot,.cursor-ring{ display:none; } }
@@ -1002,7 +1126,7 @@ body.cursor-on .cursor-dot{ opacity:1; }
   .gate-hero{ height:250svh; }
   .gate-hero__sticky{ height:100svh; perspective:1100px; perspective-origin:50% 50%; }
   /* the Amer gate is symmetric, so pulling its centre to the seam reads
-     like two ornate doors meeting — and cover removes the empty space */
+     like two ornate doors meeting - and cover removes the empty space */
   .gate-leaf{ background-size:cover; }
   .gate-leaf--left{ background-position:right center; }
   .gate-leaf--right{ background-position:left center; }
@@ -1022,7 +1146,25 @@ body.cursor-on .cursor-dot{ opacity:1; }
   .about-teaser, .journey-teaser{ padding:1.4rem 1.2rem 3.6rem; }
   .team-section{ padding:2.6rem 1.2rem 1rem; }
   .team-section--committee{ padding-bottom:3rem; }
-  .page-banner--team{ padding-top:5rem; }
+  .page-banner--team{ padding-top:5rem; padding-bottom:2.6rem; }
+  .team-banner-polaroids{
+    grid-template-columns:1fr;
+    gap:1.6rem;
+    width:min(440px, 88vw);
+    margin-top:1.4rem;
+    padding-top:.4rem;
+  }
+  .team-polaroid--main{
+    justify-self:center;
+    width:100%;
+    animation-name:polaroidFloatMainMobile;
+  }
+  .team-polaroid--holi{
+    justify-self:center;
+    width:min(420px, 92%);
+    margin-top:0;
+    animation-name:polaroidFloatHoliMobile;
+  }
 }
 
 @media (max-width:480px){
@@ -1031,5 +1173,38 @@ body.cursor-on .cursor-dot{ opacity:1; }
   .hero-statement__cta .btn{ width:100%; text-align:center; }
   .happening-card{ padding:1.5rem; border-radius:22px; }
   .happening-card__ctas .btn{ width:100%; text-align:center; }
-  .team-banner-photo{ border-width:3px; border-radius:16px; }
+  .page-banner--team{ padding-bottom:2.4rem; }
+  .team-banner-polaroids{
+    margin-bottom:.4rem;
+  }
+  .team-polaroid{ padding:.42rem; }
+  .team-polaroid--main,
+  .team-polaroid--holi{ width:100%; }
+  .team-toolbar{ padding:1.4rem 1.2rem 0; }
+}
+
+@keyframes polaroidFloatMainMobile{
+  0%,100%{ transform:translateY(0) rotate(-1.6deg); }
+  35%{ transform:translateY(-7px) rotate(-.9deg); }
+  70%{ transform:translateY(4px) rotate(-2.1deg); }
+}
+@keyframes polaroidFloatHoliMobile{
+  0%,100%{ transform:translateY(0) rotate(1.8deg); }
+  40%{ transform:translateY(6px) rotate(1.1deg); }
+  76%{ transform:translateY(-7px) rotate(2.3deg); }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .team-polaroid--main,
+  .team-polaroid--main:hover,
+  .team-polaroid--main.is-shaking{
+    animation:none;
+    transform:rotate(-2.3deg);
+  }
+  .team-polaroid--holi,
+  .team-polaroid--holi:hover,
+  .team-polaroid--holi.is-shaking{
+    animation:none;
+    transform:rotate(2.4deg);
+  }
 }

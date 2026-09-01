@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PISA Footer Preview Options</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --ivory: #F6F1E6;
+      --ivory-soft: #FBF8F1;
+      --brown: #2E2013;
+      --brown-soft: #3A2818;
+      --sand: #D9C7A0;
+      --sand-muted: #A98F6F;
+      --line: rgba(217, 199, 160, .18);
+      --saffron: #E08A3C;
+      --saffron-deep: #C1592B;
+      --green: #5C7A54;
+      --font-display: 'Fraunces', serif;
+      --font-body: 'Inter', sans-serif;
+      --font-mono: 'Space Grotesk', sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--ivory);
+      color: var(--brown);
+      font-family: var(--font-body);
+      line-height: 1.5;
+    }
+    header {
+      padding: 2rem clamp(1rem, 4vw, 3rem) 1rem;
+      max-width: 1260px;
+      margin: 0 auto;
+    }
+    h1 {
+      margin: 0 0 .35rem;
+      font: 600 clamp(2rem, 4vw, 3.2rem)/1.05 var(--font-display);
+      letter-spacing: 0;
+    }
+    header p { margin: 0; color: #6B4A32; max-width: 650px; }
+    main {
+      display: grid;
+      gap: 2rem;
+      padding: 1rem clamp(1rem, 4vw, 3rem) 3rem;
+      max-width: 1260px;
+      margin: 0 auto;
+    }
+    .preview-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin: 0 0 .7rem;
+      font-family: var(--font-mono);
+      color: #6B4A32;
+      text-transform: uppercase;
+      letter-spacing: .09em;
+      font-size: .74rem;
+    }
+    .preview-label span:first-child { color: var(--saffron-deep); font-weight: 600; }
+    .footer {
+      background: var(--brown);
+      color: var(--sand);
+      border-radius: 18px;
+      box-shadow: 0 24px 60px -30px rgba(46, 32, 19, .55);
+      overflow: hidden;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: .95rem;
+      min-width: 0;
+    }
+    .logo-chip {
+      display: inline-flex;
+      flex-shrink: 0;
+      background: var(--ivory-soft);
+      border: 1px solid rgba(224, 138, 60, .36);
+      border-radius: 14px;
+      padding: .34rem .58rem;
+      box-shadow: 0 12px 28px -18px rgba(0, 0, 0, .8);
+    }
+    .logo-chip img { width: 58px; height: auto; display: block; }
+    .brand strong {
+      display: block;
+      color: var(--ivory-soft);
+      font-size: .98rem;
+      line-height: 1.2;
+      margin-bottom: .18rem;
+    }
+    .brand span,
+    .bottom {
+      color: var(--sand-muted);
+      font-size: .8rem;
+    }
+    .links {
+      display: grid;
+      gap: 1.8rem;
+    }
+    .links h2 {
+      margin: 0 0 .65rem;
+      color: var(--ivory-soft);
+      font: 600 .68rem/1 var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: .12em;
+    }
+    .links a {
+      display: block;
+      color: var(--sand);
+      text-decoration: none;
+      font-size: .84rem;
+      line-height: 1.3;
+      margin-bottom: .44rem;
+    }
+    .links a:hover { color: var(--saffron); }
+    .bottom {
+      border-top: 1px solid var(--line);
+      font-family: var(--font-mono);
+      font-size: .7rem;
+    }
+
+    .option-a { padding: 1.6rem 1.8rem 1rem; }
+    .option-a .top {
+      display: grid;
+      grid-template-columns: minmax(250px, 1fr) auto minmax(250px, 1fr);
+      gap: 2rem;
+      align-items: start;
+    }
+    .option-a .links {
+      grid-template-columns: repeat(2, minmax(120px, max-content));
+      justify-self: center;
+    }
+    .option-a .explore-list {
+      columns: 2;
+      column-gap: 1.6rem;
+    }
+    .option-a .bottom {
+      margin-top: 1.2rem;
+      padding-top: .85rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .option-b { padding: 1.5rem 1.8rem 1rem; }
+    .option-b .top {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 2.4rem;
+      align-items: start;
+    }
+    .option-b .links {
+      grid-template-columns: repeat(3, minmax(105px, 1fr));
+    }
+    .option-b .feature {
+      border-left: 2px solid var(--saffron);
+      padding-left: 1rem;
+    }
+    .option-b .feature p {
+      margin: 0;
+      color: var(--ivory-soft);
+      font: italic 1.08rem/1.25 var(--font-display);
+    }
+    .option-b .bottom {
+      margin-top: 1.1rem;
+      padding-top: .8rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .option-c { padding: 0; }
+    .option-c .top {
+      display: grid;
+      grid-template-columns: .9fr 1.25fr;
+      min-height: 190px;
+    }
+    .option-c .brand-panel {
+      padding: 1.5rem 1.8rem;
+      background: linear-gradient(135deg, rgba(224, 138, 60, .14), rgba(92, 122, 84, .12));
+      display: flex;
+      align-items: center;
+    }
+    .option-c .links {
+      grid-template-columns: repeat(2, minmax(120px, 1fr));
+      padding: 1.5rem 1.8rem;
+      align-content: start;
+    }
+    .option-c .explore-list {
+      display: grid;
+      grid-template-columns: repeat(2, max-content);
+      column-gap: 1.5rem;
+    }
+    .option-c .bottom {
+      padding: .85rem 1.8rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .option-d { padding: 1.25rem 1.6rem .9rem; }
+    .option-d .top {
+      display: grid;
+      grid-template-columns: minmax(240px, .9fr) minmax(360px, 1.4fr);
+      gap: 2rem;
+      align-items: center;
+    }
+    .option-d .links {
+      grid-template-columns: repeat(4, max-content);
+      justify-content: end;
+      gap: 1.6rem;
+    }
+    .option-d .links h2 { margin-bottom: .45rem; }
+    .option-d .links a { margin-bottom: .34rem; font-size: .8rem; }
+    .option-d .bottom {
+      margin-top: 1rem;
+      padding-top: .75rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 820px) {
+      .option-a .top,
+      .option-b .top,
+      .option-c .top,
+      .option-d .top {
+        grid-template-columns: 1fr;
+      }
+      .option-a .links,
+      .option-b .links,
+      .option-c .links,
+      .option-d .links {
+        justify-self: stretch;
+        justify-content: start;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .option-c .brand-panel { padding-bottom: .5rem; }
+    }
+
+    @media (max-width: 520px) {
+      main { padding-inline: .8rem; }
+      .footer { border-radius: 14px; }
+      .brand { align-items: flex-start; }
+      .links,
+      .option-a .links,
+      .option-b .links,
+      .option-c .links,
+      .option-d .links {
+        grid-template-columns: 1fr;
+      }
+      .option-a .explore-list,
+      .option-c .explore-list {
+        columns: initial;
+        display: block;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Footer Preview Options</h1>
+    <p>Four compact PISA footer directions using the original logo and the current site palette. Pick the option number you want and I will apply it to the live footer.</p>
+  </header>
+
+  <main>
+    <section>
+      <div class="preview-label"><span>Option 1</span><span>Balanced Center Directory</span></div>
+      <footer class="footer option-a">
+        <div class="top">
+          <div class="brand">
+            <span class="logo-chip"><img src="img/pisa-logo.png" alt="PISA"></span>
+            <div><strong>Pace Indian Student Association</strong><span>One Pace Plaza · New York, NY</span></div>
+          </div>
+          <div class="links">
+            <div>
+              <h2>Explore</h2>
+              <div class="explore-list">
+                <a href="#">Home</a><a href="#">About Us</a><a href="#">Live Events</a><a href="#">Our Journey</a>
+                <a href="#">Gallery</a><a href="#">Team</a><a href="#">Volunteer</a>
+              </div>
+            </div>
+            <div>
+              <h2>Connect</h2>
+              <a href="#">Instagram ↗</a><a href="#">LinkedIn ↗</a><a href="#">Settersync ↗</a><a href="#">Official Email ↗</a>
+            </div>
+          </div>
+        </div>
+        <div class="bottom"><span>Celebrate. Connect. Belong.</span><span>© 2026 PISA - Pace Indian Student Association</span></div>
+      </footer>
+    </section>
+
+    <section>
+      <div class="preview-label"><span>Option 2</span><span>Compact With Tagline</span></div>
+      <footer class="footer option-b">
+        <div class="top">
+          <div class="brand">
+            <span class="logo-chip"><img src="img/pisa-logo.png" alt="PISA"></span>
+            <div><strong>PISA</strong><span>Pace Indian Student Association · NYC</span></div>
+          </div>
+          <div class="links">
+            <div>
+              <h2>Explore</h2>
+              <a href="#">Home</a><a href="#">About Us</a><a href="#">Live Events</a><a href="#">Our Journey</a><a href="#">Gallery</a><a href="#">Team</a><a href="#">Volunteer</a>
+            </div>
+            <div>
+              <h2>Connect</h2>
+              <a href="#">Instagram ↗</a><a href="#">LinkedIn ↗</a><a href="#">Settersync ↗</a><a href="#">Official Email ↗</a>
+            </div>
+            <div class="feature">
+              <h2>Belong</h2>
+              <p>Culture, community and connection at Pace.</p>
+            </div>
+          </div>
+        </div>
+        <div class="bottom"><span>One Pace Plaza · New York, NY</span><span>© 2026 PISA</span></div>
+      </footer>
+    </section>
+
+    <section>
+      <div class="preview-label"><span>Option 3</span><span>Split Brand Panel</span></div>
+      <footer class="footer option-c">
+        <div class="top">
+          <div class="brand-panel">
+            <div class="brand">
+              <span class="logo-chip"><img src="img/pisa-logo.png" alt="PISA"></span>
+              <div><strong>Pace Indian Student Association</strong><span>Celebrate. Connect. Belong.</span></div>
+            </div>
+          </div>
+          <div class="links">
+            <div>
+              <h2>Explore</h2>
+              <div class="explore-list">
+                <a href="#">Home</a><a href="#">About Us</a><a href="#">Live Events</a><a href="#">Our Journey</a>
+                <a href="#">Gallery</a><a href="#">Team</a><a href="#">Volunteer</a>
+              </div>
+            </div>
+            <div>
+              <h2>Connect</h2>
+              <a href="#">Instagram ↗</a><a href="#">LinkedIn ↗</a><a href="#">Settersync ↗</a><a href="#">Official Email ↗</a>
+            </div>
+          </div>
+        </div>
+        <div class="bottom"><span>One Pace Plaza · New York, NY</span><span>© 2026 PISA - Pace Indian Student Association</span></div>
+      </footer>
+    </section>
+
+    <section>
+      <div class="preview-label"><span>Option 4</span><span>Very Slim Footer</span></div>
+      <footer class="footer option-d">
+        <div class="top">
+          <div class="brand">
+            <span class="logo-chip"><img src="img/pisa-logo.png" alt="PISA"></span>
+            <div><strong>PISA</strong><span>One Pace Plaza · New York, NY</span></div>
+          </div>
+          <div class="links">
+            <div><h2>Main</h2><a href="#">Home</a><a href="#">About Us</a></div>
+            <div><h2>Events</h2><a href="#">Live Events</a><a href="#">Our Journey</a></div>
+            <div><h2>People</h2><a href="#">Gallery</a><a href="#">Team</a><a href="#">Volunteer</a></div>
+            <div><h2>Connect</h2><a href="#">Instagram ↗</a><a href="#">LinkedIn ↗</a><a href="#">Settersync ↗</a><a href="#">Email ↗</a></div>
+          </div>
+        </div>
+        <div class="bottom"><span>Celebrate. Connect. Belong.</span><span>© 2026 PISA</span></div>
+      </footer>
+    </section>
+  </main>
+</body>
+
+</html>

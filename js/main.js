@@ -1,11 +1,15 @@
 /* =========================================================
-   PISA HUB — main.js
+   PISA HUB - main.js
    Vanilla JS. No build step. Everything driven from the
-   EVENTS / TEAM / ROLES data objects below — edit those to
+   EVENTS / TEAM / ROLES data objects below - edit those to
    update real content. See README.md for details.
 ========================================================= */
 (() => {
   "use strict";
+
+  if ("scrollRestoration" in history) {
+    history.scrollRestoration = "manual";
+  }
 
   /* ---------------------------------------------------------
      ICONS (small inline SVG strings, reused across components)
@@ -23,7 +27,7 @@
   };
 
   /* ---------------------------------------------------------
-     DATA — EVENTS (single source of truth)
+     DATA - EVENTS (single source of truth)
      status is computed live from `date` (+ optional `endDate`):
        now < date               -> "upcoming"
        date <= now <= end       -> "live"
@@ -34,7 +38,7 @@
     {
       id: "orientation",
       title: "Spring Orientation Mixer",
-      tagline: "First hello of the semester — icebreakers, chai and new faces.",
+      tagline: "First hello of the semester - icebreakers, chai and new faces.",
       date: "2026-02-10T18:00:00",
       location: "Kessel Student Center, Pace University",
       registerLink: "https://settersyncnyc.pace.edu/organization/pisa",
@@ -45,11 +49,11 @@
         "img/events/orientation/gallery-3.jpg",
         "img/events/orientation/gallery-4.jpg"
       ],
-      description: "Our very first mixer of the spring semester — a low-key evening of introductions, snacks and sign-ups that set the tone for everything PISA built afterward."
+      description: "Our very first mixer of the spring semester - a low-key evening of introductions, snacks and sign-ups that set the tone for everything PISA built afterward."
     },
     {
       id: "beginning",
-      title: "The Beginning — Welcome Kickoff",
+      title: "The Beginning - Welcome Kickoff",
       tagline: "Where it all started: chai, samosas and two hundred new friends.",
       date: "2026-08-18T17:00:00",
       location: "One Pace Plaza Lobby, New York",
@@ -62,7 +66,7 @@
         "img/events/beginning/gallery-4.jpg",
         "img/events/beginning/gallery-5.jpg"
       ],
-      description: "The kickoff that opened Fall 2026 — new members, returning faces, and the first taste of what the semester would become."
+      description: "The kickoff that opened Fall 2026 - new members, returning faces, and the first taste of what the semester would become."
     },
     {
       id: "akshardham",
@@ -78,7 +82,7 @@
         "img/events/akshardham/gallery-2.jpg",
         "img/events/akshardham/gallery-3.jpg"
       ],
-      description: "A full-day cultural excursion to one of the largest Hindu temple complexes in the world — coach transport, guided tour and a shared meal included."
+      description: "A full-day cultural excursion to one of the largest Hindu temple complexes in the world - coach transport, guided tour and a shared meal included."
     },
     {
       id: "milan",
@@ -95,7 +99,7 @@
         "img/events/milan/gallery-2.jpg",
         "img/events/milan/gallery-3.jpg"
       ],
-      description: "The opening celebration of every semester — a Bollywood-inspired welcome featuring music, dance, food, introductions, and the unveiling of PISA's semester team and vision."
+      description: "The opening celebration of every semester - a Bollywood-inspired welcome featuring music, dance, food, introductions, and the unveiling of PISA's semester team and vision."
     },
     {
       id: "garba",
@@ -106,6 +110,7 @@
       location: "Pace University, New York",
       registerLink: "https://settersyncnyc.pace.edu/organization/pisa",
       poster: "img/events/garba/poster.jpg",
+      showPoster: true,
       gallery: [
         "img/events/garba/gallery-1.jpg",
         "img/events/garba/gallery-2.jpg",
@@ -115,23 +120,43 @@
     },
     {
       id: "diwali",
-      title: "Prakāshā — Grand Diwali 2026",
+      title: "Prakāshā - Grand Diwali 2026",
       tagline: "Lights, laddoos and the biggest night of the semester.",
       date: "2026-11-08T18:00:00",
       endDate: "2026-11-08T23:30:00",
       location: "Pace University, New York",
       registerLink: "https://settersyncnyc.pace.edu/organization/pisa",
       poster: "img/events/diwali-2k26/poster.jpg",
+      showPoster: true,
       gallery: [
         "img/events/diwali-2k26/gallery-1.jpg",
         "img/events/diwali-2k26/gallery-2.jpg",
         "img/events/diwali-2k26/gallery-3.jpg"
       ],
-      description: "The festival of lights, PISA-style — diyas, a full dinner spread and a dance floor that doesn't stop."
+      description: "The festival of lights, PISA-style - diyas, a full dinner spread and a dance floor that doesn't stop."
     },
+    /* @@COMMENTED-OUT-START: events-non-2026-semesters-a ================
+       DATE:     2026-08-31
+       WHY:      Requested: Our Journey / semester filters should show
+                 only Fall 2026, Spring 2026 and Summer 2026 for now -
+                 every other semester's events are hidden until asked
+                 to bring them back.
+       WAS FOR:  7 EVENTS entries covering Spring 2023 (holi-2023),
+                 Fall 2023 (bollyween-2023, diwali-2023), Fall 2024
+                 (navratri-2024, diwali-2024), Spring 2025 (holi-2025)
+                 and Fall 2025 (independence-2025). Because EVENTS is
+                 the single source of truth (see file header), removing
+                 these here also removed them from: Our Journey
+                 timeline, the home page "Journey strip", the semester
+                 dropdowns, and the standalone Gallery page's year
+                 groups - no other file needed to change.
+       RESTORE:  Uncomment this whole block (delete this header/footer,
+                 keep the 7 object literals + their trailing commas).
+    ====================================================================
+
     {
       id: "holi-2023",
-      title: "Rang De Pace — Holi 2023",
+      title: "Rang De Pace - Holi 2023",
       tagline: "A courtyard drenched in color.",
       date: "2023-03-08T13:00:00",
       endDate: "2023-03-08T17:00:00",
@@ -145,7 +170,7 @@
         "img/events/holi-2023/gallery-5.jpg",
         "img/events/holi-2023/gallery-6.jpg"
       ],
-      description: "PISA's Holi celebration in the One Pace Plaza courtyard — color powders, music and food, with other campus organizations joining in."
+      description: "PISA's Holi celebration in the One Pace Plaza courtyard - color powders, music and food, with other campus organizations joining in."
     },
     {
       id: "bollyween-2023",
@@ -162,11 +187,11 @@
         "img/events/bollyween-2023/gallery-4.jpg",
         "img/events/bollyween-2023/gallery-5.jpg"
       ],
-      description: "PISA's Bollywood-meets-Halloween party — costumes, dancing and a night of desi music on campus."
+      description: "PISA's Bollywood-meets-Halloween party - costumes, dancing and a night of desi music on campus."
     },
     {
       id: "diwali-2023",
-      title: "Prakāshā — Grand Diwali 2023",
+      title: "Prakāshā - Grand Diwali 2023",
       tagline: "The festival of lights at Pace.",
       date: "2023-11-11T18:00:00",
       endDate: "2023-11-11T23:00:00",
@@ -180,12 +205,12 @@
         "img/events/diwali-2023/gallery-5.jpg",
         "img/events/diwali-2023/gallery-6.jpg"
       ],
-      description: "The annual Diwali celebration — diyas, food, music and performances bringing the Pace community together for the festival of lights."
+      description: "The annual Diwali celebration - diyas, food, music and performances bringing the Pace community together for the festival of lights."
     },
     {
       id: "navratri-2024",
       title: "Navratri Garba 2024",
-      tagline: "Our first-ever Navratri — 350+ in one circle.",
+      tagline: "Our first-ever Navratri - 350+ in one circle.",
       date: "2024-10-05T18:00:00",
       endDate: "2024-10-05T23:00:00",
       location: "Pace University, New York",
@@ -198,11 +223,11 @@
         "img/events/navratri-2024/gallery-5.jpg",
         "img/events/navratri-2024/gallery-6.jpg"
       ],
-      description: "PISA's first-ever Navratri celebration — a night of garba and dandiya that drew more than 350 people, with spinning chaniya cholis, live beats and an ever-growing circle of dancers."
+      description: "PISA's first-ever Navratri celebration - a night of garba and dandiya that drew more than 350 people, with spinning chaniya cholis, live beats and an ever-growing circle of dancers."
     },
     {
       id: "diwali-2024",
-      title: "Prakāshā — Grand Diwali 2024",
+      title: "Prakāshā - Grand Diwali 2024",
       tagline: "500+ guests and a plaza aglow with diyas.",
       date: "2024-11-01T18:00:00",
       endDate: "2024-11-01T23:30:00",
@@ -217,11 +242,11 @@
         "img/events/diwali-2024/gallery-6.jpg",
         "img/events/diwali-2024/gallery-7.jpg"
       ],
-      description: "PISA's flagship Diwali — a 500+ guest celebration of lights with cultural performances, a full dinner spread, decorations and dancing for students, faculty and guests alike."
+      description: "PISA's flagship Diwali - a 500+ guest celebration of lights with cultural performances, a full dinner spread, decorations and dancing for students, faculty and guests alike."
     },
     {
       id: "holi-2025",
-      title: "Rang De Pace — Holi 2025",
+      title: "Rang De Pace - Holi 2025",
       tagline: "Color, dhol and spring on the plaza.",
       date: "2025-03-14T13:00:00",
       endDate: "2025-03-14T17:00:00",
@@ -235,7 +260,7 @@
         "img/events/holi-2025/gallery-5.jpg",
         "img/events/holi-2025/gallery-6.jpg"
       ],
-      description: "Our spring Holi — clouds of gulaal, dhol beats and the whole community out in the courtyard to welcome the season."
+      description: "Our spring Holi - clouds of gulaal, dhol beats and the whole community out in the courtyard to welcome the season."
     },
     {
       id: "independence-2025",
@@ -250,8 +275,10 @@
         "img/events/independence-2025/gallery-3.jpg",
         "img/events/independence-2025/gallery-4.jpg"
       ],
-      description: "Marking India's Independence Day at Pace — a get-together for the community far from home, but always together."
+      description: "Marking India's Independence Day at Pace - a get-together for the community far from home, but always together."
     },
+
+    @@COMMENTED-OUT-END: events-non-2026-semesters-a ==================== */
     {
       id: "mock-wedding-2026",
       title: "Indian Mock Wedding",
@@ -268,7 +295,7 @@
         "img/events/mock-wedding-2026/gallery-5.jpg",
         "img/events/mock-wedding-2026/gallery-6.jpg"
       ],
-      description: "A large-scale Indian Mock Wedding experience presented in Spring 2026 — showcasing the traditions, rituals, fashion, music, food and celebrations of an Indian wedding."
+      description: "A large-scale Indian Mock Wedding experience presented in Spring 2026 - showcasing the traditions, rituals, fashion, music, food and celebrations of an Indian wedding."
     },
     {
       id: "yoga-day-2026",
@@ -286,6 +313,20 @@
       ],
       description: "Our annual International Yoga Day experience brings students, faculty, staff and professors together through yoga and Indian wellness traditions."
     },
+    /* @@COMMENTED-OUT-START: events-non-2026-semesters-b ================
+       DATE:     2026-08-31
+       WHY:      Same reason as events-non-2026-semesters-a above:
+                 Our Journey / semester filters should show only
+                 Fall 2026, Spring 2026 and Summer 2026 for now.
+       WAS FOR:  2 EVENTS entries covering Spring 2022 (holi-2022) and
+                 Fall 2025 (navratri-2025). Split into a second block
+                 here (rather than merged with block "a") because
+                 mock-wedding-2026 and yoga-day-2026 - both kept,
+                 both 2026 - sit between them in the array.
+       RESTORE:  Uncomment this whole block (delete this header/footer,
+                 keep the 2 object literals + their trailing commas).
+    ====================================================================
+
     {
       id: "holi-2022",
       title: "Holi at Pace 2022",
@@ -295,19 +336,21 @@
       location: "Frankfort Lot, One Pace Plaza, New York",
       registerLink: "https://settersyncnyc.pace.edu/organization/pisa",
       gallery: [],
-      description: "PISA's Festival of Colors at the Frankfort Lot, One Pace Plaza — clouds of color powder, Indian food and music bringing the NYC campus together to welcome spring."
+      description: "PISA's Festival of Colors at the Frankfort Lot, One Pace Plaza - clouds of color powder, Indian food and music bringing the NYC campus together to welcome spring."
     },
     {
       id: "navratri-2025",
-      title: "Navratri Night — Dandiya & Garba",
+      title: "Navratri Night - Dandiya & Garba",
       tagline: "Nine nights of music, dance and dandiya.",
       date: "2025-09-26T18:00:00",
       endDate: "2025-09-26T23:00:00",
       location: "Pace University, New York",
       registerLink: "https://settersyncnyc.pace.edu/organization/pisa",
       gallery: [],
-      description: "A Navratri night of Dandiya and Garba — traditional music, spinning dandiya sticks and the whole Pace community dancing together to celebrate the nine nights."
+      description: "A Navratri night of Dandiya and Garba - traditional music, spinning dandiya sticks and the whole Pace community dancing together to celebrate the nine nights."
     },
+
+    @@COMMENTED-OUT-END: events-non-2026-semesters-b ==================== */
     {
       id: "independence-2026",
       title: "Independence Day at the Consulate General of India",
@@ -317,14 +360,14 @@
       location: "Consulate General of India, New York",
       registerLink: "https://settersyncnyc.pace.edu/organization/pisa",
       gallery: [],
-      description: "PISA joined India's Independence Day celebration at the Consulate General of India in New York — a proud morning marking the tricolor alongside the wider Indian community in the city."
+      description: "PISA joined India's Independence Day celebration at the Consulate General of India in New York - a proud morning marking the tricolor alongside the wider Indian community in the city."
     }
   ];
 
   /* ---------------------------------------------------------
-     DATA — TEAM
+     DATA - TEAM
      Replace photoSeed with a real image path once you have
-     headshots — see README.md.
+     headshots - see README.md.
   --------------------------------------------------------- */
   /* Teams are keyed by semester so members can be browsed term-by-term. */
   const TEAMS_BY_SEM = {
@@ -333,16 +376,23 @@
         {
           title: "Executive Board",
           members: [
-            { name: "Dilan", role: "President", photo: "img/team/dilan.jpg", focus: "50% 20%", photoSeed: "dilan-president", instagram: "#", linkedin: "#" },
-            { name: "Shivam", role: "Vice President", photo: "img/team/shivam.jpg", photoSeed: "shivam-vice-president", instagram: "#", linkedin: "#" },
-            { name: "Gurleen", role: "Secretary", photo: "img/team/gurleen.jpg", focus: "50% 20%", photoSeed: "gurleen-secretary", instagram: "#", linkedin: "#" }
+            { name: "Dilan", role: "President", photo: "img/team/dilan.jpg", focus: "50% 20%", photoSeed: "dilan-president", instagram: "#", linkedin: "https://www.linkedin.com/in/dilxn/" },
+            { name: "Shivam", role: "Vice President", photo: "img/team/shivambhatt.jpg", photoSeed: "shivam-vice-president", instagram: "#", linkedin: "https://www.linkedin.com/in/shivam-bhatt14/" },
+            { name: "Gurleen", role: "Secretary", photo: "img/team/gurleen.jpg", focus: "50% 20%", photoSeed: "gurleen-secretary", instagram: "#", linkedin: "https://www.linkedin.com/in/gurleenkaurfrm/" }
           ]
         },
         {
           title: "Directors",
           members: [
-            { name: "Pritha", role: "Director of Events", photo: "img/team/pritha.jpg", photoSeed: "pritha-director-events", instagram: "#", linkedin: "#" },
+            { name: "Pritha", role: "Director of Events", photo: "img/team/pritha.jpg", photoSeed: "pritha-director-events", instagram: "#", linkedin: "https://www.linkedin.com/in/prithaarora/" },
             { name: "Sriya", role: "Director of Marketing", photo: "img/team/sriya.jpg", photoSeed: "sriya-director-marketing", instagram: "#", linkedin: "#" }
+          ]
+        },
+        {
+          title: "Marketing Team",
+          members: [
+            { name: "Sharwari", role: "Marketing Associate", photo: "img/team/sharwari.jpg", photoSeed: "sharwari-marketing-associate", instagram: "#", linkedin: "#" },
+            { name: "Usha", role: "Marketing Associate", photo: "img/team/usha.jpg", photoSeed: "usha-marketing-associate", instagram: "#", linkedin: "#" }
           ]
         },
         {
@@ -364,6 +414,23 @@
         }
       ]
     },
+    /* @@COMMENTED-OUT-START: team-fall-spring-2025 =======================
+       DATE:     2026-08-31
+       WHY:      Requested: hide Fall 2025 and Spring 2025 from the Team
+                 page's semester dropdown for now - we'll add real
+                 photos for these rosters later.
+       WAS FOR:  2 TEAMS_BY_SEM entries ("Fall 2025", "Spring 2025").
+                 Note: these use the older exec/committee shape (see
+                 paintTeam's fallback), with placeholder photoSeed
+                 avatars rather than real photo paths - unlike the
+                 "Fall 2026" entry above. Because renderTeam() builds
+                 the semester dropdown from Object.keys(TEAMS_BY_SEM),
+                 removing these keys here also removes them from that
+                 dropdown - no other file needed to change.
+       RESTORE:  Uncomment this whole block (delete this header/footer,
+                 keep the 2 semester entries + their trailing commas).
+    ====================================================================
+
     "Fall 2025": {
       exec: [
         { name: "Aarav Mehta", role: "President", quote: "Build something people remember.", photoSeed: "prez-f25", instagram: "#", linkedin: "#" },
@@ -388,18 +455,20 @@
         { name: "Karan Shah", role: "Marketing Lead", photoSeed: "mkt-s25", instagram: "#", linkedin: "#" },
         { name: "Neha Reddy", role: "Events Lead", photoSeed: "evt-s25", instagram: "#", linkedin: "#" }
       ]
-    }
+    },
+
+    @@COMMENTED-OUT-END: team-fall-spring-2025 ==================== */
   };
 
   /* ---------------------------------------------------------
-     DATA — VOLUNTEER ROLES
+     DATA - VOLUNTEER ROLES
   --------------------------------------------------------- */
   const ROLES = [
     { id: "performer", title: "Performer", desc: "Dance, sing or showcase your talent on stage at PISA events.", icon: ICONS.mic },
     { id: "organizer", title: "Event Organizer", desc: "Plan logistics, timelines and run-of-show from start to finish.", icon: ICONS.calendar },
     { id: "media", title: "Photographer / Videographer", desc: "Capture the moments that become Our Journey.", icon: ICONS.camera },
     { id: "marketing", title: "Marketing & Social Media", desc: "Design posts, write captions and help us grow our reach.", icon: ICONS.megaphone },
-    { id: "logistics", title: "Logistics & Setup", desc: "Decor, sound, seating — the backbone of every great event.", icon: ICONS.tool },
+    { id: "logistics", title: "Logistics & Setup", desc: "Decor, sound, seating - the backbone of every great event.", icon: ICONS.tool },
     { id: "outreach", title: "Outreach & Hospitality", desc: "Welcome guests and build ties with other student orgs.", icon: ICONS.handshake }
   ];
 
@@ -408,6 +477,12 @@
   --------------------------------------------------------- */
   const $ = (sel, ctx = document) => ctx.querySelector(sel);
   const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
+
+  function resetScrollPosition() {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }
 
   function fmtDate(iso) {
     const d = new Date(iso);
@@ -471,14 +546,14 @@
     return ROUTES.includes(hash) ? hash : "home";
   }
 
-  function navigate(route, { replace = false } = {}) {
+  function navigate(route, { replace = false, scrollTarget = null } = {}) {
     if (!ROUTES.includes(route)) route = "home";
     currentRoute = route;
 
     $$(".page").forEach((p) => p.classList.toggle("is-active", p.dataset.page === route));
     $$('[data-route]').forEach((el) => el.classList.toggle("is-active", el.dataset.route === route && el.tagName === "A" && el.closest(".nav__links, .mobile-menu")));
 
-    window.scrollTo({ top: 0, behavior: "auto" });
+    resetScrollPosition();
     closeMobileMenu();
     updateNavChrome();
 
@@ -489,6 +564,13 @@
     if (route === "home") renderHome();
     if (route === "gallery") renderGallery();
 
+    if (scrollTarget) {
+      requestAnimationFrame(() => {
+        const target = document.getElementById(scrollTarget);
+        if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+
     if (!replace) history.pushState({ route }, "", `#${route}`);
   }
 
@@ -497,7 +579,7 @@
     const link = e.target.closest("[data-route]");
     if (!link) return;
     e.preventDefault();
-    navigate(link.dataset.route);
+    navigate(link.dataset.route, { scrollTarget: link.dataset.scrollTarget || null });
   });
 
   /* ===========================================================
@@ -538,7 +620,7 @@
   });
 
   /* ===========================================================
-     GATE HERO — scroll-linked opening animation
+     GATE HERO - scroll-linked opening animation
   =========================================================== */
   const gateHero = $("#gateHero");
   const gateSticky = $("#gateSticky");
@@ -546,7 +628,7 @@
   const leafRight = $("#leafRight");
   const gateCaption = $("#gateCaption");
 
-  // ease so the doors hold, then swing — reads more like real hinges than a linear slide
+  // ease so the doors hold, then swing - reads more like real hinges than a linear slide
   const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
   function updateGateProgress() {
@@ -628,7 +710,7 @@
         </div>
         <div class="happening-card__visual">${upcomingPosterMarkup(next)}</div>`;
     } else {
-      card.innerHTML = `<p>No upcoming events right now — check back soon.</p>`;
+      card.innerHTML = `<p>No upcoming events right now - check back soon.</p>`;
     }
 
     // Upcoming grid (skip the "next" one shown above, show next 3)
@@ -697,7 +779,7 @@
     if (meta) meta.textContent = `${history.length} event${history.length === 1 ? "" : "s"}`;
 
     if (!history.length) {
-      wrap.innerHTML = `<p style="text-align:center;color:var(--brown-mid)">No completed events yet — once an event's date passes, it will automatically appear here with its full story.</p>`;
+      wrap.innerHTML = `<p style="text-align:center;color:var(--brown-mid)">No completed events yet - once an event's date passes, it will automatically appear here with its full story.</p>`;
       return;
     }
 
@@ -719,18 +801,35 @@
                 <h3>${ev.title}</h3>
                 <p class="timeline-item__meta">${fmtDate(ev.date)} · ${ev.location}</p>
               </div>
-              <span class="timeline-item__expand">+</span>
-            </div>
-            <div class="timeline-item__panel">
-              <div class="timeline-item__panel-inner">
-                <div class="timeline-item__gallery">
-                  ${ev.gallery.map((src, gi) => `<img src="${src}" alt="${ev.title} photo ${gi + 1}" data-gallery-open="${ev.id}" data-index="${gi}" loading="lazy">`).join("")}
-                </div>
-                <p>${ev.description}</p>
-              </div>
             </div>
           </div>`).join("")}
       </div>`).join("");
+
+    /* @@COMMENTED-OUT-START: timeline-gallery-dropdown ==================
+       DATE:     2026-08-31
+       WHY:      We don't have real photos for every event yet, and an
+                 expandable panel that's empty (or full of placeholder
+                 images) for most cards looked broken/unfinished.
+       WAS FOR:  A "+" button on each Our Journey timeline card that
+                 expanded a panel showing that event's photo gallery
+                 (click-to-enlarge into the shared lightbox) plus its
+                 full description paragraph.
+       RESTORE:  1) Inside the .timeline-item template above, add back
+                    the expand button as the last child of
+                    .timeline-item__head:
+                      <span class="timeline-item__expand">+</span>
+                 2) Still inside .timeline-item, as a sibling right
+                    after .timeline-item__head, add back the panel:
+                      <div class="timeline-item__panel">
+                        <div class="timeline-item__panel-inner">
+                          <div class="timeline-item__gallery">
+                            ${ev.gallery.map((src, gi) => `<img src="${src}" alt="${ev.title} photo ${gi + 1}" data-gallery-open="${ev.id}" data-index="${gi}" loading="lazy">`).join("")}
+                          </div>
+                          <p>${ev.description}</p>
+                        </div>
+                      </div>
+                 3) Uncomment the two listener blocks below.
+    ====================================================================
 
     $$(".timeline-item__head", wrap).forEach((head) => {
       head.addEventListener("click", () => {
@@ -743,6 +842,8 @@
         openGallery(img.dataset.galleryOpen, Number(img.dataset.index));
       });
     });
+
+    @@COMMENTED-OUT-END: timeline-gallery-dropdown ==================== */
 
     // striking reveal: each node lights up and its connector draws as it scrolls in
     const items = $$(".timeline-item", wrap);
@@ -814,11 +915,11 @@
   }
 
   /* ===========================================================
-     GALLERY PAGE — all event photos, filtered by semester
+     GALLERY PAGE - all event photos, filtered by semester
   =========================================================== */
   let gallerySelectBuilt = false;
   function galleryEventsByYear() {
-    // Only events that have already happened (closed) — no upcoming events.
+    // Only events that have already happened (closed) - no upcoming events.
     const withPhotos = EVENTS.filter((e) => getStatus(e) === "closed" && Array.isArray(e.gallery) && e.gallery.length);
     const groups = {};
     withPhotos.forEach((ev) => {
@@ -937,7 +1038,7 @@
     const wrap = $("#eventsList");
 
     if (!list.length) {
-      wrap.innerHTML = `<p style="text-align:center;color:var(--brown-mid)">Nothing open for registration right now — check Our Journey to relive what we've already done.</p>`;
+      wrap.innerHTML = `<p style="text-align:center;color:var(--brown-mid)">Nothing open for registration right now - check Our Journey to relive what we've already done.</p>`;
       return;
     }
 
@@ -985,7 +1086,7 @@
       const card = timerEl.closest(".live-card");
 
       if (diff <= 0) {
-        // event has started or passed — if fully closed, remove card (moves to History)
+        // event has started or passed - if fully closed, remove card (moves to History)
         const ev = EVENTS.find((e) => e.id === id);
         const status = getStatus(ev);
         if (status === "closed") {
@@ -1079,7 +1180,7 @@
   });
 
   /* ===========================================================
-     POLISHED CURSOR (desktop) — with a hint label over the gate
+     POLISHED CURSOR (desktop) - with a hint label over the gate
   =========================================================== */
   function initCursor() {
     const fine = window.matchMedia("(pointer:fine)").matches;
@@ -1087,15 +1188,26 @@
     if (!fine || reduce || window.innerWidth <= 860) return;
     const dot = $("#cursorDot"), ring = $("#cursorRing");
     if (!dot || !ring) return;
-    document.body.classList.add("cursor-on");
-
     let mx = innerWidth / 2, my = innerHeight / 2, rx = mx, ry = my;
-    const interactive = "a, button, label, select, .gallery-tile, [data-route]";
+    const interactive = "a, button, label, select, .gallery-tile, .team-polaroid, [data-route]";
+
+    const showCursor = () => document.body.classList.add("cursor-on");
+    const hideCursor = () => {
+      document.body.classList.remove("cursor-on");
+      ring.classList.remove("is-hover");
+    };
 
     window.addEventListener("mousemove", (e) => {
+      showCursor();
       mx = e.clientX; my = e.clientY;
       dot.style.transform = `translate(${mx}px, ${my}px) translate(-3px,-2px)`;
     }, { passive: true });
+    document.addEventListener("mouseenter", showCursor);
+    document.addEventListener("mouseleave", hideCursor);
+    window.addEventListener("blur", hideCursor);
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) hideCursor();
+    });
     document.addEventListener("mouseover", (e) => { if (e.target.closest(interactive)) ring.classList.add("is-hover"); });
     document.addEventListener("mouseout", (e) => { if (e.target.closest(interactive)) ring.classList.remove("is-hover"); });
 
@@ -1107,7 +1219,7 @@
   }
 
   /* ===========================================================
-     ENGAGEMENT TOASTS — reward long visits, catch quick exits
+     ENGAGEMENT TOASTS - reward long visits, catch quick exits
   =========================================================== */
   function showToast({ emoji, title, msg, ctaText, route, ctaHref, dur = 9000 }) {
     const wrap = $("#toastWrap");
@@ -1150,7 +1262,7 @@
         emoji: kind === "long" ? "🎉" : "👋",
         title: kind === "long" ? `Don't miss ${ev.title}!` : "Leaving so soon?",
         msg: kind === "long"
-          ? `You're clearly into PISA — our next event, ${ev.title}, is ${when}. Grab your spot.`
+          ? `You're clearly into PISA - our next event, ${ev.title}, is ${when}. Grab your spot.`
           : `Register for ${ev.title} (${when}) before you go.`,
         ctaText: "Register now →", ctaHref: ev.registerLink, dur: 12000
       });
@@ -1183,18 +1295,48 @@
     });
   }
 
+  function initTeamPolaroidShake() {
+    $$(".team-polaroid").forEach((photo) => {
+      const shake = () => {
+        photo.classList.remove("is-shaking");
+        void photo.offsetWidth;
+        photo.classList.add("is-shaking");
+      };
+
+      photo.addEventListener("click", shake);
+      photo.addEventListener("animationend", (e) => {
+        if (e.animationName.includes("polaroidShake")) {
+          photo.classList.remove("is-shaking");
+        }
+      });
+      photo.addEventListener("keydown", (e) => {
+        if (e.key !== "Enter" && e.key !== " ") return;
+        e.preventDefault();
+        shake();
+      });
+    });
+  }
+
   /* ===========================================================
      INIT
   =========================================================== */
   document.addEventListener("DOMContentLoaded", () => {
     $("#year").textContent = new Date().getFullYear();
+    resetScrollPosition();
     updateGateProgress();
     updateNavChrome();
     navigate(resolveRoute(), { replace: true });
+    requestAnimationFrame(resetScrollPosition);
     observeReveals();
     initCursor();
     initEngagementToasts();
+    initTeamPolaroidShake();
   });
+
+  window.addEventListener("load", () => {
+    resetScrollPosition();
+    setTimeout(resetScrollPosition, 0);
+  }, { once: true });
 
   window.addEventListener("resize", () => {
     if (currentRoute === "home") updateGateProgress();
