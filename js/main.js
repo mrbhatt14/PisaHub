@@ -36,23 +36,6 @@
   --------------------------------------------------------- */
   const EVENTS = [
     {
-      id: "beginning",
-      title: "The Beginning - Welcome Kickoff",
-      tagline: "Where it all started: chai, samosas and two hundred new friends.",
-      date: "2026-08-18T17:00:00",
-      location: "One Pace Plaza Lobby, New York",
-      registerLink: "https://settersyncnyc.pace.edu/organization/pisa",
-      poster: "img/events/beginning/poster.jpg",
-      gallery: [
-        "img/events/beginning/gallery-1.jpg",
-        "img/events/beginning/gallery-2.jpg",
-        "img/events/beginning/gallery-3.jpg",
-        "img/events/beginning/gallery-4.jpg",
-        "img/events/beginning/gallery-5.jpg"
-      ],
-      description: "The kickoff that opened Fall 2026 - new members, returning faces, and the first taste of what the semester would become."
-    },
-    {
       id: "milan",
       title: "The PISA Premiere",
       tagline: "The Bollywood-inspired welcome that opens every semester.",
