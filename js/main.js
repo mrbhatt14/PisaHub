@@ -275,9 +275,7 @@
       poster: "img/events/yoga-day-2026/poster.jpg",
       gallery: [
         "img/events/yoga-day-2026/gallery-1.jpg",
-        "img/events/yoga-day-2026/gallery-2.jpg",
-        "img/events/yoga-day-2026/gallery-3.jpg",
-        "img/events/yoga-day-2026/gallery-4.jpg"
+        "img/events/yoga-day-2026/gallery-2.jpg"
       ],
       description: "Our annual International Yoga Day experience brings students, faculty, staff and professors together through yoga and Indian wellness traditions."
     },
