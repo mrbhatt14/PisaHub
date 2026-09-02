@@ -361,7 +361,7 @@
         {
           title: "Executive Board",
           members: [
-            { name: "Dilan", role: "President", photo: "img/team/dilan.jpg", fit: "contain", photoSeed: "dilan-president", instagram: "#", linkedin: "https://www.linkedin.com/in/dilxn/" },
+            { name: "Dilan", role: "President", photo: "img/team/dilan.jpg", focus: "50% 0%", photoSeed: "dilan-president", instagram: "#", linkedin: "https://www.linkedin.com/in/dilxn/" },
             { name: "Shivam", role: "Vice President", photo: "img/team/shivambhatt.jpg", photoSeed: "shivam-vice-president", instagram: "#", linkedin: "https://www.linkedin.com/in/shivam-bhatt14/" },
             { name: "Gurleen", role: "Secretary", photo: "img/team/gurleen.jpg", focus: "50% 20%", photoSeed: "gurleen-secretary", instagram: "https://www.instagram.com/gurleen.16.10?igsi=MTkxdG5ra3Z2Mzk3NA==", linkedin: "https://www.linkedin.com/in/gurleenkaurfrm?utm_source=share_via&utm_content=profile&utm_medium=member_android" },
             { name: "Fahad", role: "Treasurer", photo: "img/team/fahad.jpg", photoSeed: "fahad-treasurer", instagram: "#", linkedin: "#" }
