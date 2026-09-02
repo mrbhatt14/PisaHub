@@ -36,22 +36,6 @@
   --------------------------------------------------------- */
   const EVENTS = [
     {
-      id: "orientation",
-      title: "Spring Orientation Mixer",
-      tagline: "First hello of the semester - icebreakers, chai and new faces.",
-      date: "2026-02-10T18:00:00",
-      location: "Kessel Student Center, Pace University",
-      registerLink: "https://settersyncnyc.pace.edu/organization/pisa",
-      poster: "img/events/orientation/poster.jpg",
-      gallery: [
-        "img/events/orientation/gallery-1.jpg",
-        "img/events/orientation/gallery-2.jpg",
-        "img/events/orientation/gallery-3.jpg",
-        "img/events/orientation/gallery-4.jpg"
-      ],
-      description: "Our very first mixer of the spring semester - a low-key evening of introductions, snacks and sign-ups that set the tone for everything PISA built afterward."
-    },
-    {
       id: "beginning",
       title: "The Beginning - Welcome Kickoff",
       tagline: "Where it all started: chai, samosas and two hundred new friends.",
@@ -67,22 +51,6 @@
         "img/events/beginning/gallery-5.jpg"
       ],
       description: "The kickoff that opened Fall 2026 - new members, returning faces, and the first taste of what the semester would become."
-    },
-    {
-      id: "akshardham",
-      title: "Akshardham Cultural Visit",
-      tagline: "A day trip to BAPS Swaminarayan Akshardham, Robbinsville.",
-      date: "2026-08-24T09:00:00",
-      endDate: "2026-08-24T20:00:00",
-      location: "Meet at One Pace Plaza Lobby",
-      registerLink: "https://settersyncnyc.pace.edu/organization/pisa",
-      poster: "img/events/akshardham/poster.jpg",
-      gallery: [
-        "img/events/akshardham/gallery-1.jpg",
-        "img/events/akshardham/gallery-2.jpg",
-        "img/events/akshardham/gallery-3.jpg"
-      ],
-      description: "A full-day cultural excursion to one of the largest Hindu temple complexes in the world - coach transport, guided tour and a shared meal included."
     },
     {
       id: "milan",
@@ -121,7 +89,7 @@
     {
       id: "diwali",
       title: "Prakāshā - Grand Diwali 2026",
-      tagline: "Lights, laddoos and the biggest night of the semester.",
+      tagline: "Lights, Food, Music and the biggest night of the semester.",
       date: "2026-11-08T18:00:00",
       endDate: "2026-11-08T23:30:00",
       location: "Pace University, New York",
@@ -280,20 +248,37 @@
 
     @@COMMENTED-OUT-END: events-non-2026-semesters-a ==================== */
     {
+      id: "holi-2026",
+      title: "Rang De Pace - Holi 2026",
+      tagline: "Color, dhol and spring on the plaza.",
+      date: "2026-03-13T13:00:00",
+      endDate: "2026-03-13T17:00:00",
+      location: "One Pace Plaza Courtyard, New York",
+      poster: "img/events/holi-2026/poster.jpg",
+      gallery: [
+        "img/events/holi-2026/gallery-1.jpg"
+      ],
+      description: "Our spring Holi - clouds of gulaal, dhol beats and the whole community out on the plaza to welcome the season."
+    },
+    {
+      id: "fashion-show-2026",
+      title: "The Cultural Fashion Show",
+      tagline: "Traditions from across India, on the runway.",
+      date: "2026-03-20T18:00:00",
+      location: "Pace University, New York",
+      gallery: [],
+      description: "A runway celebration of India's regional fashion - members walked in traditional and contemporary looks representing cultures and states from across the country."
+    },
+    {
       id: "mock-wedding-2026",
-      title: "Indian Mock Wedding",
+      title: "Band Baaja Bash - Indian Mock Wedding",
       tagline: "A full Indian wedding, staged on campus.",
       date: "2026-04-04T16:00:00",
       endDate: "2026-04-04T22:00:00",
       location: "Pace University, New York",
       poster: "img/events/mock-wedding-2026/poster.jpg",
       gallery: [
-        "img/events/mock-wedding-2026/gallery-1.jpg",
-        "img/events/mock-wedding-2026/gallery-2.jpg",
-        "img/events/mock-wedding-2026/gallery-3.jpg",
-        "img/events/mock-wedding-2026/gallery-4.jpg",
-        "img/events/mock-wedding-2026/gallery-5.jpg",
-        "img/events/mock-wedding-2026/gallery-6.jpg"
+        "img/events/mock-wedding-2026/gallery-1.jpg"
       ],
       description: "A large-scale Indian Mock Wedding experience presented in Spring 2026 - showcasing the traditions, rituals, fashion, music, food and celebrations of an Indian wedding."
     },
@@ -376,40 +361,43 @@
         {
           title: "Executive Board",
           members: [
-            { name: "Dilan", role: "President", photo: "img/team/dilan.jpg", focus: "50% 20%", photoSeed: "dilan-president", instagram: "#", linkedin: "https://www.linkedin.com/in/dilxn/" },
+            { name: "Dilan", role: "President", photo: "img/team/dilan.jpg", fit: "contain", photoSeed: "dilan-president", instagram: "#", linkedin: "https://www.linkedin.com/in/dilxn/" },
             { name: "Shivam", role: "Vice President", photo: "img/team/shivambhatt.jpg", photoSeed: "shivam-vice-president", instagram: "#", linkedin: "https://www.linkedin.com/in/shivam-bhatt14/" },
-            { name: "Gurleen", role: "Secretary", photo: "img/team/gurleen.jpg", focus: "50% 20%", photoSeed: "gurleen-secretary", instagram: "#", linkedin: "https://www.linkedin.com/in/gurleenkaurfrm/" }
+            { name: "Gurleen", role: "Secretary", photo: "img/team/gurleen.jpg", focus: "50% 20%", photoSeed: "gurleen-secretary", instagram: "https://www.instagram.com/gurleen.16.10?igsi=MTkxdG5ra3Z2Mzk3NA==", linkedin: "https://www.linkedin.com/in/gurleenkaurfrm?utm_source=share_via&utm_content=profile&utm_medium=member_android" },
+            { name: "Fahad", role: "Treasurer", photo: "img/team/fahad.jpg", photoSeed: "fahad-treasurer", instagram: "#", linkedin: "#" }
           ]
         },
         {
           title: "Directors",
           members: [
-            { name: "Pritha", role: "Director of Events", photo: "img/team/pritha.jpg", photoSeed: "pritha-director-events", instagram: "#", linkedin: "https://www.linkedin.com/in/prithaarora/" },
-            { name: "Sriya", role: "Director of Marketing", photo: "img/team/sriya.jpg", photoSeed: "sriya-director-marketing", instagram: "#", linkedin: "#" }
+            { name: "Pritha", role: "Director of Events", photo: "img/team/pritha.jpg", photoSeed: "pritha-director-events", instagram: "https://www.instagram.com/arorapritha/", linkedin: "https://www.linkedin.com/in/prithaarora/" },
+            { name: "Sriya", role: "Director of Marketing", photo: "img/team/sriya.jpg", photoSeed: "sriya-director-marketing", instagram: "#", linkedin: "https://www.linkedin.com/in/sriya-patnala?utm_source=share_via&utm_content=profile&utm_medium=member_android" }
           ]
         },
         {
           title: "Marketing Team",
           members: [
-            { name: "Sharwari", role: "Marketing Associate", photo: "img/team/sharwari.jpg", photoSeed: "sharwari-marketing-associate", instagram: "#", linkedin: "#" },
-            { name: "Usha", role: "Marketing Associate", photo: "img/team/usha.jpg", photoSeed: "usha-marketing-associate", instagram: "#", linkedin: "#" }
+            { name: "Sharwari", role: "Marketing Associate", photo: "img/team/sharwari.jpg", photoSeed: "sharwari-marketing-associate", instagram: "https://www.instagram.com/sharwarii.__/", linkedin: "https://www.linkedin.com/in/sharwari-pawar-8694b722a" },
+            { name: "Usha", role: "Marketing Associate", photo: "img/team/usha.jpg", photoSeed: "usha-marketing-associate", instagram: "https://www.instagram.com/ush_haa?igsi=OHpxaTl2ajVoZ3dt&utm_source=qr", linkedin: "https://www.linkedin.com/in/usha-kanchukatla-98267a306?utm_source=share_via&utm_content=profile&utm_medium=member_ios" },
+            { name: "Akanksha", role: "Marketing Associate", photo: "img/team/akanksha.jpg", photoSeed: "akanksha-marketing-associate", instagram: "#", linkedin: "#" }
           ]
         },
         {
           title: "Events Team",
           members: [
-            { name: "Pransu", role: "Cultural Coordinator", photo: "img/team/pransu.jpg", photoSeed: "pransu-cultural-coordinator", instagram: "#", linkedin: "#" },
+            { name: "Pransu", role: "Cultural Coordinator", photo: "img/team/pransu.jpg", photoSeed: "pransu-cultural-coordinator", instagram: "https://www.instagram.com/pransuchangela9?", linkedin: "https://www.linkedin.com/in/pransuchangela" },
             { name: "Rahul", role: "Logistical Coordinator", photo: "img/team/rahul.jpg", photoSeed: "rahul-logistical-coordinator", instagram: "#", linkedin: "#" },
             { name: "Vighnesh", role: "Events Associate", photo: "img/team/vighnesh.jpg", photoSeed: "vighnesh-events-associate", instagram: "#", linkedin: "#" },
-            { name: "Priyanshi", role: "Events Associate", photo: "img/team/priyanshi.jpg", photoSeed: "priyanshi-events-associate", instagram: "#", linkedin: "#" },
-            { name: "Sreeya", role: "Events Associate", photo: "img/team/sreeya.jpg", photoSeed: "sreeya-events-associate", instagram: "#", linkedin: "#" }
+            { name: "Priyanshi", role: "Events Associate", photo: "img/team/priyanshi.jpg", photoSeed: "priyanshi-events-associate", instagram: "https://www.instagram.com/priyanshi._.6/", linkedin: "https://www.linkedin.com/in/parmar-priyanshi/" },
+            { name: "Sreeya", role: "Events Associate", photo: "img/team/sreeya.jpg", focus: "61% 50%", photoSeed: "sreeya-events-associate", instagram: "https://www.instagram.com/sreeya.rao?igsi=azQ3N2k1anp5ZHJq&utm_source=qr", linkedin: "https://www.linkedin.com/in/theepalapudi-sreeya-rao" }
           ]
         },
         {
           title: "Media & Outreach",
           members: [
             { name: "Mansi", role: "Photographer & Videographer", photo: "img/team/mansi.jpg", photoSeed: "mansi-photographer-videographer", instagram: "#", linkedin: "#" },
-            { name: "Anshitha", role: "PISA Ambassador", photo: "img/team/anshitha.jpg", photoSeed: "anshitha-pisa-ambassador", instagram: "#", linkedin: "#" }
+            { name: "Anshitha", role: "PISA Ambassador", photo: "img/team/anshitha.jpg", photoSeed: "anshitha-pisa-ambassador", instagram: "#", linkedin: "#" },
+            { name: "Lavisha", role: "Outreach & Communications Coordinator", photo: "img/team/lavisha.jpg", photoSeed: "lavisha-outreach-communications-coordinator", instagram: "#", linkedin: "#" }
           ]
         }
       ]
@@ -522,7 +510,7 @@
   function teamCardMarkup(member, small) {
     return `
       <article class="team-card">
-        <div class="team-card__photo"><img src="${member.photo || avatarUrl(member.photoSeed)}" alt="${member.name}" loading="lazy"${member.focus ? ` style="object-position:${member.focus}"` : ""}></div>
+        <div class="team-card__photo"><img src="${member.photo || avatarUrl(member.photoSeed)}" alt="${member.name}" loading="lazy"${member.fit ? ` style="object-fit:${member.fit}${member.focus ? `;object-position:${member.focus}` : ""}"` : member.focus ? ` style="object-position:${member.focus}"` : ""}></div>
         <span class="team-card__role">${member.role}</span>
         <div class="team-card__body">
           <h3>${member.name}</h3>
@@ -1110,6 +1098,10 @@
   const prevUnitValues = {};
 
   function renderLiveEvents() {
+    // Rebuilding the list below resets every flip face back to its "00" placeholder,
+    // so the stale-value cache from any previous render must be cleared too - otherwise
+    // tickCountdowns() thinks those digits are unchanged and never writes the real value in.
+    Object.keys(prevUnitValues).forEach((key) => delete prevUnitValues[key]);
     const list = EVENTS.filter((e) => getStatus(e) !== "closed").sort((a, b) => new Date(a.date) - new Date(b.date));
     const wrap = $("#eventsList");
 
@@ -1338,7 +1330,7 @@
       showToast({
         emoji: "🎉",
         title: `Register for ${ev.title}`,
-        msg: `${ev.tagline} — ${when}. Grab your spot.`,
+        msg: `${ev.tagline} - ${when}. Grab your spot.`,
         ctaText: "Register now →", ctaHref: ev.registerLink, dur: 14000
       });
     }, 6000);
