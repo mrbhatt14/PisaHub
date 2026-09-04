@@ -496,6 +496,8 @@ svg{ display:block; }
 .bp-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:1rem 1.2rem; }
 .bp-field small{ display:block; font-family:var(--font-mono); font-size:.58rem; letter-spacing:.14em; text-transform:uppercase; color:var(--brown-mid); margin-bottom:.28rem; }
 .bp-field b{ font-weight:600; font-size:.92rem; line-height:1.25; display:block; }
+.bp-field--wide{ grid-column:1 / -1; }
+.bp-field--wide b{ font-size:.82rem; line-height:1.4; }
 .bp-confirmed{ display:inline-flex; align-items:center; gap:.4em; color:var(--green); }
 .bp-confirmed__dot{ width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 0 0 rgba(92,122,84,.5); animation:pingDot 2s ease-out infinite; }
 
@@ -1141,7 +1143,9 @@ svg{ display:block; }
 .team-card:hover .team-card__photo img{ transform:scale(1.07); }
 .team-card__photo::after{
   content:''; position:absolute; inset:0;
-  background:linear-gradient(180deg, rgba(46,32,19,0) 35%, rgba(46,32,19,.92) 100%);
+  background:
+    linear-gradient(180deg, rgba(46,32,19,.6) 0%, rgba(46,32,19,0) 46%),
+    linear-gradient(180deg, rgba(46,32,19,0) 35%, rgba(46,32,19,.92) 100%);
 }
 .team-card__role{
   position:absolute; top:1rem; left:1rem; z-index:2; font-family:var(--font-mono); font-size:.66rem;

@@ -39,16 +39,16 @@
       id: "milan",
       title: "The PISA Premiere",
       tagline: "The Bollywood-inspired welcome that opens every semester.",
-      date: "2026-09-08T15:30:00",
+      date: "2026-09-08T16:30:00",
       endDate: "2026-09-08T22:00:00",
-      location: "Pace University, New York",
+      location: "Bianco Room, 15 Beekman Street, Pace University, NY",
       registerLink: "https://settersyncnyc.pace.edu/event/12643233",
-      poster: "img/events/milan/poster.jpg",
+      poster: "/img/events/milan/poster.jpg",
       showPoster: true,
       gallery: [
-        "img/events/milan/gallery-1.jpg",
-        "img/events/milan/gallery-2.jpg",
-        "img/events/milan/gallery-3.jpg"
+        "/img/events/milan/gallery-1.jpg",
+        "/img/events/milan/gallery-2.jpg",
+        "/img/events/milan/gallery-3.jpg"
       ],
       description: "The opening celebration of every semester - a Bollywood-inspired welcome featuring music, dance, food, introductions, and the unveiling of PISA's semester team and vision."
     },
@@ -60,12 +60,12 @@
       endDate: "2026-10-13T23:00:00",
       location: "Pace University, New York",
       registerLink: "https://settersyncnyc.pace.edu/organization/pisa",
-      poster: "img/events/garba/poster.jpg",
+      poster: "/img/events/garba/poster.jpg",
       showPoster: true,
       gallery: [
-        "img/events/garba/gallery-1.jpg",
-        "img/events/garba/gallery-2.jpg",
-        "img/events/garba/gallery-3.jpg"
+        "/img/events/garba/gallery-1.jpg",
+        "/img/events/garba/gallery-2.jpg",
+        "/img/events/garba/gallery-3.jpg"
       ],
       description: "Two nights of dandiya sticks, circles of dancers and the loudest dhol on campus. Runs October 13 & 20."
     },
@@ -77,13 +77,9 @@
       endDate: "2026-11-08T23:30:00",
       location: "Pace University, New York",
       registerLink: "https://settersyncnyc.pace.edu/organization/pisa",
-      poster: "img/events/diwali-2k26/poster.jpg",
+      poster: "/img/events/diwali-2k26/poster.jpg",
       showPoster: true,
-      gallery: [
-        "img/events/diwali-2k26/gallery-1.jpg",
-        "img/events/diwali-2k26/gallery-2.jpg",
-        "img/events/diwali-2k26/gallery-3.jpg"
-      ],
+      gallery: [],
       description: "The festival of lights, PISA-style - diyas, a full dinner spread and a dance floor that doesn't stop."
     },
     /* @@COMMENTED-OUT-START: events-non-2026-semesters-a ================
@@ -112,14 +108,14 @@
       date: "2023-03-08T13:00:00",
       endDate: "2023-03-08T17:00:00",
       location: "One Pace Plaza Courtyard, New York",
-      poster: "img/events/holi-2023/poster.jpg",
+      poster: "/img/events/holi-2023/poster.jpg",
       gallery: [
-        "img/events/holi-2023/gallery-1.jpg",
-        "img/events/holi-2023/gallery-2.jpg",
-        "img/events/holi-2023/gallery-3.jpg",
-        "img/events/holi-2023/gallery-4.jpg",
-        "img/events/holi-2023/gallery-5.jpg",
-        "img/events/holi-2023/gallery-6.jpg"
+        "/img/events/holi-2023/gallery-1.jpg",
+        "/img/events/holi-2023/gallery-2.jpg",
+        "/img/events/holi-2023/gallery-3.jpg",
+        "/img/events/holi-2023/gallery-4.jpg",
+        "/img/events/holi-2023/gallery-5.jpg",
+        "/img/events/holi-2023/gallery-6.jpg"
       ],
       description: "PISA's Holi celebration in the One Pace Plaza courtyard - color powders, music and food, with other campus organizations joining in."
     },
@@ -130,13 +126,13 @@
       date: "2023-10-27T19:00:00",
       endDate: "2023-10-27T23:00:00",
       location: "Pace University, New York",
-      poster: "img/events/bollyween-2023/poster.jpg",
+      poster: "/img/events/bollyween-2023/poster.jpg",
       gallery: [
-        "img/events/bollyween-2023/gallery-1.jpg",
-        "img/events/bollyween-2023/gallery-2.jpg",
-        "img/events/bollyween-2023/gallery-3.jpg",
-        "img/events/bollyween-2023/gallery-4.jpg",
-        "img/events/bollyween-2023/gallery-5.jpg"
+        "/img/events/bollyween-2023/gallery-1.jpg",
+        "/img/events/bollyween-2023/gallery-2.jpg",
+        "/img/events/bollyween-2023/gallery-3.jpg",
+        "/img/events/bollyween-2023/gallery-4.jpg",
+        "/img/events/bollyween-2023/gallery-5.jpg"
       ],
       description: "PISA's Bollywood-meets-Halloween party - costumes, dancing and a night of desi music on campus."
     },
@@ -147,14 +143,14 @@
       date: "2023-11-11T18:00:00",
       endDate: "2023-11-11T23:00:00",
       location: "Pace University, New York",
-      poster: "img/events/diwali-2023/poster.jpg",
+      poster: "/img/events/diwali-2023/poster.jpg",
       gallery: [
-        "img/events/diwali-2023/gallery-1.jpg",
-        "img/events/diwali-2023/gallery-2.jpg",
-        "img/events/diwali-2023/gallery-3.jpg",
-        "img/events/diwali-2023/gallery-4.jpg",
-        "img/events/diwali-2023/gallery-5.jpg",
-        "img/events/diwali-2023/gallery-6.jpg"
+        "/img/events/diwali-2023/gallery-1.jpg",
+        "/img/events/diwali-2023/gallery-2.jpg",
+        "/img/events/diwali-2023/gallery-3.jpg",
+        "/img/events/diwali-2023/gallery-4.jpg",
+        "/img/events/diwali-2023/gallery-5.jpg",
+        "/img/events/diwali-2023/gallery-6.jpg"
       ],
       description: "The annual Diwali celebration - diyas, food, music and performances bringing the Pace community together for the festival of lights."
     },
@@ -165,14 +161,14 @@
       date: "2024-10-05T18:00:00",
       endDate: "2024-10-05T23:00:00",
       location: "Pace University, New York",
-      poster: "img/events/navratri-2024/poster.jpg",
+      poster: "/img/events/navratri-2024/poster.jpg",
       gallery: [
-        "img/events/navratri-2024/gallery-1.jpg",
-        "img/events/navratri-2024/gallery-2.jpg",
-        "img/events/navratri-2024/gallery-3.jpg",
-        "img/events/navratri-2024/gallery-4.jpg",
-        "img/events/navratri-2024/gallery-5.jpg",
-        "img/events/navratri-2024/gallery-6.jpg"
+        "/img/events/navratri-2024/gallery-1.jpg",
+        "/img/events/navratri-2024/gallery-2.jpg",
+        "/img/events/navratri-2024/gallery-3.jpg",
+        "/img/events/navratri-2024/gallery-4.jpg",
+        "/img/events/navratri-2024/gallery-5.jpg",
+        "/img/events/navratri-2024/gallery-6.jpg"
       ],
       description: "PISA's first-ever Navratri celebration - a night of garba and dandiya that drew more than 350 people, with spinning chaniya cholis, live beats and an ever-growing circle of dancers."
     },
@@ -183,15 +179,15 @@
       date: "2024-11-01T18:00:00",
       endDate: "2024-11-01T23:30:00",
       location: "One Pace Plaza, New York",
-      poster: "img/events/diwali-2024/poster.jpg",
+      poster: "/img/events/diwali-2024/poster.jpg",
       gallery: [
-        "img/events/diwali-2024/gallery-1.jpg",
-        "img/events/diwali-2024/gallery-2.jpg",
-        "img/events/diwali-2024/gallery-3.jpg",
-        "img/events/diwali-2024/gallery-4.jpg",
-        "img/events/diwali-2024/gallery-5.jpg",
-        "img/events/diwali-2024/gallery-6.jpg",
-        "img/events/diwali-2024/gallery-7.jpg"
+        "/img/events/diwali-2024/gallery-1.jpg",
+        "/img/events/diwali-2024/gallery-2.jpg",
+        "/img/events/diwali-2024/gallery-3.jpg",
+        "/img/events/diwali-2024/gallery-4.jpg",
+        "/img/events/diwali-2024/gallery-5.jpg",
+        "/img/events/diwali-2024/gallery-6.jpg",
+        "/img/events/diwali-2024/gallery-7.jpg"
       ],
       description: "PISA's flagship Diwali - a 500+ guest celebration of lights with cultural performances, a full dinner spread, decorations and dancing for students, faculty and guests alike."
     },
@@ -202,14 +198,14 @@
       date: "2025-03-14T13:00:00",
       endDate: "2025-03-14T17:00:00",
       location: "One Pace Plaza Courtyard, New York",
-      poster: "img/events/holi-2025/poster.jpg",
+      poster: "/img/events/holi-2025/poster.jpg",
       gallery: [
-        "img/events/holi-2025/gallery-1.jpg",
-        "img/events/holi-2025/gallery-2.jpg",
-        "img/events/holi-2025/gallery-3.jpg",
-        "img/events/holi-2025/gallery-4.jpg",
-        "img/events/holi-2025/gallery-5.jpg",
-        "img/events/holi-2025/gallery-6.jpg"
+        "/img/events/holi-2025/gallery-1.jpg",
+        "/img/events/holi-2025/gallery-2.jpg",
+        "/img/events/holi-2025/gallery-3.jpg",
+        "/img/events/holi-2025/gallery-4.jpg",
+        "/img/events/holi-2025/gallery-5.jpg",
+        "/img/events/holi-2025/gallery-6.jpg"
       ],
       description: "Our spring Holi - clouds of gulaal, dhol beats and the whole community out in the courtyard to welcome the season."
     },
@@ -219,12 +215,12 @@
       tagline: "Different skies, same heartbeat.",
       date: "2025-08-15T17:00:00",
       location: "Pace University, New York",
-      poster: "img/events/independence-2025/poster.jpg",
+      poster: "/img/events/independence-2025/poster.jpg",
       gallery: [
-        "img/events/independence-2025/gallery-1.jpg",
-        "img/events/independence-2025/gallery-2.jpg",
-        "img/events/independence-2025/gallery-3.jpg",
-        "img/events/independence-2025/gallery-4.jpg"
+        "/img/events/independence-2025/gallery-1.jpg",
+        "/img/events/independence-2025/gallery-2.jpg",
+        "/img/events/independence-2025/gallery-3.jpg",
+        "/img/events/independence-2025/gallery-4.jpg"
       ],
       description: "Marking India's Independence Day at Pace - a get-together for the community far from home, but always together."
     },
@@ -237,9 +233,11 @@
       date: "2026-03-13T13:00:00",
       endDate: "2026-03-13T17:00:00",
       location: "One Pace Plaza Courtyard, New York",
-      poster: "img/events/holi-2026/poster.jpg",
+      poster: "/img/events/holi-2026/poster.jpg",
       gallery: [
-        "img/events/holi-2026/gallery-1.jpg"
+        "/img/events/holi-2026/gallery-1.jpg",
+        "/img/events/holi-2026/gallery-2.jpg",
+        "/img/events/holi-2026/gallery-3.jpg"
       ],
       description: "Our spring Holi - clouds of gulaal, dhol beats and the whole community out on the plaza to welcome the season."
     },
@@ -259,9 +257,11 @@
       date: "2026-04-04T16:00:00",
       endDate: "2026-04-04T22:00:00",
       location: "Pace University, New York",
-      poster: "img/events/mock-wedding-2026/poster.jpg",
+      poster: "/img/events/mock-wedding-2026/poster.jpg",
       gallery: [
-        "img/events/mock-wedding-2026/gallery-1.jpg"
+        "/img/events/mock-wedding-2026/gallery-1.jpg",
+        "/img/events/mock-wedding-2026/gallery-2.jpg",
+        "/img/events/mock-wedding-2026/gallery-3.jpg"
       ],
       description: "A large-scale Indian Mock Wedding experience presented in Spring 2026 - showcasing the traditions, rituals, fashion, music, food and celebrations of an Indian wedding."
     },
@@ -272,10 +272,10 @@
       date: "2026-06-21T09:00:00",
       endDate: "2026-06-21T11:00:00",
       location: "Pace University, New York",
-      poster: "img/events/yoga-day-2026/poster.jpg",
+      poster: "/img/events/yoga-day-2026/poster.jpg",
       gallery: [
-        "img/events/yoga-day-2026/gallery-1.jpg",
-        "img/events/yoga-day-2026/gallery-2.jpg"
+        "/img/events/yoga-day-2026/gallery-1.jpg",
+        "/img/events/yoga-day-2026/gallery-2.jpg"
       ],
       description: "Our annual International Yoga Day experience brings students, faculty, staff and professors together through yoga and Indian wellness traditions."
     },
@@ -342,31 +342,32 @@
         {
           title: "Executive Board",
           members: [
-            { name: "Dilan", role: "President", photo: "img/team/dilan.jpg", focus: "50% 0%", photoSeed: "dilan-president", instagram: "#", linkedin: "https://www.linkedin.com/in/dilxn/" },
-            { name: "Shivam", role: "Vice President", photo: "img/team/shivambhatt.jpg", photoSeed: "shivam-vice-president", instagram: "#", linkedin: "https://www.linkedin.com/in/shivam-bhatt14/" },
-            { name: "Gurleen", role: "Secretary", photo: "img/team/gurleen.jpg", focus: "50% 20%", photoSeed: "gurleen-secretary", instagram: "https://www.instagram.com/gurleen.16.10?igsi=MTkxdG5ra3Z2Mzk3NA==", linkedin: "https://www.linkedin.com/in/gurleenkaurfrm?utm_source=share_via&utm_content=profile&utm_medium=member_android" },
-            { name: "Fahad", role: "Treasurer", photo: "img/team/fahad.jpg", photoSeed: "fahad-treasurer", instagram: "#", linkedin: "#" }
+            { name: "Dilan", role: "President", photo: "/img/team/dilan.jpg", photoSeed: "dilan-president", instagram: "#", linkedin: "https://www.linkedin.com/in/dilxn/" },
+            { name: "Shivam", role: "Vice President", photo: "/img/team/shivambhatt.jpg", photoSeed: "shivam-vice-president", instagram: "#", linkedin: "https://www.linkedin.com/in/shivam-bhatt14/" },
+            { name: "Gurleen", role: "Secretary", photo: "/img/team/gurleen.jpg", focus: "50% 10%", photoSeed: "gurleen-secretary", instagram: "https://www.instagram.com/gurleen.16.10?igsi=MTkxdG5ra3Z2Mzk3NA==", linkedin: "https://www.linkedin.com/in/gurleenkaurfrm?utm_source=share_via&utm_content=profile&utm_medium=member_android" },
+            { name: "Fahad", role: "Treasurer", photo: "/img/team/fahad.jpg", photoSeed: "fahad-treasurer", instagram: "#", linkedin: "#" }
           ]
         },
         {
           title: "Directors",
           members: [
-            { name: "Pritha", role: "Director of Events", photo: "img/team/pritha.jpg", photoSeed: "pritha-director-events", instagram: "https://www.instagram.com/arorapritha/", linkedin: "https://www.linkedin.com/in/prithaarora/" },
-            { name: "Sriya", role: "Director of Marketing", photo: "img/team/sriya.jpg", photoSeed: "sriya-director-marketing", instagram: "#", linkedin: "https://www.linkedin.com/in/sriya-patnala?utm_source=share_via&utm_content=profile&utm_medium=member_android" }
+            { name: "Pritha", role: "Director of Events", photo: "/img/team/pritha.jpg", photoSeed: "pritha-director-events", instagram: "https://www.instagram.com/arorapritha/", linkedin: "https://www.linkedin.com/in/prithaarora/" },
+            { name: "Sriya", role: "Director of Marketing", photo: "/img/team/sriya.jpg", photoSeed: "sriya-director-marketing", instagram: "#", linkedin: "https://www.linkedin.com/in/sriya-patnala?utm_source=share_via&utm_content=profile&utm_medium=member_android" }
           ]
         },
         {
           title: "Marketing Team",
           members: [
-            { name: "Sharwari", role: "Marketing Associate", photo: "img/team/sharwari.jpg", photoSeed: "sharwari-marketing-associate", instagram: "https://www.instagram.com/sharwarii.__/", linkedin: "https://www.linkedin.com/in/sharwari-pawar-8694b722a" },
-            { name: "Usha", role: "Marketing Associate", photo: "img/team/usha.jpg", photoSeed: "usha-marketing-associate", instagram: "https://www.instagram.com/ush_haa?igsi=OHpxaTl2ajVoZ3dt&utm_source=qr", linkedin: "https://www.linkedin.com/in/usha-kanchukatla-98267a306?utm_source=share_via&utm_content=profile&utm_medium=member_ios" },
-            { name: "Akanksha", role: "Marketing Associate", photo: "img/team/akanksha.jpg", photoSeed: "akanksha-marketing-associate", instagram: "#", linkedin: "#" }
+            { name: "Sharwari", role: "Marketing Associate", photo: "/img/team/sharwari.jpg", photoSeed: "sharwari-marketing-associate", instagram: "https://www.instagram.com/sharwarii.__/", linkedin: "https://www.linkedin.com/in/sharwari-pawar-8694b722a" },
+            { name: "Usha", role: "Marketing Associate", photo: "/img/team/usha.jpg", photoSeed: "usha-marketing-associate", instagram: "https://www.instagram.com/ush_haa?igsi=OHpxaTl2ajVoZ3dt&utm_source=qr", linkedin: "https://www.linkedin.com/in/usha-kanchukatla-98267a306?utm_source=share_via&utm_content=profile&utm_medium=member_ios" },
+            { name: "Akanksha", role: "Marketing Associate", photo: "/img/team/akanksha.jpg", photoSeed: "akanksha-marketing-associate", instagram: "#", linkedin: "#" },
+            { name: "Swarup", role: "Marketing Associate", photo: "/img/team/swarup.jpg", photoSeed: "swarup-marketing-associate", instagram: "#", linkedin: "#" }
           ]
         },
         {
           title: "Events Team",
           members: [
-            { name: "Pransu", role: "Cultural Coordinator", photo: "img/team/pransu.jpg", photoSeed: "pransu-cultural-coordinator", instagram: "https://www.instagram.com/pransuchangela9?", linkedin: "https://www.linkedin.com/in/pransuchangela" },
+            { name: "Pransu", role: "Cultural Coordinator", photo: "/img/team/pransu.jpg", photoSeed: "pransu-cultural-coordinator", instagram: "https://www.instagram.com/pransuchangela9?", linkedin: "https://www.linkedin.com/in/pransuchangela" },
             /* @@COMMENTED-OUT-START: team-missing-photos-events ============
                DATE:     2026-09-02
                WHY:      Rahul and Vighnesh's `photo` paths
@@ -377,11 +378,11 @@
                RESTORE:  Uncomment these 2 members once their photos exist
                          at those paths.
             ==================================================================
-            { name: "Rahul", role: "Logistical Coordinator", photo: "img/team/rahul.jpg", photoSeed: "rahul-logistical-coordinator", instagram: "#", linkedin: "#" },
-            { name: "Vighnesh", role: "Events Associate", photo: "img/team/vighnesh.jpg", photoSeed: "vighnesh-events-associate", instagram: "#", linkedin: "#" },
+            { name: "Rahul", role: "Logistical Coordinator", photo: "/img/team/rahul.jpg", photoSeed: "rahul-logistical-coordinator", instagram: "#", linkedin: "#" },
+            { name: "Vighnesh", role: "Events Associate", photo: "/img/team/vighnesh.jpg", photoSeed: "vighnesh-events-associate", instagram: "#", linkedin: "#" },
             @@COMMENTED-OUT-END: team-missing-photos-events ================ */
-            { name: "Priyanshi", role: "Events Associate", photo: "img/team/priyanshi.jpg", photoSeed: "priyanshi-events-associate", instagram: "https://www.instagram.com/priyanshi._.6/", linkedin: "https://www.linkedin.com/in/parmar-priyanshi/" },
-            { name: "Sreeya", role: "Events Associate", photo: "img/team/sreeya.jpg", focus: "61% 50%", photoSeed: "sreeya-events-associate", instagram: "https://www.instagram.com/sreeya.rao?igsi=azQ3N2k1anp5ZHJq&utm_source=qr", linkedin: "https://www.linkedin.com/in/theepalapudi-sreeya-rao" }
+            { name: "Priyanshi", role: "Events Associate", photo: "/img/team/priyanshi.jpg", photoSeed: "priyanshi-events-associate", instagram: "https://www.instagram.com/priyanshi._.6/", linkedin: "https://www.linkedin.com/in/parmar-priyanshi/" },
+            { name: "Sreeya", role: "Events Associate", photo: "/img/team/sreeya.jpg", focus: "61% 50%", photoSeed: "sreeya-events-associate", instagram: "https://www.instagram.com/sreeya.rao?igsi=azQ3N2k1anp5ZHJq&utm_source=qr", linkedin: "https://www.linkedin.com/in/theepalapudi-sreeya-rao" }
           ]
         },
         {
@@ -395,10 +396,10 @@
                          real photo is added (see README.md To Do).
                RESTORE:  Uncomment once her photo exists at that path.
             ==================================================================
-            { name: "Mansi", role: "Photographer & Videographer", photo: "img/team/mansi.jpg", photoSeed: "mansi-photographer-videographer", instagram: "#", linkedin: "#" },
+            { name: "Mansi", role: "Photographer & Videographer", photo: "/img/team/mansi.jpg", photoSeed: "mansi-photographer-videographer", instagram: "#", linkedin: "#" },
             @@COMMENTED-OUT-END: team-missing-photo-mansi ================== */
-            { name: "Anshitha", role: "PISA Ambassador", photo: "img/team/anshitha.jpg", photoSeed: "anshitha-pisa-ambassador", instagram: "#", linkedin: "#" },
-            { name: "Lavisha", role: "Outreach & Communications Coordinator", photo: "img/team/lavisha.jpg", photoSeed: "lavisha-outreach-communications-coordinator", instagram: "#", linkedin: "#" }
+            { name: "Anshita", role: "PISA Ambassador", photo: "/img/team/anshitha.jpg", photoSeed: "anshitha-pisa-ambassador", instagram: "#", linkedin: "#" },
+            { name: "Lavisha", role: "Outreach & Communications Coordinator", photo: "/img/team/lavisha.jpg", photoSeed: "lavisha-outreach-communications-coordinator", instagram: "#", linkedin: "#" }
           ]
         }
       ]
@@ -531,8 +532,8 @@
   let currentRoute = "home";
 
   function resolveRoute() {
-    const hash = (location.hash || "#home").replace("#", "");
-    return ROUTES.includes(hash) ? hash : "home";
+    const path = location.pathname.replace(/^\/|\/$/g, "") || "home";
+    return ROUTES.includes(path) ? path : "home";
   }
 
   function navigate(route, { replace = false, scrollTarget = null } = {}) {
@@ -560,7 +561,7 @@
       });
     }
 
-    if (!replace) history.pushState({ route }, "", `#${route}`);
+    if (!replace) history.pushState({ route }, "", route === "home" ? "/" : `/${route}`);
   }
 
   window.addEventListener("popstate", () => navigate(resolveRoute(), { replace: true }));
@@ -770,7 +771,7 @@
           </div>
           <div class="happening-card__ctas">
             <a class="btn btn--primary" href="${next.registerLink}" target="_blank" rel="noopener">Register Now →</a>
-            <a class="btn btn--ghost" href="#events" data-route="events">View Details</a>
+            <a class="btn btn--ghost" href="/events" data-route="events">View Details</a>
           </div>
         </div>
         <div class="happening-card__visual">${upcomingPosterMarkup(next)}</div>`;
@@ -791,7 +792,7 @@
       .sort((a, b) => new Date(b.date) - new Date(a.date));
     const strip = $("#journeyStrip");
     strip.innerHTML = history.map((ev, i) => `
-      <a class="journey-card" href="#history" data-route="history">
+      <a class="journey-card" href="/history" data-route="history">
         <div class="journey-card__img"><img src="${ev.poster || ev.gallery[0]}" alt="${ev.title}" loading="lazy"></div>
         <div class="journey-card__body">
           <span class="num">0${i + 1}</span>
@@ -816,7 +817,7 @@
           <p class="event-card__meta">${fmtDate(ev.date)} · ${fmtTime(ev.date)}</p>
           <p class="tagline">${ev.tagline}</p>
           <div class="event-card__foot">
-            <a class="text-link" href="#events" data-route="events">Details →</a>
+            <a class="text-link" href="/events" data-route="events">Details →</a>
             <a class="text-link" href="${ev.registerLink}" target="_blank" rel="noopener">Register ↗</a>
           </div>
         </div>
@@ -1134,7 +1135,7 @@
           </div>
           <div class="live-card__ctas">
             <a class="btn btn--primary" href="${ev.registerLink}" target="_blank" rel="noopener">Register on Settersync ↗</a>
-            <a class="btn btn--ghost" href="#volunteer" data-route="volunteer">Volunteer for this event</a>
+            <a class="btn btn--ghost" href="/volunteer" data-route="volunteer">Volunteer for this event</a>
           </div>
         </div>
       </article>`).join("");
@@ -1298,7 +1299,7 @@
     el.style.setProperty("--dur", dur + "ms");
     const ctaHtml = !ctaText ? "" : ctaHref
       ? `<a class="toast__cta" href="${ctaHref}" target="_blank" rel="noopener">${ctaText}</a>`
-      : `<a class="toast__cta" href="#${route}" data-route="${route}">${ctaText}</a>`;
+      : `<a class="toast__cta" href="/${route === "home" ? "" : route}" data-route="${route}">${ctaText}</a>`;
     el.innerHTML = `
       <span class="toast__emoji">${emoji}</span>
       <div class="toast__body">

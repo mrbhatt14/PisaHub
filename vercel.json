@@ -1,0 +1,12 @@
+{
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/about", "destination": "/index.html" },
+    { "source": "/events", "destination": "/index.html" },
+    { "source": "/history", "destination": "/index.html" },
+    { "source": "/team", "destination": "/index.html" },
+    { "source": "/volunteer", "destination": "/index.html" },
+    { "source": "/gallery", "destination": "/index.html" }
+  ]
+}

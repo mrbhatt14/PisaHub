@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gate Closed - PISA Hub</title>
+  <meta name="robots" content="noindex">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap"
+    rel="stylesheet">
+
+  <link rel="icon" type="image/png" href="/img/pisa-favicon.png">
+
+  <style>
+    :root{
+      --ivory: #F6F1E6;
+      --ink: #2E2013;
+      --card: #FBF8F1;
+      --sand: #D9C7A0;
+      --sand-soft: #EDE2C8;
+      --brown-mid: #6B4A32;
+      --brown-line: rgba(46,32,19,0.14);
+      --saffron: #E08A3C;
+      --saffron-deep: #C1592B;
+      --brown: #2E2013;
+      --ivory-soft: #FBF8F1;
+      --font-display: 'Fraunces', serif;
+      --font-body: 'Inter', sans-serif;
+      --font-mono: 'Space Grotesk', sans-serif;
+    }
+    *,*::before,*::after{ box-sizing:border-box; }
+    html{ color-scheme: light; }
+    body{
+      margin:0; min-height:100vh; background:var(--brown); color:var(--ivory-soft);
+      font-family:var(--font-body); line-height:1.6; -webkit-font-smoothing:antialiased;
+      display:flex; align-items:center; justify-content:center; padding:2rem 1.25rem;
+      position:relative; overflow:hidden;
+    }
+    /* faint departures-board grid, matching the home hero's night-sky chrome */
+    body::before{
+      content:''; position:absolute; inset:0; opacity:.5;
+      background-image:
+        linear-gradient(rgba(246,241,230,.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(246,241,230,.05) 1px, transparent 1px);
+      background-size:42px 42px;
+      mask-image:radial-gradient(ellipse 70% 60% at 50% 30%, #000 40%, transparent 85%);
+    }
+
+    .wrap{ position:relative; z-index:1; width:100%; max-width:560px; text-align:center; }
+
+    .kicker{
+      display:inline-flex; align-items:center; gap:.55em; font-family:var(--font-mono);
+      font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; color:var(--sand);
+      margin-bottom:1.4rem;
+    }
+    .kicker__dot{ width:7px; height:7px; border-radius:50%; background:var(--saffron); }
+
+    h1{
+      font-family:var(--font-display); font-weight:600; font-size:clamp(2.1rem,7vw,3rem);
+      line-height:1.15; margin:0 0 .9rem; text-wrap:balance;
+    }
+    h1 em{ font-style:italic; color:var(--saffron); }
+
+    .sub{ margin:0 auto 2.2rem; max-width:42ch; color:var(--sand); font-size:1.02rem; }
+
+    /* torn boarding-pass stub, echoing the site's boarding-pass hero */
+    .stub{
+      position:relative; margin:0 auto 2.4rem; max-width:400px;
+      background:var(--card); color:var(--ink); border-radius:16px;
+      padding:1.3rem 1.5rem 1.5rem; text-align:left;
+      box-shadow:0 30px 60px -28px rgba(0,0,0,.65);
+    }
+    .stub::before, .stub::after{
+      content:''; position:absolute; top:50%; width:26px; height:26px; border-radius:50%;
+      background:var(--brown); transform:translateY(-50%);
+    }
+    .stub::before{ left:-13px; }
+    .stub::after{ right:-13px; }
+    .stub__top{
+      display:flex; align-items:center; justify-content:space-between; margin-bottom:.9rem;
+      padding-bottom:.9rem; border-bottom:1px dashed var(--brown-line);
+    }
+    .stub__brand{ font-family:var(--font-display); font-weight:600; font-size:1.05rem; }
+    .stub__status{
+      font-family:var(--font-mono); font-size:.62rem; letter-spacing:.1em; text-transform:uppercase;
+      color:var(--saffron-deep); background:rgba(193,89,43,.12); border:1px solid rgba(193,89,43,.3);
+      padding:.35em .7em; border-radius:999px;
+    }
+    .stub__grid{ display:grid; grid-template-columns:1fr 1fr; gap:.9rem 1rem; }
+    .stub__field small{
+      display:block; font-family:var(--font-mono); font-size:.58rem; letter-spacing:.12em;
+      text-transform:uppercase; color:var(--brown-mid); margin-bottom:.3rem;
+    }
+    .stub__field b{ font-weight:600; font-size:.92rem; display:block; word-break:break-word; }
+    .stub__field--wide{ grid-column:1 / -1; }
+    #reqPath{ font-family:var(--font-mono); font-size:.86rem; }
+
+    .actions{ display:flex; flex-wrap:wrap; gap:.85rem; justify-content:center; }
+    .btn{
+      display:inline-flex; align-items:center; gap:.5em; font-family:var(--font-body);
+      font-weight:600; font-size:.95rem; padding:.85em 1.5em; border-radius:999px;
+      text-decoration:none; border:1px solid transparent; transition:transform .25s, background .25s;
+    }
+    .btn:hover{ transform:translateY(-2px); }
+    .btn--primary{ background:var(--saffron); color:var(--brown); }
+    .btn--primary:hover{ background:var(--saffron-deep); color:var(--ivory-soft); }
+    .btn--ghost{ border-color:rgba(246,241,230,.35); color:var(--ivory-soft); }
+    .btn--ghost:hover{ background:rgba(246,241,230,.1); }
+
+    .quick{ margin-top:2.6rem; font-size:.9rem; color:var(--sand); }
+    .quick a{ color:var(--ivory-soft); text-decoration:underline; text-underline-offset:3px; }
+    .quick a:hover{ color:var(--saffron); }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <p class="kicker"><span class="kicker__dot"></span>Gate closed &middot; Error 404</p>
+    <h1>This flight isn't <em>on the board.</em></h1>
+    <p class="sub">The page you're looking for isn't on our itinerary - it may have moved gates, or never boarded at all.</p>
+
+    <div class="stub">
+      <div class="stub__top">
+        <span class="stub__brand">PISA</span>
+        <span class="stub__status">Not found</span>
+      </div>
+      <div class="stub__grid">
+        <div class="stub__field"><small>Status</small><b>Cancelled</b></div>
+        <div class="stub__field"><small>Gate</small><b>Unassigned</b></div>
+        <div class="stub__field stub__field--wide"><small>Requested route</small><b id="reqPath">-</b></div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <a class="btn btn--primary" href="/">Back to the terminal</a>
+      <a class="btn btn--ghost" href="/events">See live events</a>
+    </div>
+
+    <p class="quick">Looking for something specific? Try <a href="/team">the team</a>, <a href="/history">our journey</a>, or <a href="/volunteer">volunteering</a>.</p>
+  </div>
+
+  <script>
+    // show what was actually requested, safely (textContent, never innerHTML)
+    (function () {
+      var el = document.getElementById("reqPath");
+      if (el) el.textContent = location.pathname + location.search || "/";
+    })();
+  </script>
+</body>
+
+</html>
