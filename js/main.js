@@ -453,6 +453,67 @@
   /* ---------------------------------------------------------
      DATA - VOLUNTEER ROLES
   --------------------------------------------------------- */
+  /* ---------------------------------------------------------------
+     GOOGLE FORM WIRING
+     ---------------------------------------------------------------
+     The volunteer form below POSTs directly to a Google Form. To
+     connect it to YOUR form:
+
+     1. Create a Google Form with one question per field:
+          - "Full name"        -> Short answer
+          - "Pace email"       -> Short answer
+          - "Phone number"     -> Short answer
+          - "Class year"       -> Multiple choice / Dropdown
+                                  (Freshman, Sophomore, Junior, Senior, Graduate)
+          - "I'd like to help as a..." -> Checkboxes, with these exact options:
+                                  Performer, Event Organizer,
+                                  Photographer / Videographer,
+                                  Marketing & Social Media,
+                                  Logistics & Setup,
+                                  Outreach & Hospitality
+          - "Availability"     -> Multiple choice / Dropdown
+                                  (Weekdays, Weekends, Both, Event-day only)
+          - "Why do you want to volunteer with PISA?" -> Paragraph
+
+     2. Open the live form, right-click -> "View page source" (or use the
+        pre-filled-link trick: the ... menu -> "Get pre-filled link", fill
+        one of each, submit, then copy the URL). Each field's id looks like
+        "entry.1234567890".
+
+     3. Grab the form id from the form's URL:
+        https://docs.google.com/forms/d/e/FORM_ID/viewform  <-- FORM_ID
+
+     4. Paste FORM_ID and each entry id below. The role checkbox VALUES
+        (performer, organizer, ...) map to the Google Form checkbox option
+        LABELS via GOOGLE_FORM.roleLabels.
+
+     Until you fill in a real FORM_ID, the form falls back to the local
+     "You're on the list!" confirmation without sending anything.
+  --------------------------------------------------------------- */
+  const GOOGLE_FORM = {
+    // e.g. "1FAIpQLSd...."  (the long id between /d/e/ and /viewform)
+    formId: "1FAIpQLSfBc61qil6izRrYfMPwT5aCKwY8PMZong9hyotL2x9JoTIz-A",
+    // Map each field to its Google Form "entry.XXXXXXXXX" id.
+    entries: {
+      name:         "entry.215420659",
+      email:        "entry.763005508",
+      phone:        "entry.1442954322",
+      year:         "entry.1631289010",
+      roles:        "entry.517564729",         // the Checkboxes question
+      availability: "entry.1924310796",
+      why:          "entry.1918214720"
+    },
+    // Role checkbox value (from ROLES[].id) -> exact Google Form option label.
+    roleLabels: {
+      performer: "Performer",
+      organizer: "Event Organizer",
+      media:     "Photographer / Videographer",
+      marketing: "Marketing & Social Media",
+      logistics: "Logistics & Setup",
+      outreach:  "Outreach & Hospitality"
+    }
+  };
+
   const ROLES = [
     { id: "performer", title: "Performer", desc: "Dance, sing or showcase your talent on stage at PISA events.", icon: ICONS.mic },
     { id: "organizer", title: "Event Organizer", desc: "Plan logistics, timelines and run-of-show from start to finish.", icon: ICONS.calendar },
@@ -1083,8 +1144,46 @@
     form.addEventListener("submit", (e) => {
       e.preventDefault();
       if (!form.checkValidity()) { form.reportValidity(); return; }
-      form.style.display = "none";
-      $("#formSuccess").classList.add("is-visible");
+
+      const showSuccess = () => {
+        form.style.display = "none";
+        $("#formSuccess").classList.add("is-visible");
+      };
+
+      // Only POST once BOTH the form id and the field entry ids are real
+      // (i.e. no leftover "PASTE..." placeholders). Otherwise fall back to
+      // the local confirmation so a half-configured form never looks "sent".
+      const isConfigured =
+        GOOGLE_FORM.formId && !GOOGLE_FORM.formId.startsWith("PASTE") &&
+        !GOOGLE_FORM.entries.name.includes("PASTE");
+
+      if (isConfigured) {
+        const action = `https://docs.google.com/forms/d/e/${GOOGLE_FORM.formId}/formResponse`;
+        const data = new FormData();
+        const add = (key, val) => {
+          const entry = GOOGLE_FORM.entries[key];
+          if (entry && !entry.includes("PASTE") && val) data.append(entry, val);
+        };
+
+        add("name", $("#volName").value.trim());
+        add("email", $("#volEmail").value.trim());
+        add("phone", $("#volPhone").value.trim());
+        add("year", $("#volYear").value);
+        add("availability", $("#volAvailability").value);
+        add("why", $("#volWhy").value.trim());
+
+        // Checkboxes: one appended value per selected role, mapped to its label.
+        $$('input[name="roles"]:checked', form).forEach((cb) => {
+          add("roles", GOOGLE_FORM.roleLabels[cb.value] || cb.value);
+        });
+
+        // no-cors: Google returns an opaque response but records the entry.
+        fetch(action, { method: "POST", mode: "no-cors", body: data })
+          .catch(() => {})
+          .finally(showSuccess);
+      } else {
+        showSuccess();
+      }
     });
     $("#formReset").addEventListener("click", () => {
       form.reset();
