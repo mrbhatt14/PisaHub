@@ -361,26 +361,16 @@
             { name: "Sharwari", role: "Marketing Associate", photo: "/img/team/sharwari.jpg", photoSeed: "sharwari-marketing-associate", instagram: "https://www.instagram.com/sharwarii.__/", linkedin: "https://www.linkedin.com/in/sharwari-pawar-8694b722a" },
             { name: "Usha", role: "Marketing Associate", photo: "/img/team/usha.jpg", photoSeed: "usha-marketing-associate", instagram: "https://www.instagram.com/ush_haa?igsi=OHpxaTl2ajVoZ3dt&utm_source=qr", linkedin: "https://www.linkedin.com/in/usha-kanchukatla-98267a306?utm_source=share_via&utm_content=profile&utm_medium=member_ios" },
             { name: "Akanksha", role: "Marketing Associate", photo: "/img/team/akanksha.jpg", photoSeed: "akanksha-marketing-associate", instagram: "#", linkedin: "#" },
-            { name: "Swarup", role: "Marketing Associate", photo: "/img/team/swarup.jpg", photoSeed: "swarup-marketing-associate", instagram: "#", linkedin: "#" }
+            { name: "Swarup", role: "Marketing Associate", photo: "/img/team/swarup.jpg", photoSeed: "swarup-marketing-associate", instagram: "#", linkedin: "#" },
+            { name: "Lavisha", role: "Outreach & Communications Associate", photo: "/img/team/lavisha.jpg", photoSeed: "lavisha-outreach-communications-associate", instagram: "#", linkedin: "#" }
           ]
         },
         {
           title: "Events Team",
           members: [
             { name: "Pransu", role: "Cultural Coordinator", photo: "/img/team/pransu.jpg", photoSeed: "pransu-cultural-coordinator", instagram: "https://www.instagram.com/pransuchangela9?", linkedin: "https://www.linkedin.com/in/pransuchangela" },
-            /* @@COMMENTED-OUT-START: team-missing-photos-events ============
-               DATE:     2026-09-02
-               WHY:      Rahul and Vighnesh's `photo` paths
-                         (img/team/rahul.jpg, img/team/vighnesh.jpg) don't
-                         exist on disk yet, which renders as a broken
-                         image on their cards. Hiding them from Team until
-                         real photos are added (see README.md To Do).
-               RESTORE:  Uncomment these 2 members once their photos exist
-                         at those paths.
-            ==================================================================
-            { name: "Rahul", role: "Logistical Coordinator", photo: "/img/team/rahul.jpg", photoSeed: "rahul-logistical-coordinator", instagram: "#", linkedin: "#" },
+            { name: "Rahul", role: "Logistics Associate", photo: "/img/team/rahul.jpg", photoSeed: "rahul-logistics-associate", instagram: "#", linkedin: "#" },
             { name: "Vighnesh", role: "Events Associate", photo: "/img/team/vighnesh.jpg", photoSeed: "vighnesh-events-associate", instagram: "#", linkedin: "#" },
-            @@COMMENTED-OUT-END: team-missing-photos-events ================ */
             { name: "Priyanshi", role: "Events Associate", photo: "/img/team/priyanshi.jpg", photoSeed: "priyanshi-events-associate", instagram: "https://www.instagram.com/priyanshi._.6/", linkedin: "https://www.linkedin.com/in/parmar-priyanshi/" },
             { name: "Sreeya", role: "Events Associate", photo: "/img/team/sreeya.jpg", focus: "61% 50%", photoSeed: "sreeya-events-associate", instagram: "https://www.instagram.com/sreeya.rao?igsi=azQ3N2k1anp5ZHJq&utm_source=qr", linkedin: "https://www.linkedin.com/in/theepalapudi-sreeya-rao" }
           ]
@@ -388,18 +378,8 @@
         {
           title: "Media & Outreach",
           members: [
-            /* @@COMMENTED-OUT-START: team-missing-photo-mansi ==============
-               DATE:     2026-09-02
-               WHY:      Mansi's `photo` path (img/team/mansi.jpg) doesn't
-                         exist on disk yet, which renders as a broken
-                         image on her card. Hiding her from Team until a
-                         real photo is added (see README.md To Do).
-               RESTORE:  Uncomment once her photo exists at that path.
-            ==================================================================
             { name: "Mansi", role: "Photographer & Videographer", photo: "/img/team/mansi.jpg", photoSeed: "mansi-photographer-videographer", instagram: "#", linkedin: "#" },
-            @@COMMENTED-OUT-END: team-missing-photo-mansi ================== */
-            { name: "Anshita", role: "PISA Ambassador", photo: "/img/team/anshitha.jpg", photoSeed: "anshitha-pisa-ambassador", instagram: "#", linkedin: "#" },
-            { name: "Lavisha", role: "Outreach & Communications Coordinator", photo: "/img/team/lavisha.jpg", photoSeed: "lavisha-outreach-communications-coordinator", instagram: "#", linkedin: "#" }
+            { name: "Anshita", role: "PISA Ambassador", photo: "/img/team/anshitha.jpg", photoSeed: "anshitha-pisa-ambassador", instagram: "#", linkedin: "#" }
           ]
         }
       ]

@@ -73,3 +73,8 @@ The opening-gate hero (`#gateHero` in `index.html`) is hand-built SVG + CSS 3D t
 ## Notes on placeholders
 
 Search the codebase for `Add Name` (team roster) and `settersync.com` (registration links) — those are the two things you'll want to replace with real data before launch.
+
+## To Do
+
+- [ ] Wire up the Volunteer form (`#volForm`) to a real destination — see "Volunteer form" above. Right now submissions just show a success message and go nowhere; nobody on the PISA side receives them.
+- [ ] Add gallery/event photos: "The Cultural Fashion Show" and "Independence Day at the Consulate General of India" (Fall 2026) have no `poster`/`gallery` yet, so they're missing from the Gallery page and show "poster coming soon" — add real event photos in `js/main.js`.
