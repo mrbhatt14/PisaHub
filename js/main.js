@@ -36,6 +36,20 @@
   --------------------------------------------------------- */
   const EVENTS = [
     {
+      id: "conversation-group-2026",
+      title: "Conversation Group",
+      tagline: "Cultures closer together - an hour of conversation, games and shared stories.",
+      date: "2026-09-30T15:30:00",
+      endDate: "2026-09-30T16:30:00",
+      location: "16th Floor, 161 William Street, Pace University, NY",
+      registerLink: "https://settersyncnyc.pace.edu/event/12783820",
+      poster: "/img/events/conversation-group-2026/poster.jpg",
+      showPoster: true,
+      posterWide: true,
+      gallery: [],
+      description: "Join us for a special Conversation Group in collaboration with the Pace Internationals Office - an interactive hour of conversations, cultural exchange, activities, games, and shared experiences. This session will explore culture, identity, traditions, and the experiences that connect us across borders. Through cultural trivia, conversation prompts, music, memories, and interactive activities, participants will discover aspects of Indian culture while also bringing their own cultures, traditions, and stories into the conversation. You might share an Indian memory or experience, recognize a song, discover a tradition you never knew about, or realize that something you thought was unique to your culture is shared by someone from another part of the world. At its heart, this Conversation Group is an effort to bring cultures closer together and build a community that is not defined by borders - a space where our differences become opportunities to learn from one another and our similarities remind us how connected we already are. Come curious, bring your culture, and leave knowing a little more about someone else's!"
+    },
+    {
       id: "milan",
       title: "The PISA Premiere",
       tagline: "The Bollywood-inspired welcome that opens every semester.",
@@ -48,7 +62,37 @@
       gallery: [
         "/img/events/milan/gallery-1.jpg",
         "/img/events/milan/gallery-2.jpg",
-        "/img/events/milan/gallery-3.jpg"
+        "/img/events/milan/gallery-3.jpg",
+        "/img/events/milan/gallery-4.jpg",
+        "/img/events/milan/gallery-5.jpg",
+        "/img/events/milan/gallery-6.jpg",
+        "/img/events/milan/gallery-7.jpg",
+        "/img/events/milan/gallery-8.jpg",
+        "/img/events/milan/gallery-9.jpg",
+        "/img/events/milan/gallery-10.jpg",
+        "/img/events/milan/gallery-11.jpg",
+        "/img/events/milan/gallery-12.jpg",
+        "/img/events/milan/gallery-13.jpg",
+        "/img/events/milan/gallery-14.jpg",
+        "/img/events/milan/gallery-15.jpg",
+        "/img/events/milan/gallery-16.jpg",
+        "/img/events/milan/gallery-17.jpg",
+        "/img/events/milan/gallery-18.jpg",
+        "/img/events/milan/gallery-19.jpg",
+        "/img/events/milan/gallery-20.jpg",
+        "/img/events/milan/gallery-21.jpg",
+        "/img/events/milan/gallery-22.jpg",
+        "/img/events/milan/gallery-23.jpg",
+        "/img/events/milan/gallery-24.jpg",
+        "/img/events/milan/gallery-25.jpg",
+        "/img/events/milan/gallery-26.jpg",
+        "/img/events/milan/gallery-27.jpg",
+        "/img/events/milan/gallery-28.jpg",
+        "/img/events/milan/gallery-29.jpg",
+        "/img/events/milan/gallery-30.jpg",
+        "/img/events/milan/gallery-31.jpg",
+        "/img/events/milan/gallery-32.jpg",
+        "/img/events/milan/gallery-33.jpg"
       ],
       description: "The opening celebration of every semester - a Bollywood-inspired welcome featuring music, dance, food, introductions, and the unveiling of PISA's semester team and vision."
     },
@@ -815,7 +859,7 @@
             <a class="btn btn--ghost" href="/events" data-route="events">View Details</a>
           </div>
         </div>
-        <div class="happening-card__visual">${upcomingPosterMarkup(next)}</div>`;
+        <div class="happening-card__visual${next.posterWide ? " is-wide" : ""}">${upcomingPosterMarkup(next)}</div>`;
     } else {
       card.innerHTML = `<p>No upcoming events right now - check back soon.</p>`;
     }
@@ -849,7 +893,7 @@
     const statusLabel = status === "live" ? "Live Now" : status === "upcoming" ? "Open for Registration" : "Closed";
     return `
       <article class="event-card">
-        <div class="event-card__img">
+        <div class="event-card__img${ev.posterWide ? " is-wide" : ""}">
           ${upcomingPosterMarkup(ev)}
           <span class="status-chip status-chip--${status}">${statusLabel}</span>
         </div>
@@ -1052,17 +1096,39 @@
           <h3>${ev.title}</h3>
           <span>${fmtDate(ev.date)} · ${ev.location}</span>
         </div>
-        <div class="gallery-masonry">
-          ${ev.gallery.map((src, gi) => `
-            <button class="gallery-tile" data-gallery-open="${ev.id}" data-index="${gi}" aria-label="Open ${ev.title} photo ${gi + 1}">
-              <img src="${src}" alt="${ev.title} photo ${gi + 1}" loading="lazy">
-              <span class="gallery-tile__glow"></span>
-            </button>`).join("")}
+        <div class="gallery-carousel">
+          <button class="gallery-nav gallery-nav--prev" aria-label="Previous photos">&#8249;</button>
+          <div class="gallery-track">
+            ${ev.gallery.map((src, gi) => `
+              <button class="gallery-tile" data-gallery-open="${ev.id}" data-index="${gi}" aria-label="Open ${ev.title} photo ${gi + 1}">
+                <img src="${src}" alt="${ev.title} photo ${gi + 1}" loading="lazy">
+                <span class="gallery-tile__glow"></span>
+              </button>`).join("")}
+          </div>
+          <button class="gallery-nav gallery-nav--next" aria-label="More photos">&#8250;</button>
         </div>
       </section>`).join("") || `<p style="color:var(--brown-mid);text-align:center">No photos for this semester yet.</p>`;
 
     $$("[data-gallery-open]", grid).forEach((btn) => {
       btn.addEventListener("click", () => openGallery(btn.dataset.galleryOpen, Number(btn.dataset.index)));
+    });
+
+    // Wire each carousel's prev/next arrows to scroll its filmstrip by ~a page.
+    $$(".gallery-carousel", grid).forEach((car) => {
+      const track = $(".gallery-track", car);
+      const prev = $(".gallery-nav--prev", car);
+      const next = $(".gallery-nav--next", car);
+      const page = () => Math.max(track.clientWidth * 0.85, 260);
+      const update = () => {
+        const max = track.scrollWidth - track.clientWidth - 2;
+        prev.disabled = track.scrollLeft <= 2;
+        next.disabled = track.scrollLeft >= max;
+      };
+      prev.addEventListener("click", () => track.scrollBy({ left: -page(), behavior: "smooth" }));
+      next.addEventListener("click", () => track.scrollBy({ left: page(), behavior: "smooth" }));
+      track.addEventListener("scroll", update, { passive: true });
+      window.addEventListener("resize", update, { passive: true });
+      requestAnimationFrame(update);
     });
 
     const tiles = $$(".gallery-tile", grid);
