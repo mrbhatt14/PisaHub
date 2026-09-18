@@ -379,17 +379,17 @@
         {
           title: "Executive Board",
           members: [
-            { name: "Dilan", role: "President", photo: "/img/team/dilan.jpg", photoSeed: "dilan-president", instagram: "#", linkedin: "https://www.linkedin.com/in/dilxn/" },
+            { name: "Dilan", role: "President", photo: "/img/team/dilan.jpg", photoSeed: "dilan-president", instagram: "https://www.instagram.com/dilvn.co/", linkedin: "https://www.linkedin.com/in/dilxn/" },
             { name: "Shivam", role: "Vice President", photo: "/img/team/shivambhatt.jpg", photoSeed: "shivam-vice-president", instagram: "#", linkedin: "https://www.linkedin.com/in/shivam-bhatt14/" },
             { name: "Gurleen", role: "Secretary", photo: "/img/team/gurleen.jpg", focus: "50% 10%", photoSeed: "gurleen-secretary", instagram: "https://www.instagram.com/gurleen.16.10?igsi=MTkxdG5ra3Z2Mzk3NA==", linkedin: "https://www.linkedin.com/in/gurleenkaurfrm?utm_source=share_via&utm_content=profile&utm_medium=member_android" },
-            { name: "Fahad", role: "Treasurer", photo: "/img/team/fahad.jpg", photoSeed: "fahad-treasurer", instagram: "#", linkedin: "#" }
+            { name: "Fahad", role: "Treasurer", photo: "/img/team/fahad.jpg", photoSeed: "fahad-treasurer", instagram: "https://www.instagram.com/mir_fahad_ali/", linkedin: "https://www.linkedin.com/in/mir-fahad-ali-9971b724b/" }
           ]
         },
         {
           title: "Directors",
           members: [
             { name: "Pritha", role: "Director of Events", photo: "/img/team/pritha.jpg", photoSeed: "pritha-director-events", instagram: "https://www.instagram.com/arorapritha/", linkedin: "https://www.linkedin.com/in/prithaarora/" },
-            { name: "Sriya", role: "Director of Marketing", photo: "/img/team/sriya.jpg", photoSeed: "sriya-director-marketing", instagram: "#", linkedin: "https://www.linkedin.com/in/sriya-patnala?utm_source=share_via&utm_content=profile&utm_medium=member_android" }
+            { name: "Sriya", role: "Director of Marketing", photo: "/img/team/sriya.jpg", photoSeed: "sriya-director-marketing", instagram: "https://www.instagram.com/sriya.patnala/", linkedin: "https://www.linkedin.com/in/sriya-patnala?utm_source=share_via&utm_content=profile&utm_medium=member_android" }
           ]
         },
         {
@@ -397,17 +397,17 @@
           members: [
             { name: "Sharwari", role: "Marketing Associate", photo: "/img/team/sharwari.jpg", photoSeed: "sharwari-marketing-associate", instagram: "https://www.instagram.com/sharwarii.__/", linkedin: "https://www.linkedin.com/in/sharwari-pawar-8694b722a" },
             { name: "Usha", role: "Marketing Associate", photo: "/img/team/usha.jpg", photoSeed: "usha-marketing-associate", instagram: "https://www.instagram.com/ush_haa?igsi=OHpxaTl2ajVoZ3dt&utm_source=qr", linkedin: "https://www.linkedin.com/in/usha-kanchukatla-98267a306?utm_source=share_via&utm_content=profile&utm_medium=member_ios" },
-            { name: "Akanksha", role: "Marketing Associate", photo: "/img/team/akanksha.jpg", photoSeed: "akanksha-marketing-associate", instagram: "#", linkedin: "#" },
-            { name: "Swarup", role: "Marketing Associate", photo: "/img/team/swarup.jpg", photoSeed: "swarup-marketing-associate", instagram: "#", linkedin: "#" },
-            { name: "Lavisha", role: "Outreach & Communications Associate", photo: "/img/team/lavisha.jpg", photoSeed: "lavisha-outreach-communications-associate", instagram: "#", linkedin: "#" }
+            { name: "Akanksha", role: "Marketing Associate", photo: "/img/team/akanksha.jpg", photoSeed: "akanksha-marketing-associate", instagram: "https://www.instagram.com/__akankssha20__/", linkedin: "https://www.linkedin.com/in/gaikwadakanksha/" },
+            { name: "Swarup", role: "Marketing Associate", photo: "/img/team/swarup.jpg", photoSeed: "swarup-marketing-associate", instagram: "https://www.instagram.com/kamerkar.swarup/", linkedin: "https://www.linkedin.com/in/swarup-kamerkar/" },
+            { name: "Lavisha", role: "Outreach & Communications Associate", photo: "/img/team/lavisha.jpg", photoSeed: "lavisha-outreach-communications-associate", instagram: "https://www.instagram.com/lavishagehani/", linkedin: "https://www.linkedin.com/in/lavishagehani/" }
           ]
         },
         {
           title: "Events Team",
           members: [
             { name: "Pransu", role: "Cultural Coordinator", photo: "/img/team/pransu.jpg", photoSeed: "pransu-cultural-coordinator", instagram: "https://www.instagram.com/pransuchangela9?", linkedin: "https://www.linkedin.com/in/pransuchangela" },
-            { name: "Rahul", role: "Logistics Associate", photo: "/img/team/rahul.jpg", photoSeed: "rahul-logistics-associate", instagram: "#", linkedin: "#" },
-            { name: "Vighnesh", role: "Events Associate", photo: "/img/team/vighnesh.jpg", photoSeed: "vighnesh-events-associate", instagram: "#", linkedin: "#" },
+            { name: "Rahul", role: "Logistics Associate", photo: "/img/team/rahul.jpg", photoSeed: "rahul-logistics-associate", instagram: "https://www.instagram.com/rrahulsarrvaiya99/", linkedin: "https://www.linkedin.com/in/rahul-sarvaiya/" },
+            { name: "Vighnesh", role: "Events Associate", photo: "/img/team/vighnesh.jpg", photoSeed: "vighnesh-events-associate", instagram: "https://www.instagram.com/vighneshshinde12_/", linkedin: "https://www.linkedin.com/in/vighneshshinde12/" },
             { name: "Priyanshi", role: "Events Associate", photo: "/img/team/priyanshi.jpg", photoSeed: "priyanshi-events-associate", instagram: "https://www.instagram.com/priyanshi._.6/", linkedin: "https://www.linkedin.com/in/parmar-priyanshi/" },
             { name: "Sreeya", role: "Events Associate", photo: "/img/team/sreeya.jpg", focus: "61% 50%", photoSeed: "sreeya-events-associate", instagram: "https://www.instagram.com/sreeya.rao?igsi=azQ3N2k1anp5ZHJq&utm_source=qr", linkedin: "https://www.linkedin.com/in/theepalapudi-sreeya-rao" }
           ]
@@ -415,8 +415,8 @@
         {
           title: "Media & Outreach",
           members: [
-            { name: "Mansi", role: "Photographer & Videographer", photo: "/img/team/mansi.jpg", photoSeed: "mansi-photographer-videographer", instagram: "#", linkedin: "#" },
-            { name: "Anshita", role: "PISA Ambassador", photo: "/img/team/anshitha.jpg", photoSeed: "anshitha-pisa-ambassador", instagram: "#", linkedin: "#" }
+            { name: "Mansi", role: "Photographer & Videographer", photo: "/img/team/mansi.jpg", photoSeed: "mansi-photographer-videographer", instagram: "#", linkedin: "https://www.linkedin.com/in/mansi-chaudhari-?utm_source=share_via&utm_content=profile&utm_medium=member_ios" },
+            { name: "Anshita", role: "PISA Ambassador", photo: "/img/team/anshitha.jpg", photoSeed: "anshitha-pisa-ambassador", instagram: "https://www.instagram.com/anshi_therani?igsi=MWZobjk1ZXFwenQ1dA%3D%3D&utm_source=qr", linkedin: "https://www.linkedin.com/in/anshita-therani?utm_source=share_via&utm_content=profile&utm_medium=member_ios" }
           ]
         }
       ]
@@ -587,6 +587,16 @@
   function avatarUrl(seed) {
     return `https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(seed)}&backgroundColor=d9c7a0,e08a3c,5c7a54`;
   }
+  function socialLink(url, name, network) {
+    const raw = (url || "").trim();
+    // No link on file → send visitors to the team page instead.
+    if (!raw || raw === "#" || raw.toUpperCase() === "NA") {
+      return `<a href="/team" data-route="team" aria-label="${name} — see the PISA team">${ICONS[network]}</a>`;
+    }
+    // Normalize handles saved without a scheme (e.g. "www.linkedin.com/…").
+    const href = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+    return `<a href="${href}" target="_blank" rel="noopener" aria-label="${name} on ${network === "instagram" ? "Instagram" : "LinkedIn"}">${ICONS[network]}</a>`;
+  }
   function teamCardMarkup(member, small) {
     return `
       <article class="team-card">
@@ -596,8 +606,8 @@
           <h3>${member.name}</h3>
           ${member.quote ? `<p class="team-card__quote">"${member.quote}"</p>` : ""}
           <div class="team-card__socials">
-            <a href="${member.instagram}" target="_blank" rel="noopener" aria-label="${member.name} on Instagram">${ICONS.instagram}</a>
-            <a href="${member.linkedin}" target="_blank" rel="noopener" aria-label="${member.name} on LinkedIn">${ICONS.linkedin}</a>
+            ${socialLink(member.instagram, member.name, "instagram")}
+            ${socialLink(member.linkedin, member.name, "linkedin")}
           </div>
         </div>
       </article>`;
