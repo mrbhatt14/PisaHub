@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>PISA Hub — Admin Login</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body class="admin-body">
+  <div class="admin-card">
+    <h1>PISA Hub Admin</h1>
+    <p class="sub">Sign in with your maintainer or admin account.</p>
+
+    <form id="loginForm">
+      <div class="admin-field">
+        <label for="email">Email</label>
+        <input type="email" id="email" required autocomplete="username" />
+      </div>
+      <div class="admin-field">
+        <label for="password">Password</label>
+        <input type="password" id="password" required autocomplete="current-password" />
+      </div>
+      <button type="submit" class="admin-btn" id="loginBtn" style="width:100%;">Sign in</button>
+      <p class="admin-error" id="loginError"></p>
+    </form>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="/js/admin/supabase-client.js"></script>
+  <script>
+    const form = document.getElementById("loginForm");
+    const errorEl = document.getElementById("loginError");
+    const btn = document.getElementById("loginBtn");
+
+    // Already signed in? Skip straight to the dashboard.
+    supabaseClient.auth.getSession().then(({ data: { session } }) => {
+      if (session) window.location.href = "/admin/dashboard.html";
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      errorEl.textContent = "";
+      btn.disabled = true;
+      btn.textContent = "Signing in…";
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        errorEl.textContent = error.message;
+        btn.disabled = false;
+        btn.textContent = "Sign in";
+        return;
+      }
+
+      // Confirm the account has a maintainer/admin profile row before letting them in.
+      const { data: profile } = await supabaseClient
+        .from("profiles")
+        .select("role")
+        .eq("user_id", data.user.id)
+        .single();
+
+      if (!profile) {
+        errorEl.textContent = "No admin profile found for this account.";
+        await supabaseClient.auth.signOut();
+        btn.disabled = false;
+        btn.textContent = "Sign in";
+        return;
+      }
+
+      window.location.href = "/admin/dashboard.html";
+    });
+  </script>
+</body>
+</html>

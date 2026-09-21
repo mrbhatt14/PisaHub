@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>PISA Hub — Admin</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+  <div class="admin-shell">
+    <div class="admin-topbar">
+      <div class="brand">PISA Hub Admin</div>
+      <div style="display:flex; align-items:center; gap:16px;">
+        <span class="who" id="whoami"></span>
+        <button class="admin-btn admin-btn--ghost" id="signOutBtn">Sign out</button>
+      </div>
+    </div>
+
+    <div class="admin-nav">
+      <button class="active" data-tab="events">Events</button>
+      <button data-tab="team">Team</button>
+      <button data-tab="users" id="usersTabBtn" style="display:none;">Users</button>
+    </div>
+
+    <div class="admin-main">
+      <!-- Events panel -->
+      <div id="panel-events">
+        <div class="admin-panel-header">
+          <h2>Events</h2>
+          <button class="admin-btn" id="newEventBtn">+ New event</button>
+        </div>
+        <table class="admin-table" id="eventsTable">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Photos</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="eventsTableBody"></tbody>
+        </table>
+        <p class="admin-empty admin-hidden" id="eventsEmpty">No events yet — create the first one.</p>
+      </div>
+
+      <!-- Team panel -->
+      <div id="panel-team" class="admin-hidden">
+        <div class="admin-panel-header">
+          <h2>Team</h2>
+          <button class="admin-btn" id="newMemberBtn">+ New member</button>
+        </div>
+        <table class="admin-table" id="teamTable">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Role</th>
+              <th>Section</th>
+              <th>Order</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="teamTableBody"></tbody>
+        </table>
+        <p class="admin-empty admin-hidden" id="teamEmpty">No team members yet — add the first one.</p>
+      </div>
+
+      <!-- Users panel (admin only, next phase) -->
+      <div id="panel-users" class="admin-hidden">
+        <div class="admin-panel-header"><h2>Users</h2></div>
+        <p class="admin-empty">Maintainer/admin account management is coming in the next phase.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Event create/edit modal -->
+  <div class="admin-modal-backdrop admin-hidden" id="eventModalBackdrop">
+    <div class="admin-modal">
+      <h3 id="eventModalTitle">New event</h3>
+      <form id="eventForm">
+        <div class="admin-field">
+          <label for="ev_id">ID (slug — no spaces, lowercase, e.g. diwali-2026)</label>
+          <input type="text" id="ev_id" required pattern="[a-z0-9-]+" />
+        </div>
+        <div class="admin-field">
+          <label for="ev_title">Title</label>
+          <input type="text" id="ev_title" required />
+        </div>
+        <div class="admin-field">
+          <label for="ev_tagline">Tagline</label>
+          <input type="text" id="ev_tagline" />
+        </div>
+        <div class="admin-field">
+          <label for="ev_date">Start date/time</label>
+          <input type="datetime-local" id="ev_date" required />
+        </div>
+        <div class="admin-field">
+          <label for="ev_end_date">End date/time (optional)</label>
+          <input type="datetime-local" id="ev_end_date" />
+        </div>
+        <div class="admin-field">
+          <label for="ev_location">Location</label>
+          <input type="text" id="ev_location" />
+        </div>
+        <div class="admin-field">
+          <label for="ev_register_link">Registration link</label>
+          <input type="url" id="ev_register_link" />
+        </div>
+        <div class="admin-field">
+          <label for="ev_description">Description</label>
+          <textarea id="ev_description"></textarea>
+        </div>
+        <div class="admin-field">
+          <label for="ev_status">Status</label>
+          <select id="ev_status">
+            <option value="draft">Draft (hidden from public site)</option>
+            <option value="published">Published</option>
+          </select>
+        </div>
+        <p class="admin-error" id="eventFormError"></p>
+        <div class="admin-modal-actions">
+          <button type="button" class="admin-btn admin-btn--ghost" id="eventModalCancel">Cancel</button>
+          <button type="submit" class="admin-btn" id="eventModalSave">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Team member create/edit modal -->
+  <div class="admin-modal-backdrop admin-hidden" id="memberModalBackdrop">
+    <div class="admin-modal">
+      <h3 id="memberModalTitle">New team member</h3>
+      <form id="memberForm">
+        <div class="admin-field">
+          <label for="tm_name">Name</label>
+          <input type="text" id="tm_name" required />
+        </div>
+        <div class="admin-field">
+          <label for="tm_role">Role</label>
+          <input type="text" id="tm_role" required placeholder="e.g. President, Treasurer" />
+        </div>
+        <div class="admin-field">
+          <label for="tm_section">Section</label>
+          <select id="tm_section">
+            <option value="exec">Executive board</option>
+            <option value="committee">Committee</option>
+          </select>
+        </div>
+        <div class="admin-field">
+          <label for="tm_instagram">Instagram (full URL)</label>
+          <input type="url" id="tm_instagram" />
+        </div>
+        <div class="admin-field">
+          <label for="tm_linkedin">LinkedIn (full URL)</label>
+          <input type="url" id="tm_linkedin" />
+        </div>
+        <div class="admin-field">
+          <label for="tm_quote">Quote (optional, shown on exec cards)</label>
+          <textarea id="tm_quote"></textarea>
+        </div>
+        <div class="admin-field">
+          <label for="tm_sort_order">Sort order (lower shows first)</label>
+          <input type="number" id="tm_sort_order" value="0" />
+        </div>
+        <p class="admin-error" id="memberFormError"></p>
+        <p style="color:var(--brown-mid); font-size:0.85rem;">Photo upload is coming in the next phase — members show the site's fallback avatar until then.</p>
+        <div class="admin-modal-actions">
+          <button type="button" class="admin-btn admin-btn--ghost" id="memberModalCancel">Cancel</button>
+          <button type="submit" class="admin-btn" id="memberModalSave">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="/js/admin/supabase-client.js"></script>
+  <script src="/js/admin/auth.js"></script>
+  <script src="/js/admin/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+-- PISA Hub — admin schema
+-- Run once in Supabase SQL Editor (Project -> SQL Editor -> New query -> paste -> Run).
+-- Safe to re-run: guarded with IF NOT EXISTS / CREATE OR REPLACE where possible.
+
+-- ---------------------------------------------------------------------------
+-- profiles: one row per authenticated user, holds their role.
+-- Supabase auth.users already exists (managed by Supabase Auth) — we extend it.
+-- ---------------------------------------------------------------------------
+create table if not exists public.profiles (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  display_name text,
+  role text not null default 'maintainer' check (role in ('maintainer', 'admin')),
+  created_at timestamptz not null default now()
+);
+
+-- Auto-create a profile row whenever someone signs up, defaulting to maintainer.
+-- Promote the first real user to admin manually afterwards (see bottom of this file).
+create or replace function public.handle_new_user()
+returns trigger as $$
+begin
+  insert into public.profiles (user_id, display_name)
+  values (new.id, new.email);
+  return new;
+end;
+$$ language plpgsql security definer;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute function public.handle_new_user();
+
+-- Helper used inside RLS policies below: does the current user have at least `min_role`?
+create or replace function public.has_role(min_role text)
+returns boolean as $$
+  select exists (
+    select 1 from public.profiles
+    where user_id = auth.uid()
+      and (
+        role = 'admin'
+        or (min_role = 'maintainer' and role = 'maintainer')
+      )
+  );
+$$ language sql security definer stable;
+
+-- ---------------------------------------------------------------------------
+-- events
+-- ---------------------------------------------------------------------------
+create table if not exists public.events (
+  id text primary key,                 -- matches the existing `id` convention in js/main.js, e.g. "diwali-2026"
+  title text not null,
+  tagline text,
+  event_date timestamptz not null,
+  end_date timestamptz,
+  location text,
+  register_link text,
+  description text,
+  status text not null default 'draft' check (status in ('draft', 'published')),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.event_photos (
+  id uuid primary key default gen_random_uuid(),
+  event_id text not null references public.events(id) on delete cascade,
+  storage_key text not null,           -- R2 object key, e.g. events/diwali-2026/<uuid>.jpg
+  is_poster boolean not null default false,
+  sort_order int not null default 0,
+  created_at timestamptz not null default now()
+);
+
+-- ---------------------------------------------------------------------------
+-- team_members
+-- ---------------------------------------------------------------------------
+create table if not exists public.team_members (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  role text not null,
+  section text not null default 'committee' check (section in ('exec', 'committee')),
+  instagram text,
+  linkedin text,
+  quote text,
+  storage_key text,                    -- R2 object key for headshot, null = fallback avatar
+  sort_order int not null default 0,
+  created_at timestamptz not null default now()
+);
+
+-- ---------------------------------------------------------------------------
+-- Row-Level Security
+-- ---------------------------------------------------------------------------
+alter table public.profiles enable row level security;
+alter table public.events enable row level security;
+alter table public.event_photos enable row level security;
+alter table public.team_members enable row level security;
+
+-- profiles: users can read their own row; only admins can read/edit everyone's.
+drop policy if exists "profiles_self_read" on public.profiles;
+create policy "profiles_self_read" on public.profiles
+  for select using (user_id = auth.uid() or public.has_role('admin'));
+
+drop policy if exists "profiles_admin_write" on public.profiles;
+create policy "profiles_admin_write" on public.profiles
+  for all using (public.has_role('admin')) with check (public.has_role('admin'));
+
+-- events: public can read published events; maintainers/admins can read+write everything.
+drop policy if exists "events_public_read" on public.events;
+create policy "events_public_read" on public.events
+  for select using (status = 'published' or public.has_role('maintainer'));
+
+drop policy if exists "events_maintainer_write" on public.events;
+create policy "events_maintainer_write" on public.events
+  for all using (public.has_role('maintainer')) with check (public.has_role('maintainer'));
+
+-- event_photos: readable if the parent event is readable; writable by maintainers/admins.
+drop policy if exists "event_photos_public_read" on public.event_photos;
+create policy "event_photos_public_read" on public.event_photos
+  for select using (
+    public.has_role('maintainer')
+    or exists (select 1 from public.events e where e.id = event_id and e.status = 'published')
+  );
+
+drop policy if exists "event_photos_maintainer_write" on public.event_photos;
+create policy "event_photos_maintainer_write" on public.event_photos
+  for all using (public.has_role('maintainer')) with check (public.has_role('maintainer'));
+
+-- team_members: public read always; maintainers/admins write.
+drop policy if exists "team_public_read" on public.team_members;
+create policy "team_public_read" on public.team_members
+  for select using (true);
+
+drop policy if exists "team_maintainer_write" on public.team_members;
+create policy "team_maintainer_write" on public.team_members
+  for all using (public.has_role('maintainer')) with check (public.has_role('maintainer'));
+
+-- ---------------------------------------------------------------------------
+-- Table-level grants. RLS policies above control *which rows* each role can
+-- touch, but Postgres checks table-level GRANTs first — without these, every
+-- query (even ones RLS would allow) fails with "permission denied for table".
+-- This is the standard Supabase pattern: grant broadly here, restrict with RLS.
+-- ---------------------------------------------------------------------------
+grant usage on schema public to anon, authenticated, service_role;
+grant all on all tables in schema public to anon, authenticated, service_role;
+grant all on all sequences in schema public to anon, authenticated, service_role;
+alter default privileges in schema public grant all on tables to anon, authenticated, service_role;
+alter default privileges in schema public grant all on sequences to anon, authenticated, service_role;
+
+-- ---------------------------------------------------------------------------
+-- One-time bootstrap: after you sign up your own admin account through the
+-- app once, run this (with your real email) to promote yourself to admin —
+-- every other maintainer/admin account is then managed from the admin UI.
+-- ---------------------------------------------------------------------------
+-- update public.profiles set role = 'admin'
+-- where user_id = (select id from auth.users where email = 'you@example.com');
