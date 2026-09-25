@@ -24,6 +24,7 @@
       <p class="admin-side__label">Website modules</p>
       <button class="active" data-tab="home"><span>Home Page</span><small>overview &amp; preview</small></button>
       <button data-tab="live"><span>Live Events</span></button>
+      <button data-tab="gallery"><span>Gallery</span><small>photo albums</small></button>
       <button data-tab="events"><span>All Events</span><small>archive &amp; photos</small></button>
       <button data-tab="team"><span>Team</span></button>
       <p class="admin-side__label" id="adminSideLabel" style="display:none;">Administration</p>
@@ -59,7 +60,7 @@
           <article class="adm-map__item">
             <h4>Our Journey strip</h4>
             <p>The 5 most recent finished events that have a poster or photos.</p>
-            <button class="admin-btn admin-btn--ghost" data-goto="events">Edit in All Events</button>
+            <button class="admin-btn admin-btn--ghost" data-goto="gallery">Edit in Gallery</button>
           </article>
         </div>
         <div class="adm-preview-bar">
@@ -79,7 +80,20 @@
           <button class="admin-btn" id="newLiveBtn">+ New live event</button>
         </div>
         <div class="adm-ev-grid" id="liveGrid"></div>
-        <p class="admin-empty admin-hidden" id="liveEmpty">No live or upcoming events. Create one to put it on the site.</p>
+        <p class="admin-empty admin-hidden" id="liveEmpty">No live, upcoming or draft events. Create one to get started.</p>
+      </div>
+
+      <!-- Gallery module -->
+      <div id="panel-gallery" class="admin-hidden">
+        <div class="admin-panel-header">
+          <div>
+            <h2>Gallery</h2>
+            <p class="admin-lede">Photo albums for each event. Photos appear on the public <strong>Gallery</strong> and <strong>Our Journey</strong> pages once the event has ended.</p>
+          </div>
+          <select id="galYear" class="adm-select" aria-label="Filter by year"></select>
+        </div>
+        <div class="adm-ev-grid" id="galGrid"></div>
+        <p class="admin-empty admin-hidden" id="galEmpty">No events for this year.</p>
       </div>
 
       <!-- All events (archive) panel -->
@@ -106,23 +120,22 @@
       <!-- Team panel -->
       <div id="panel-team" class="admin-hidden">
         <div class="admin-panel-header">
-          <h2>Team</h2>
-          <button class="admin-btn" id="newMemberBtn">+ New member</button>
+          <div>
+            <h2>Team</h2>
+            <p class="admin-lede">Each member belongs to a semester (term + year) and a group. That decides where they appear on the public <strong>Team</strong> page.</p>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <select id="teamSemFilter" class="adm-select" aria-label="Filter by semester"></select>
+            <button class="admin-btn" id="newMemberBtn">+ New member</button>
+          </div>
         </div>
         <table class="admin-table" id="teamTable">
           <thead>
-            <tr>
-              <th></th>
-              <th>Name</th>
-              <th>Role</th>
-              <th>Section</th>
-              <th>Order</th>
-              <th></th>
-            </tr>
+            <tr><th></th><th>Name</th><th>Role</th><th>Group</th><th>Semester</th><th>Order</th><th></th></tr>
           </thead>
           <tbody id="teamTableBody"></tbody>
         </table>
-        <p class="admin-empty admin-hidden" id="teamEmpty">No team members yet — add the first one.</p>
+        <p class="admin-empty admin-hidden" id="teamEmpty">No team members for this semester yet.</p>
       </div>
 
       <!-- Users panel (admin only, next phase) -->
@@ -209,44 +222,45 @@
 
   <!-- Team member create/edit modal -->
   <div class="admin-modal-backdrop admin-hidden" id="memberModalBackdrop">
-    <div class="admin-modal">
+    <div class="admin-modal" style="max-width:640px;">
       <h3 id="memberModalTitle">New team member</h3>
-      <form id="memberForm">
-        <div class="admin-field">
-          <label for="tm_name">Name</label>
-          <input type="text" id="tm_name" required />
+      <form id="memberForm" novalidate>
+        <p class="adm-section-label">Where they appear</p>
+        <div class="adm-form-grid">
+          <div class="admin-field">
+            <label for="tm_term">Term</label>
+            <select id="tm_term"><option value="fall">Fall</option><option value="spring">Spring</option></select>
+          </div>
+          <div class="admin-field">
+            <label for="tm_year">Year</label>
+            <select id="tm_year"></select>
+          </div>
+          <div class="admin-field adm-span-2">
+            <label for="tm_group">Group on the Team page</label>
+            <select id="tm_group"></select>
+            <input type="text" id="tm_group_other" class="admin-hidden" maxlength="40" placeholder="New group name, e.g. Design Team" style="margin-top:8px;" />
+          </div>
         </div>
-        <div class="admin-field">
-          <label for="tm_role">Role</label>
-          <input type="text" id="tm_role" required placeholder="e.g. President, Treasurer" />
-        </div>
-        <div class="admin-field">
-          <label for="tm_section">Section</label>
-          <select id="tm_section">
-            <option value="exec">Executive board</option>
-            <option value="committee">Committee</option>
-          </select>
-        </div>
-        <div class="admin-field">
-          <label for="tm_instagram">Instagram (full URL)</label>
-          <input type="url" id="tm_instagram" />
-        </div>
-        <div class="admin-field">
-          <label for="tm_linkedin">LinkedIn (full URL)</label>
-          <input type="url" id="tm_linkedin" />
-        </div>
-        <div class="admin-field">
-          <label for="tm_quote">Quote (optional, shown on exec cards)</label>
-          <textarea id="tm_quote"></textarea>
-        </div>
-        <div class="admin-field">
-          <label for="tm_sort_order">Sort order (lower shows first)</label>
-          <input type="number" id="tm_sort_order" value="0" />
-        </div>
-        <div class="admin-field">
-          <label for="tm_photo">Headshot (optional — falls back to a generated avatar if not set)</label>
-          <img id="tm_photo_preview" class="admin-hidden" style="width:80px; height:80px; border-radius:50%; object-fit:cover; margin-bottom:8px;" />
-          <input type="file" id="tm_photo" accept="image/png,image/jpeg,image/webp" />
+        <p class="adm-notice" id="tmPlacement"></p>
+
+        <p class="adm-section-label">Details</p>
+        <div class="adm-form-grid">
+          <div class="admin-field"><label for="tm_name">Name</label><input type="text" id="tm_name" maxlength="60" required /></div>
+          <div class="admin-field"><label for="tm_role">Role</label><input type="text" id="tm_role" maxlength="60" required placeholder="e.g. President, Marketing Associate" /></div>
+          <div class="admin-field"><label for="tm_instagram">Instagram (full URL, optional)</label><input type="url" id="tm_instagram" placeholder="https://" /></div>
+          <div class="admin-field"><label for="tm_linkedin">LinkedIn (full URL, optional)</label><input type="url" id="tm_linkedin" placeholder="https://" /></div>
+          <div class="admin-field adm-span-2"><label for="tm_quote">Quote (optional)</label><textarea id="tm_quote" rows="2" maxlength="160"></textarea></div>
+          <div class="admin-field"><label for="tm_sort_order">Order in group (lower shows first)</label><input type="number" id="tm_sort_order" value="0" /></div>
+          <div class="admin-field">
+            <label>Photo (cropped to the team card)</label>
+            <div style="display:flex; align-items:center; gap:12px;">
+              <img id="tm_photo_preview" alt="" style="width:76px; height:80px; border-radius:8px; object-fit:cover; background:var(--sand-soft);" />
+              <span style="display:flex; flex-direction:column; gap:6px;">
+                <button type="button" class="admin-btn admin-btn--ghost" id="tmPhotoBtn" style="padding:8px 14px;">Choose &amp; crop photo</button>
+                <button type="button" class="admin-btn admin-btn--ghost admin-hidden" id="tmPhotoRemove" style="padding:6px 14px; font-size:.8rem;">Remove photo</button>
+              </span>
+            </div>
+          </div>
         </div>
         <p class="admin-error" id="memberFormError"></p>
         <div class="admin-modal-actions">
@@ -254,6 +268,35 @@
           <button type="submit" class="admin-btn" id="memberModalSave">Save</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Gallery photo manager -->
+  <div class="admin-modal-backdrop admin-hidden" id="galModalBackdrop">
+    <div class="admin-modal admin-modal--xl">
+      <div class="adm-modal-head">
+        <div><h3 id="galModalTitle">Photos</h3><span class="adm-count" id="galCount" style="float:none;"></span></div>
+        <button type="button" class="admin-btn admin-btn--ghost" id="galModalClose">Done</button>
+      </div>
+
+      <p class="adm-notice admin-hidden" id="galVisibility"></p>
+      <div class="adm-drop" id="galDrop">
+        <p><strong>Drag photos here</strong> or</p>
+        <button type="button" class="admin-btn" id="galAddBtn">Choose photos</button>
+        <input type="file" id="galFileInput" accept="image/*" multiple hidden />
+        <p class="adm-hint">JPG, PNG or WebP. Big phone photos are resized automatically (2000px) and a thumbnail is made, so the public gallery stays fast.</p>
+      </div>
+      <p class="adm-hint" id="galStatus" role="status" style="min-height:1.4em; margin:.6rem 0;"></p>
+
+      <div class="adm-photo-bar">
+        <span class="adm-hint" style="margin:0;">Drag a photo onto another to reorder. The poster is managed separately.</span>
+        <span style="display:flex; gap:8px;">
+          <button type="button" class="admin-btn admin-btn--ghost" id="galSelectAll">Select all</button>
+          <button type="button" class="admin-btn admin-btn--danger" id="galDeleteBtn" disabled>Delete selected (0)</button>
+        </span>
+      </div>
+      <div class="adm-photos" id="galPhotos"></div>
+      <p class="admin-empty admin-hidden" id="galPhotosEmpty">No photos yet &mdash; add some above.</p>
     </div>
   </div>
 
@@ -314,8 +357,8 @@
   <!-- Poster cropper: locks every poster to the site's 3:2 frame -->
   <div class="admin-modal-backdrop admin-hidden" id="cropBackdrop" style="z-index:110;">
     <div class="admin-modal" style="max-width:680px;">
-      <h3>Position the poster</h3>
-      <p class="adm-hint">Posters are always shown in a 3:2 frame. Drag to reposition and use the slider to zoom &mdash; what is inside the frame is exactly what gets saved, so nothing is cropped or letterboxed later.</p>
+      <h3 id="cropTitle">Position the image</h3>
+      <p class="adm-hint" id="cropHint"></p>
       <div class="adm-crop" id="cropStage"><img id="cropImg" alt="" draggable="false" /></div>
       <div class="adm-crop-controls">
         <label for="cropZoom">Zoom</label>
@@ -334,7 +377,11 @@
   <script src="/js/r2-config.js"></script>
   <script src="/js/admin/auth.js"></script>
   <script src="/js/admin/upload.js"></script>
+  <script src="/js/admin/image-tools.js"></script>
+  <script src="/js/admin/cropper.js"></script>
   <script src="/js/admin/live-events.js"></script>
+  <script src="/js/admin/gallery.js"></script>
+  <script src="/js/admin/team.js"></script>
   <script src="/js/admin/dashboard.js"></script>
 </body>
 </html>

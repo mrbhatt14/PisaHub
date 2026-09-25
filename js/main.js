@@ -35,6 +35,16 @@
                                    Our Journey / History page
   --------------------------------------------------------- */
   const EVENTS = [
+    /* NOTE (2026-09-25): every event that used to be hardcoded here now lives
+       in Supabase + R2 and is edited from the admin portal (Live Events /
+       Gallery modules). loadLiveEventsData() fills this array at page load.
+       The objects below (6 past events, 31 gallery photos, 4 posters; the
+       Pisa_Premiere event id was renamed pisa-premiere-2026) are kept only
+       so they can be restored. They are commented out because leaving them
+       active would make events deleted in the admin reappear on the site.
+       RESTORE: delete the row in the admin (or set it to Draft), then remove
+       the comment-marker lines around that object. */
+
     /* @@COMMENTED-OUT-START: migrated-conversation-group ==========
        DATE:     2026-09-25
        WHY:      conversation-group-2026 (Conversation Group) now live in Supabase and are edited from
@@ -63,6 +73,7 @@
       description: "Join us for a special Conversation Group in collaboration with the Pace Internationals Office - an interactive hour of conversations, cultural exchange, activities, games, and shared experiences. This session will explore culture, identity, traditions, and the experiences that connect us across borders. Through cultural trivia, conversation prompts, music, memories, and interactive activities, participants will discover aspects of Indian culture while also bringing their own cultures, traditions, and stories into the conversation. You might share an Indian memory or experience, recognize a song, discover a tradition you never knew about, or realize that something you thought was unique to your culture is shared by someone from another part of the world. At its heart, this Conversation Group is an effort to bring cultures closer together and build a community that is not defined by borders - a space where our differences become opportunities to learn from one another and our similarities remind us how connected we already are. Come curious, bring your culture, and leave knowing a little more about someone else's!"
     },
     @@COMMENTED-OUT-END: migrated-conversation-group ========== */
+    /* @@COMMENTED-OUT-START: migrated-milan (see note at top of EVENTS)
     {
       id: "milan",
       title: "The PISA Premiere",
@@ -74,7 +85,7 @@
       poster: "/img/events/Pisa_Premiere/poster.jpg",
       showPoster: true,
       gallery: [
-        /* Team & group photos first */
+        // Team & group photos first
         "/img/events/Pisa_Premiere/gallery-2.jpg",
         "/img/events/Pisa_Premiere/gallery-18.jpg",
         "/img/events/Pisa_Premiere/gallery-23.jpg",
@@ -88,12 +99,12 @@
         "/img/events/Pisa_Premiere/gallery-21.jpg",
         "/img/events/Pisa_Premiere/gallery-9.jpg",
         "/img/events/Pisa_Premiere/gallery-1.jpg",
-        /* Banner / signage photos */
+        // Banner / signage photos
         "/img/events/Pisa_Premiere/gallery-6.jpg",
         "/img/events/Pisa_Premiere/gallery-4.jpg",
         "/img/events/Pisa_Premiere/gallery-5.jpg",
         "/img/events/Pisa_Premiere/gallery-14.jpg",
-        /* Individual / solo photos */
+        // Individual / solo photos
         "/img/events/Pisa_Premiere/gallery-3.jpg",
         "/img/events/Pisa_Premiere/gallery-7.jpg",
         "/img/events/Pisa_Premiere/gallery-10.jpg",
@@ -103,6 +114,7 @@
       ],
       description: "The opening celebration of every semester - a Bollywood-inspired welcome featuring music, dance, food, introductions, and the unveiling of PISA's semester team and vision."
     },
+    @@COMMENTED-OUT-END: migrated-milan */
     /* @@COMMENTED-OUT-START: migrated-garba-diwali ==========
        DATE:     2026-09-25
        WHY:      garba and diwali (Navratri Garba Night, Prakasha) now live in Supabase and are edited from
@@ -291,6 +303,7 @@
     },
 
     @@COMMENTED-OUT-END: events-non-2026-semesters-a ==================== */
+    /* @@COMMENTED-OUT-START: migrated-holi-2026 (see note at top of EVENTS)
     {
       id: "holi-2026",
       title: "Rang De Pace - Holi 2026",
@@ -306,6 +319,8 @@
       ],
       description: "Our spring Holi - clouds of gulaal, dhol beats and the whole community out on the plaza to welcome the season."
     },
+    @@COMMENTED-OUT-END: migrated-holi-2026 */
+    /* @@COMMENTED-OUT-START: migrated-fashion-show-2026 (see note at top of EVENTS)
     {
       id: "fashion-show-2026",
       title: "The Cultural Fashion Show",
@@ -315,6 +330,8 @@
       gallery: [],
       description: "A runway celebration of India's regional fashion - members walked in traditional and contemporary looks representing cultures and states from across the country."
     },
+    @@COMMENTED-OUT-END: migrated-fashion-show-2026 */
+    /* @@COMMENTED-OUT-START: migrated-mock-wedding-2026 (see note at top of EVENTS)
     {
       id: "mock-wedding-2026",
       title: "Band Baaja Bash - Indian Mock Wedding",
@@ -330,6 +347,8 @@
       ],
       description: "A large-scale Indian Mock Wedding experience presented in Spring 2026 - showcasing the traditions, rituals, fashion, music, food and celebrations of an Indian wedding."
     },
+    @@COMMENTED-OUT-END: migrated-mock-wedding-2026 */
+    /* @@COMMENTED-OUT-START: migrated-yoga-day-2026 (see note at top of EVENTS)
     {
       id: "yoga-day-2026",
       title: "International Yoga Day",
@@ -344,6 +363,7 @@
       ],
       description: "Our annual International Yoga Day experience brings students, faculty, staff and professors together through yoga and Indian wellness traditions."
     },
+    @@COMMENTED-OUT-END: migrated-yoga-day-2026 */
     /* @@COMMENTED-OUT-START: events-non-2026-semesters-b ================
        DATE:     2026-08-31
        WHY:      Same reason as events-non-2026-semesters-a above:
@@ -382,6 +402,7 @@
     },
 
     @@COMMENTED-OUT-END: events-non-2026-semesters-b ==================== */
+    /* @@COMMENTED-OUT-START: migrated-independence-2026 (see note at top of EVENTS)
     {
       id: "independence-2026",
       title: "Independence Day at the Consulate General of India",
@@ -393,6 +414,7 @@
       gallery: [],
       description: "PISA joined India's Independence Day celebration at the Consulate General of India in New York - a proud morning marking the tricolor alongside the wider Indian community in the city."
     }
+    @@COMMENTED-OUT-END: migrated-independence-2026 */
   ];
 
   /* ---------------------------------------------------------
@@ -404,6 +426,19 @@
      `let` (not `const`) because loadLiveTeamData() adds a semester entry
      once the admin-managed roster loads from Supabase (see loadLiveTeamData). */
   let TEAMS_BY_SEM = {
+    /* @@COMMENTED-OUT-START: migrated-team-fall-2026 ================
+       DATE:     2026-09-25
+       WHY:      The Fall 2026 roster (18 members in 5 groups, with photos)
+                 now lives in Supabase + R2 and is edited from the admin
+                 portal's Team tab, where each member has a term, year and
+                 group. Keeping it here would make removed members reappear.
+                 loadLiveTeamData() builds TEAMS_BY_SEM from the database.
+       WAS FOR:  1 TEAMS_BY_SEM entry ("Fall 2026"). Headshots were
+                 re-cropped to the 3:4 card (Gurleen/Sreeya keep their
+                 old focus point baked in); img/team/* is now unused.
+       RESTORE:  Delete the members in the admin, then uncomment this
+                 block (delete header/footer, keep the object + comma).
+    ====================================================================
     "Fall 2026": {
       groups: [
         {
@@ -451,6 +486,7 @@
         }
       ]
     },
+    @@COMMENTED-OUT-END: migrated-team-fall-2026 ==================== */
     /* @@COMMENTED-OUT-START: team-fall-spring-2025 =======================
        DATE:     2026-08-31
        WHY:      Requested: hide Fall 2025 and Spring 2025 from the Team
@@ -1061,7 +1097,7 @@
                       <div class="timeline-item__panel">
                         <div class="timeline-item__panel-inner">
                           <div class="timeline-item__gallery">
-                            ${ev.gallery.map((src, gi) => `<img src="${src}" alt="${ev.title} photo ${gi + 1}" data-gallery-open="${ev.id}" data-index="${gi}" loading="lazy">`).join("")}
+                            ${ev.gallery.map((src, gi) => `<img src="${(ev.galleryThumbs || ev.gallery)[gi]}" alt="${ev.title} photo ${gi + 1}" data-gallery-open="${ev.id}" data-index="${gi}" loading="lazy" decoding="async">`).join("")}
                           </div>
                           <p>${ev.description}</p>
                         </div>
@@ -1141,6 +1177,10 @@
 
   function renderTeam() {
     const semesters = sortSemestersDesc(Object.keys(TEAMS_BY_SEM));
+    if (!semesters.length) {
+      $("#teamGroups").innerHTML = `<p style="text-align:center;color:var(--brown-mid)">Our team roster is being updated - check back soon.</p>`;
+      return;
+    }
     const select = $("#teamSemSelect");
     if (select && !teamSelectBuilt) {
       select.innerHTML = semesters.map((s) => `<option value="${s}">${s}</option>`).join("");
@@ -1187,10 +1227,15 @@
       poster,
       showPoster: !!poster,
       gallery: photos.filter((p) => p !== posterRow).map((p) => photoUrl(p.storage_key)),
+      // small versions for grids (older photos have no thumbnail -> full image)
+      galleryThumbs: photos.filter((p) => p !== posterRow).map((p) => photoUrl(p.thumb_key || p.storage_key)),
       description: row.description || ""
     };
   }
 
+  // Each member row carries term + year + group, which decide the semester roster
+  // and the titled group they appear in on the Team page. Rows without a term/year
+  // (legacy) are ignored. A live semester replaces a hardcoded one with the same key.
   async function loadLiveTeamData() {
     const { data: members, error } = await supabaseClient
       .from("team_members")
@@ -1198,18 +1243,25 @@
       .order("sort_order", { ascending: true });
     if (error || !members || !members.length) return;
 
-    const exec = members.filter((m) => m.section === "exec").map(toTeamCardShape);
-    const committee = members.filter((m) => m.section === "committee").map(toTeamCardShape);
-    // "Live YYYY" (not a real term name) so semesterSortKey() sorts it to the
-    // top of the dropdown without colliding with a real semester key.
-    TEAMS_BY_SEM = { [`Live ${new Date().getFullYear() + 1}`]: { exec, committee }, ...TEAMS_BY_SEM };
+    const live = {};
+    members.filter((m) => m.term && m.year).forEach((m) => {
+      const key = `${m.term === "spring" ? "Spring" : "Fall"} ${m.year}`;
+      const title = m.group_title || (m.section === "exec" ? "Executive Board" : "Committees");
+      const sem = (live[key] = live[key] || { groups: [] });
+      let group = sem.groups.find((g) => g.title === title);
+      if (!group) sem.groups.push((group = { title, members: [] }));
+      group.members.push(toTeamCardShape(m));
+    });
+    // Executive Board always first; the sort is stable so other groups keep their order.
+    Object.values(live).forEach((sem) => sem.groups.sort((a, b) => (b.title === "Executive Board") - (a.title === "Executive Board")));
+    TEAMS_BY_SEM = { ...TEAMS_BY_SEM, ...live };
   }
 
   async function loadLiveEventsData() {
-    const { data: rows, error } = await supabaseClient
-      .from("events")
-      .select("*, event_photos(storage_key, is_poster, sort_order)")
-      .eq("status", "published");
+    const query = (cols) => supabaseClient.from("events").select(`*, event_photos(${cols})`).eq("status", "published");
+    let { data: rows, error } = await query("storage_key, thumb_key, is_poster, sort_order");
+    // thumb_key is added by the Gallery-module SQL; if it hasn't been run yet, load without it.
+    if (error) ({ data: rows, error } = await query("storage_key, is_poster, sort_order"));
     if (error || !rows || !rows.length) return;
 
     // A live event replaces a hardcoded one with the same id; otherwise it's added.
@@ -1264,7 +1316,7 @@
           <div class="gallery-track">
             ${ev.gallery.map((src, gi) => `
               <button class="gallery-tile" data-gallery-open="${ev.id}" data-index="${gi}" aria-label="Open ${ev.title} photo ${gi + 1}">
-                <img src="${src}" alt="${ev.title} photo ${gi + 1}" loading="lazy">
+                <img src="${(ev.galleryThumbs || ev.gallery)[gi]}" alt="${ev.title} photo ${gi + 1}" loading="lazy" decoding="async">
                 <span class="gallery-tile__glow"></span>
               </button>`).join("")}
           </div>
@@ -1518,7 +1570,7 @@
     $("#modalMeta").textContent = `${fmtDate(ev.date)} · ${ev.location}`;
     $("#modalDesc").textContent = ev.description;
 
-    carouselTrack.innerHTML = ev.gallery.map((src, i) => `<img src="${src}" alt="${ev.title} photo ${i + 1}">`).join("");
+    carouselTrack.innerHTML = ev.gallery.map((src, i) => `<img src="${src}" alt="${ev.title} photo ${i + 1}" loading="lazy" decoding="async">`).join("");
     carouselDots.innerHTML = ev.gallery.map((_, i) => `<span data-dot="${i}"></span>`).join("");
     carouselLength = ev.gallery.length;
     carouselIndex = Math.min(startIndex, carouselLength - 1);

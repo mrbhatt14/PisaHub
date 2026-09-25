@@ -18,7 +18,6 @@ async function initLiveEvents() {
   $id("liveForm").addEventListener("submit", saveLiveEvent);
   $id("liveForm").addEventListener("input", renderLivePreview);
   $id("lv_published").addEventListener("change", renderLivePreview);
-  initCropper();
   await loadLiveEvents();
 }
 
@@ -45,31 +44,41 @@ async function loadLiveEvents() {
   }
 
   const now = new Date();
-  const list = data.filter((ev) => eventEnd(ev) >= now);
-  empty.classList.toggle("admin-hidden", list.length > 0);
+  // Drafts always show here (even if their date has passed) so unfinished work is never lost;
+  // published events show while they are live or upcoming.
+  const drafts = data.filter((ev) => ev.status === "draft");
+  const published = data.filter((ev) => ev.status !== "draft" && eventEnd(ev) >= now);
+  empty.classList.toggle("admin-hidden", drafts.length + published.length > 0);
 
-  for (const ev of list) {
+  const cardHtml = (ev) => {
     const poster = (ev.event_photos || []).find((p) => p.is_poster);
+    const isDraft = ev.status === "draft";
     const started = new Date(ev.event_date) <= now;
-    const chip = ev.status === "draft" ? ["draft", "Draft"] : started ? ["live", "Live now"] : ["", "Open for registration"];
-    const card = document.createElement("article");
-    card.className = "adm-ev";
-    card.innerHTML = `
-      <div class="adm-ev__poster">
-        ${posterMarkup(poster ? photoUrl(poster.storage_key) : null, ev.title)}
-        <span class="adm-ev__chip ${chip[0] ? `adm-ev__chip--${chip[0]}` : ""}">${chip[1]}</span>
-      </div>
-      <div class="adm-ev__body">
-        <h3>${escapeHtml(ev.title)}</h3>
-        <div class="adm-ev__meta">${escapeHtml(fmtWhen(ev.event_date))}</div>
-        <div class="adm-ev__meta">${escapeHtml(ev.location || "No location")}</div>
-        <div class="adm-ev__actions">
-          <button class="admin-btn" data-edit="${ev.id}">Edit</button>
-          <button class="admin-btn admin-btn--ghost" data-del="${ev.id}">Delete</button>
+    const passed = eventEnd(ev) < now;
+    const chip = isDraft ? ["draft", "Draft"] : started ? ["live", "Live now"] : ["", "Open for registration"];
+    return `
+      <article class="adm-ev">
+        <div class="adm-ev__poster">
+          ${posterMarkup(poster ? photoUrl(poster.storage_key) : null, ev.title)}
+          <span class="adm-ev__chip ${chip[0] ? `adm-ev__chip--${chip[0]}` : ""}">${chip[1]}</span>
         </div>
-      </div>`;
-    grid.appendChild(card);
-  }
+        <div class="adm-ev__body">
+          <h3>${escapeHtml(ev.title)}</h3>
+          <div class="adm-ev__meta">${escapeHtml(fmtWhen(ev.event_date))}${isDraft && passed ? " · date has passed" : ""}</div>
+          <div class="adm-ev__meta">${escapeHtml(ev.location || "No location")}</div>
+          <div class="adm-ev__actions">
+            <button class="admin-btn" data-edit="${ev.id}">${isDraft ? "Continue editing" : "Edit"}</button>
+            <button class="admin-btn admin-btn--ghost" data-del="${ev.id}">Delete</button>
+          </div>
+        </div>
+      </article>`;
+  };
+  const group = (title, hint, list) => list.length
+    ? `<div class="adm-group"><h3>${title} <span>${list.length}</span></h3><p>${hint}</p></div>${list.map(cardHtml).join("")}`
+    : "";
+  grid.innerHTML =
+    group("Drafts", "Not visible on the website. Turn on “Published” in the editor to put one live.", drafts) +
+    group("Live &amp; upcoming", "Visible on the public Live Events page.", published);
   grid.querySelectorAll("[data-edit]").forEach((b) => b.addEventListener("click", () => openLiveEditor(b.dataset.edit)));
   grid.querySelectorAll("[data-del]").forEach((b) => b.addEventListener("click", () => deleteLiveEvent(b.dataset.del)));
 }
@@ -86,10 +95,13 @@ function fmtWhen(iso) {
 
 async function deleteLiveEvent(id) {
   if (!confirm("Delete this event and its poster? This removes it from the public site.")) return;
-  const { data: photos } = await supabaseClient.from("event_photos").select("storage_key").eq("event_id", id);
+  const { data: photos } = await supabaseClient.from("event_photos").select("storage_key, thumb_key").eq("event_id", id);
   const { error } = await supabaseClient.from("events").delete().eq("id", id);
   if (error) return alert(`Failed to delete: ${error.message}`);
-  (photos || []).forEach((p) => deleteImage(p.storage_key).catch(() => {}));
+  (photos || []).forEach((p) => {
+    deleteImage(p.storage_key).catch(() => {});
+    if (p.thumb_key) deleteImage(p.thumb_key).catch(() => {});
+  });
   await Promise.all([loadLiveEvents(), loadEvents()]);
 }
 
@@ -209,7 +221,18 @@ function pickPoster() {
   const input = document.createElement("input");
   input.type = "file";
   input.accept = "image/png,image/jpeg,image/webp";
-  input.onchange = () => input.files[0] && openCropper(input.files[0]);
+  input.onchange = () => input.files[0] && openCropper(input.files[0], {
+    outW: POSTER_W, outH: POSTER_H,
+    title: "Position the poster",
+    hint: "Posters are always shown in a 3:2 frame. Drag to reposition and use the slider to zoom — what is inside the frame is exactly what gets saved, so nothing is cropped or letterboxed later.",
+    onApply: (blob) => {
+      if (posterState.blobUrl) URL.revokeObjectURL(posterState.blobUrl);
+      posterState.blob = blob;
+      posterState.blobUrl = URL.createObjectURL(blob);
+      posterState.removed = false;
+      renderLivePreview();
+    },
+  });
   input.click();
 }
 
@@ -297,85 +320,4 @@ async function savePoster(eventId) {
     await supabaseClient.from("event_photos").delete().eq("id", row.id);
     deleteImage(row.storage_key).catch(() => {});
   }
-}
-
-// ---------------------------------------------------------------------------
-// Poster cropper (fixed 3:2 frame, drag + zoom, exports 1500x1000 JPEG)
-// ---------------------------------------------------------------------------
-
-const crop = { img: null, nw: 0, nh: 0, scale: 1, minScale: 1, x: 0, y: 0, vw: 0, vh: 0, drag: null };
-
-function initCropper() {
-  const stage = $id("cropStage");
-  $id("cropCancel").addEventListener("click", () => $id("cropBackdrop").classList.add("admin-hidden"));
-  $id("cropApply").addEventListener("click", applyCrop);
-  $id("cropZoom").addEventListener("input", (e) => setCropScale(crop.minScale * Number(e.target.value)));
-  stage.addEventListener("pointerdown", (e) => {
-    stage.setPointerCapture(e.pointerId);
-    crop.drag = { px: e.clientX, py: e.clientY, x: crop.x, y: crop.y };
-  });
-  stage.addEventListener("pointermove", (e) => {
-    if (!crop.drag) return;
-    crop.x = crop.drag.x + (e.clientX - crop.drag.px);
-    crop.y = crop.drag.y + (e.clientY - crop.drag.py);
-    paintCrop();
-  });
-  ["pointerup", "pointercancel"].forEach((t) => stage.addEventListener(t, () => (crop.drag = null)));
-}
-
-function openCropper(file) {
-  const url = URL.createObjectURL(file);
-  const img = $id("cropImg");
-  img.onload = () => {
-    crop.img = img; crop.nw = img.naturalWidth; crop.nh = img.naturalHeight;
-    $id("cropBackdrop").classList.remove("admin-hidden");
-    const rect = $id("cropStage").getBoundingClientRect();
-    crop.vw = rect.width; crop.vh = rect.height;
-    crop.minScale = Math.max(crop.vw / crop.nw, crop.vh / crop.nh); // cover: no empty space possible
-    $id("cropZoom").value = 1;
-    crop.scale = crop.minScale;
-    crop.x = (crop.vw - crop.nw * crop.scale) / 2;
-    crop.y = (crop.vh - crop.nh * crop.scale) / 2;
-    paintCrop();
-    const soft = crop.nw < POSTER_W;
-    $id("cropQuality").textContent = `Original: ${crop.nw}×${crop.nh}px. ` + (soft
-      ? `Smaller than ${POSTER_W}px wide, so it may look slightly soft on large screens — a larger image is better.`
-      : "Resolution is good.");
-  };
-  img.src = url;
-}
-
-function setCropScale(s) {
-  const cx = crop.vw / 2, cy = crop.vh / 2; // zoom around the frame centre
-  const ratio = s / crop.scale;
-  crop.x = cx - (cx - crop.x) * ratio;
-  crop.y = cy - (cy - crop.y) * ratio;
-  crop.scale = s;
-  paintCrop();
-}
-
-function paintCrop() {
-  crop.x = Math.min(0, Math.max(crop.vw - crop.nw * crop.scale, crop.x));
-  crop.y = Math.min(0, Math.max(crop.vh - crop.nh * crop.scale, crop.y));
-  crop.img.style.width = `${crop.nw * crop.scale}px`;
-  crop.img.style.height = `${crop.nh * crop.scale}px`;
-  crop.img.style.transform = `translate(${crop.x}px, ${crop.y}px)`;
-}
-
-function applyCrop() {
-  const canvas = document.createElement("canvas");
-  canvas.width = POSTER_W; canvas.height = POSTER_H;
-  const sx = -crop.x / crop.scale, sy = -crop.y / crop.scale;
-  const sw = crop.vw / crop.scale, sh = crop.vh / crop.scale;
-  const ctx = canvas.getContext("2d");
-  ctx.imageSmoothingQuality = "high";
-  ctx.drawImage(crop.img, sx, sy, sw, sh, 0, 0, POSTER_W, POSTER_H);
-  canvas.toBlob((blob) => {
-    if (posterState.blobUrl) URL.revokeObjectURL(posterState.blobUrl);
-    posterState.blob = blob;
-    posterState.blobUrl = URL.createObjectURL(blob);
-    posterState.removed = false;
-    $id("cropBackdrop").classList.add("admin-hidden");
-    renderLivePreview();
-  }, "image/jpeg", 0.9);
 }

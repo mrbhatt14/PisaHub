@@ -32,15 +32,12 @@ async function init() {
   document.getElementById("photosModalClose").addEventListener("click", closePhotosModal);
   document.getElementById("photosUploadInput").addEventListener("change", handlePhotoUpload);
 
-  document.getElementById("newMemberBtn").addEventListener("click", () => openMemberModal(null));
-  document.getElementById("memberModalCancel").addEventListener("click", closeMemberModal);
-  document.getElementById("memberForm").addEventListener("submit", saveMember);
 
   switchTab(currentTabFromHash(), { updateHash: false });
-  await Promise.all([loadEvents(), loadTeam(), initLiveEvents()]);
+  await Promise.all([loadEvents(), initTeam(), initLiveEvents(), initGallery()]);
 }
 
-const TABS = ["home", "live", "events", "team", "users"];
+const TABS = ["home", "live", "gallery", "events", "team", "users"];
 
 // Tabs are routes: /admin/dashboard.html#live etc. so refresh, Back and shared links keep your place.
 function currentTabFromHash() {
@@ -327,171 +324,6 @@ async function deleteEventPhoto(photoId, storageKey) {
   }
   deleteImage(storageKey).catch(() => {}); // best-effort cleanup
   await loadPhotos();
-}
-
-// ---------------------------------------------------------------------------
-// Team list
-// ---------------------------------------------------------------------------
-
-let editingMemberId = null; // null = creating a new member
-let editingMemberStorageKey = null; // current photo's R2 key, if any
-
-async function loadTeam() {
-  const { data: members, error } = await supabaseClient
-    .from("team_members")
-    .select("id, name, role, section, sort_order, storage_key")
-    .order("section", { ascending: true })
-    .order("sort_order", { ascending: true });
-
-  const tbody = document.getElementById("teamTableBody");
-  const empty = document.getElementById("teamEmpty");
-  tbody.innerHTML = "";
-
-  if (error) {
-    tbody.innerHTML = `<tr><td colspan="5">Failed to load team: ${escapeHtml(error.message)}</td></tr>`;
-    return;
-  }
-
-  if (!members.length) {
-    empty.classList.remove("admin-hidden");
-    return;
-  }
-  empty.classList.add("admin-hidden");
-
-  for (const m of members) {
-    const tr = document.createElement("tr");
-    const thumb = m.storage_key
-      ? `<img src="${photoUrl(m.storage_key)}" style="width:32px; height:32px; border-radius:50%; object-fit:cover;" />`
-      : "";
-    tr.innerHTML = `
-      <td>${thumb}</td>
-      <td>${escapeHtml(m.name)}</td>
-      <td>${escapeHtml(m.role)}</td>
-      <td>${m.section === "exec" ? "Executive board" : "Committee"}</td>
-      <td>${m.sort_order}</td>
-      <td class="admin-row-actions">
-        <button data-action="edit" data-id="${m.id}">Edit</button>
-        <button data-action="delete" data-id="${m.id}">Delete</button>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  }
-
-  tbody.querySelectorAll('button[data-action="edit"]').forEach((btn) => {
-    btn.addEventListener("click", () => openMemberModal(btn.dataset.id));
-  });
-  tbody.querySelectorAll('button[data-action="delete"]').forEach((btn) => {
-    btn.addEventListener("click", () => deleteMember(btn.dataset.id));
-  });
-}
-
-async function openMemberModal(id) {
-  editingMemberId = id;
-  editingMemberStorageKey = null;
-  const form = document.getElementById("memberForm");
-  form.reset();
-  document.getElementById("memberFormError").textContent = "";
-  const preview = document.getElementById("tm_photo_preview");
-  preview.classList.add("admin-hidden");
-  preview.src = "";
-
-  if (id) {
-    document.getElementById("memberModalTitle").textContent = "Edit team member";
-    const { data: m, error } = await supabaseClient.from("team_members").select("*").eq("id", id).single();
-    if (error) {
-      alert(`Failed to load member: ${error.message}`);
-      return;
-    }
-    document.getElementById("tm_name").value = m.name;
-    document.getElementById("tm_role").value = m.role;
-    document.getElementById("tm_section").value = m.section;
-    document.getElementById("tm_instagram").value = m.instagram ?? "";
-    document.getElementById("tm_linkedin").value = m.linkedin ?? "";
-    document.getElementById("tm_quote").value = m.quote ?? "";
-    document.getElementById("tm_sort_order").value = m.sort_order;
-    if (m.storage_key) {
-      editingMemberStorageKey = m.storage_key;
-      preview.src = photoUrl(m.storage_key);
-      preview.classList.remove("admin-hidden");
-    }
-  } else {
-    document.getElementById("memberModalTitle").textContent = "New team member";
-    document.getElementById("tm_section").value = "committee";
-    document.getElementById("tm_sort_order").value = 0;
-  }
-
-  document.getElementById("memberModalBackdrop").classList.remove("admin-hidden");
-}
-
-function closeMemberModal() {
-  document.getElementById("memberModalBackdrop").classList.add("admin-hidden");
-  editingMemberId = null;
-}
-
-async function saveMember(e) {
-  e.preventDefault();
-  const errorEl = document.getElementById("memberFormError");
-  errorEl.textContent = "";
-  const saveBtn = document.getElementById("memberModalSave");
-  saveBtn.disabled = true;
-  saveBtn.textContent = "Saving…";
-
-  const id = editingMemberId || crypto.randomUUID();
-  const file = document.getElementById("tm_photo").files[0];
-
-  const record = {
-    name: document.getElementById("tm_name").value.trim(),
-    role: document.getElementById("tm_role").value.trim(),
-    section: document.getElementById("tm_section").value,
-    instagram: document.getElementById("tm_instagram").value.trim() || null,
-    linkedin: document.getElementById("tm_linkedin").value.trim() || null,
-    quote: document.getElementById("tm_quote").value.trim() || null,
-    sort_order: parseInt(document.getElementById("tm_sort_order").value, 10) || 0,
-  };
-
-  try {
-    if (file) {
-      saveBtn.textContent = "Uploading photo…";
-      const { storageKey } = await uploadImage("team", id, file);
-      record.storage_key = storageKey;
-      if (editingMemberStorageKey) {
-        deleteImage(editingMemberStorageKey).catch(() => {}); // best-effort cleanup
-      }
-    }
-
-    saveBtn.textContent = "Saving…";
-    let error;
-    if (editingMemberId) {
-      ({ error } = await supabaseClient.from("team_members").update(record).eq("id", editingMemberId));
-    } else {
-      ({ error } = await supabaseClient.from("team_members").insert({ id, ...record }));
-    }
-    if (error) throw error;
-  } catch (err) {
-    errorEl.textContent = err.message;
-    saveBtn.disabled = false;
-    saveBtn.textContent = "Save";
-    return;
-  }
-
-  saveBtn.disabled = false;
-  saveBtn.textContent = "Save";
-  closeMemberModal();
-  await loadTeam();
-}
-
-async function deleteMember(id) {
-  if (!confirm("Delete this team member?")) return;
-  const { data: existing } = await supabaseClient.from("team_members").select("storage_key").eq("id", id).single();
-  const { error } = await supabaseClient.from("team_members").delete().eq("id", id);
-  if (error) {
-    alert(`Failed to delete: ${error.message}`);
-    return;
-  }
-  if (existing?.storage_key) {
-    deleteImage(existing.storage_key).catch(() => {}); // best-effort cleanup
-  }
-  await loadTeam();
 }
 
 // ---------------------------------------------------------------------------

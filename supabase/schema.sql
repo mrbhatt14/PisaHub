@@ -150,3 +150,42 @@ alter default privileges in schema public grant all on sequences to anon, authen
 -- ---------------------------------------------------------------------------
 -- update public.profiles set role = 'admin'
 -- where user_id = (select id from auth.users where email = 'you@example.com');
+
+-- ---------------------------------------------------------------------------
+-- Gallery thumbnails (added with the Gallery module). Admin uploads store a
+-- resized full image (storage_key) plus a small thumbnail (thumb_key) so the
+-- public gallery grid stays fast with 1000+ photos. Older rows have no thumb.
+-- ---------------------------------------------------------------------------
+alter table public.event_photos add column if not exists thumb_key text;
+
+-- ---------------------------------------------------------------------------
+-- Gallery photos are public only after the event has ended. Posters stay public
+-- for any published event (they are the marketing image for upcoming events).
+-- The site already hides early photos in the UI; this enforces it in the database
+-- so they can't be fetched from the API either. Maintainers/admins see everything.
+-- "Ended" = end_date, or event_date + 6 hours when no end_date is set (same rule as the site).
+-- ---------------------------------------------------------------------------
+drop policy if exists "event_photos_public_read" on public.event_photos;
+create policy "event_photos_public_read" on public.event_photos
+  for select using (
+    public.has_role('maintainer')
+    or exists (
+      select 1 from public.events e
+      where e.id = event_photos.event_id
+        and e.status = 'published'
+        and (
+          event_photos.is_poster
+          or coalesce(e.end_date, e.event_date + interval '6 hours') <= now()
+        )
+    )
+  );
+
+-- ---------------------------------------------------------------------------
+-- Team: which semester a member belongs to, and which group they sit in on the
+-- public Team page. term is 'spring' | 'fall'; group_title is e.g. 'Executive Board'.
+-- Members without term/year are not shown publicly (legacy rows).
+-- ---------------------------------------------------------------------------
+alter table public.team_members
+  add column if not exists term text check (term in ('spring','fall')),
+  add column if not exists year int check (year between 2006 and 2100),
+  add column if not exists group_title text;
