@@ -13,20 +13,77 @@
     <div class="admin-topbar">
       <div class="brand">PISA Hub Admin</div>
       <div style="display:flex; align-items:center; gap:16px;">
+        <a class="admin-btn admin-btn--ghost" href="/" target="_blank" rel="noopener">View website &#8599;</a>
         <span class="who" id="whoami"></span>
         <button class="admin-btn admin-btn--ghost" id="signOutBtn">Sign out</button>
       </div>
     </div>
 
-    <div class="admin-nav">
-      <button class="active" data-tab="events">Events</button>
-      <button data-tab="team">Team</button>
-      <button data-tab="users" id="usersTabBtn" style="display:none;">Users</button>
-    </div>
+    <div class="admin-layout">
+    <nav class="admin-side" aria-label="Website modules">
+      <p class="admin-side__label">Website modules</p>
+      <button class="active" data-tab="home"><span>Home Page</span><small>overview &amp; preview</small></button>
+      <button data-tab="live"><span>Live Events</span></button>
+      <button data-tab="events"><span>All Events</span><small>archive &amp; photos</small></button>
+      <button data-tab="team"><span>Team</span></button>
+      <p class="admin-side__label" id="adminSideLabel" style="display:none;">Administration</p>
+      <button data-tab="users" id="usersTabBtn" style="display:none;"><span>Users</span></button>
+    </nav>
 
     <div class="admin-main">
-      <!-- Events panel -->
-      <div id="panel-events">
+      <!-- Home Page module -->
+      <div id="panel-home">
+        <div class="admin-panel-header">
+          <div>
+            <h2>Home Page</h2>
+            <p class="admin-lede">The home page is assembled from your other modules &mdash; change the source below and the home page updates by itself.</p>
+          </div>
+          <a class="admin-btn" href="/" target="_blank" rel="noopener">Open home page &#8599;</a>
+        </div>
+        <div class="adm-map">
+          <article class="adm-map__item">
+            <h4>Boarding-pass hero</h4>
+            <p>Shows the very next upcoming event.</p>
+            <button class="admin-btn admin-btn--ghost" data-goto="live">Edit in Live Events</button>
+          </article>
+          <article class="adm-map__item">
+            <h4>Happening Next slider</h4>
+            <p>Up to 2 events that are live or start within 25 days.</p>
+            <button class="admin-btn admin-btn--ghost" data-goto="live">Edit in Live Events</button>
+          </article>
+          <article class="adm-map__item">
+            <h4>Upcoming grid</h4>
+            <p>The next events after the ones in the slider.</p>
+            <button class="admin-btn admin-btn--ghost" data-goto="live">Edit in Live Events</button>
+          </article>
+          <article class="adm-map__item">
+            <h4>Our Journey strip</h4>
+            <p>The 5 most recent finished events that have a poster or photos.</p>
+            <button class="admin-btn admin-btn--ghost" data-goto="events">Edit in All Events</button>
+          </article>
+        </div>
+        <div class="adm-preview-bar">
+          <p class="adm-section-label" style="margin:0;">Live preview of the home page</p>
+          <button class="admin-btn admin-btn--ghost" id="homePreviewReload" type="button">Refresh preview</button>
+        </div>
+        <iframe class="adm-frame" id="homeFrame" title="Home page preview" loading="lazy"></iframe>
+      </div>
+
+      <!-- Live Events module -->
+      <div id="panel-live" class="admin-hidden">
+        <div class="admin-panel-header">
+          <div>
+            <h2>Live Events</h2>
+            <p class="admin-lede">Everything here appears on the public <strong>Live Events</strong> page while it is upcoming or happening. Once an event ends it moves to Our Journey automatically.</p>
+          </div>
+          <button class="admin-btn" id="newLiveBtn">+ New live event</button>
+        </div>
+        <div class="adm-ev-grid" id="liveGrid"></div>
+        <p class="admin-empty admin-hidden" id="liveEmpty">No live or upcoming events. Create one to put it on the site.</p>
+      </div>
+
+      <!-- All events (archive) panel -->
+      <div id="panel-events" class="admin-hidden">
         <div class="admin-panel-header">
           <h2>Events</h2>
           <button class="admin-btn" id="newEventBtn">+ New event</button>
@@ -55,6 +112,7 @@
         <table class="admin-table" id="teamTable">
           <thead>
             <tr>
+              <th></th>
               <th>Name</th>
               <th>Role</th>
               <th>Section</th>
@@ -73,6 +131,7 @@
         <p class="admin-empty">Maintainer/admin account management is coming in the next phase.</p>
       </div>
     </div>
+    </div><!-- /admin-layout -->
   </div>
 
   <!-- Event create/edit modal -->
@@ -128,6 +187,26 @@
     </div>
   </div>
 
+  <!-- Event photos modal -->
+  <div class="admin-modal-backdrop admin-hidden" id="photosModalBackdrop">
+    <div class="admin-modal" style="max-width:680px;">
+      <h3 id="photosModalTitle">Event photos</h3>
+
+      <div class="admin-field">
+        <label for="photosUploadInput">Upload photos (JPG/PNG/WebP, multiple allowed)</label>
+        <input type="file" id="photosUploadInput" accept="image/png,image/jpeg,image/webp" multiple />
+      </div>
+      <p class="admin-error" id="photosUploadStatus"></p>
+
+      <div id="photosGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(120px, 1fr)); gap:12px; margin-top:16px;"></div>
+      <p class="admin-empty admin-hidden" id="photosEmpty">No photos yet — upload some above.</p>
+
+      <div class="admin-modal-actions">
+        <button type="button" class="admin-btn admin-btn--ghost" id="photosModalClose">Close</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Team member create/edit modal -->
   <div class="admin-modal-backdrop admin-hidden" id="memberModalBackdrop">
     <div class="admin-modal">
@@ -164,8 +243,12 @@
           <label for="tm_sort_order">Sort order (lower shows first)</label>
           <input type="number" id="tm_sort_order" value="0" />
         </div>
+        <div class="admin-field">
+          <label for="tm_photo">Headshot (optional — falls back to a generated avatar if not set)</label>
+          <img id="tm_photo_preview" class="admin-hidden" style="width:80px; height:80px; border-radius:50%; object-fit:cover; margin-bottom:8px;" />
+          <input type="file" id="tm_photo" accept="image/png,image/jpeg,image/webp" />
+        </div>
         <p class="admin-error" id="memberFormError"></p>
-        <p style="color:var(--brown-mid); font-size:0.85rem;">Photo upload is coming in the next phase — members show the site's fallback avatar until then.</p>
         <div class="admin-modal-actions">
           <button type="button" class="admin-btn admin-btn--ghost" id="memberModalCancel">Cancel</button>
           <button type="submit" class="admin-btn" id="memberModalSave">Save</button>
@@ -174,9 +257,84 @@
     </div>
   </div>
 
+  <!-- Live event editor: preview mirrors the public card exactly -->
+  <div class="admin-modal-backdrop admin-hidden" id="liveModalBackdrop">
+    <div class="admin-modal admin-modal--xl">
+      <div class="adm-modal-head">
+        <h3 id="liveModalTitle">New live event</h3>
+        <button type="button" class="admin-btn admin-btn--ghost" id="liveModalClose" aria-label="Close">Close</button>
+      </div>
+
+      <p class="adm-section-label">Live preview &mdash; this is exactly how visitors see it. Click the poster to change it.</p>
+      <article class="live-card adm-preview" id="livePreview"></article>
+
+      <form id="liveForm" novalidate>
+        <div class="adm-form-grid">
+          <div class="admin-field adm-span-2">
+            <label for="lv_title">Title <span class="adm-count" id="lv_title_count"></span></label>
+            <input type="text" id="lv_title" maxlength="60" required />
+          </div>
+          <div class="admin-field adm-span-2">
+            <label for="lv_tagline">Tagline &mdash; shows on the card, max 2 lines <span class="adm-count" id="lv_tagline_count"></span></label>
+            <input type="text" id="lv_tagline" maxlength="110" />
+          </div>
+          <div class="admin-field">
+            <label for="lv_date">Starts</label>
+            <input type="datetime-local" id="lv_date" required />
+          </div>
+          <div class="admin-field">
+            <label for="lv_end_date">Ends (optional &mdash; defaults to start + 6h)</label>
+            <input type="datetime-local" id="lv_end_date" />
+          </div>
+          <div class="admin-field adm-span-2">
+            <label for="lv_location">Location <span class="adm-count" id="lv_location_count"></span></label>
+            <input type="text" id="lv_location" maxlength="80" required />
+          </div>
+          <div class="admin-field adm-span-2">
+            <label for="lv_register">Registration link (Settersync)</label>
+            <input type="url" id="lv_register" placeholder="https://" required />
+          </div>
+          <div class="admin-field adm-span-2">
+            <label for="lv_description">Description &mdash; shown in Our Journey after the event ends</label>
+            <textarea id="lv_description" rows="4"></textarea>
+          </div>
+          <div class="admin-field adm-span-2 adm-status">
+            <label class="adm-switch"><input type="checkbox" id="lv_published" /><span class="adm-switch__track"></span><span id="lv_published_label">Draft &mdash; hidden from the public site</span></label>
+          </div>
+        </div>
+        <p class="admin-error" id="liveFormError"></p>
+        <div class="admin-modal-actions">
+          <button type="button" class="admin-btn admin-btn--ghost" id="liveCancel">Cancel</button>
+          <button type="submit" class="admin-btn" id="liveSave">Save event</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Poster cropper: locks every poster to the site's 3:2 frame -->
+  <div class="admin-modal-backdrop admin-hidden" id="cropBackdrop" style="z-index:110;">
+    <div class="admin-modal" style="max-width:680px;">
+      <h3>Position the poster</h3>
+      <p class="adm-hint">Posters are always shown in a 3:2 frame. Drag to reposition and use the slider to zoom &mdash; what is inside the frame is exactly what gets saved, so nothing is cropped or letterboxed later.</p>
+      <div class="adm-crop" id="cropStage"><img id="cropImg" alt="" draggable="false" /></div>
+      <div class="adm-crop-controls">
+        <label for="cropZoom">Zoom</label>
+        <input type="range" id="cropZoom" min="1" max="3" step="0.01" value="1" />
+      </div>
+      <p class="adm-hint" id="cropQuality"></p>
+      <div class="admin-modal-actions">
+        <button type="button" class="admin-btn admin-btn--ghost" id="cropCancel">Cancel</button>
+        <button type="button" class="admin-btn" id="cropApply">Use this crop</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-  <script src="/js/admin/supabase-client.js"></script>
+  <script src="/js/supabase-client.js"></script>
+  <script src="/js/r2-config.js"></script>
   <script src="/js/admin/auth.js"></script>
+  <script src="/js/admin/upload.js"></script>
+  <script src="/js/admin/live-events.js"></script>
   <script src="/js/admin/dashboard.js"></script>
 </body>
 </html>

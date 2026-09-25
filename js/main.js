@@ -35,6 +35,19 @@
                                    Our Journey / History page
   --------------------------------------------------------- */
   const EVENTS = [
+    /* @@COMMENTED-OUT-START: migrated-conversation-group ==========
+       DATE:     2026-09-25
+       WHY:      conversation-group-2026 (Conversation Group) now live in Supabase and are edited from
+                 the admin portal (Live Events module). Keeping them here
+                 would make them reappear on the site after being deleted
+                 in the admin, so the database is now their only source.
+       WAS FOR:  posters were re-cropped to 3:2 and uploaded to R2 (the
+                 img/events/* files are now unused). loadLiveEventsData()
+                 merges live rows into EVENTS.
+       RESTORE:  Delete the row(s) in the admin (or set to Draft), then
+                 uncomment this block (delete header/footer, keep the
+                 object literal(s) + trailing commas).
+    ====================================================================
     {
       id: "conversation-group-2026",
       title: "Conversation Group",
@@ -49,6 +62,7 @@
       gallery: [],
       description: "Join us for a special Conversation Group in collaboration with the Pace Internationals Office - an interactive hour of conversations, cultural exchange, activities, games, and shared experiences. This session will explore culture, identity, traditions, and the experiences that connect us across borders. Through cultural trivia, conversation prompts, music, memories, and interactive activities, participants will discover aspects of Indian culture while also bringing their own cultures, traditions, and stories into the conversation. You might share an Indian memory or experience, recognize a song, discover a tradition you never knew about, or realize that something you thought was unique to your culture is shared by someone from another part of the world. At its heart, this Conversation Group is an effort to bring cultures closer together and build a community that is not defined by borders - a space where our differences become opportunities to learn from one another and our similarities remind us how connected we already are. Come curious, bring your culture, and leave knowing a little more about someone else's!"
     },
+    @@COMMENTED-OUT-END: migrated-conversation-group ========== */
     {
       id: "milan",
       title: "The PISA Premiere",
@@ -89,6 +103,19 @@
       ],
       description: "The opening celebration of every semester - a Bollywood-inspired welcome featuring music, dance, food, introductions, and the unveiling of PISA's semester team and vision."
     },
+    /* @@COMMENTED-OUT-START: migrated-garba-diwali ==========
+       DATE:     2026-09-25
+       WHY:      garba and diwali (Navratri Garba Night, Prakasha) now live in Supabase and are edited from
+                 the admin portal (Live Events module). Keeping them here
+                 would make them reappear on the site after being deleted
+                 in the admin, so the database is now their only source.
+       WAS FOR:  posters were re-cropped to 3:2 and uploaded to R2 (the
+                 img/events/* files are now unused). loadLiveEventsData()
+                 merges live rows into EVENTS.
+       RESTORE:  Delete the row(s) in the admin (or set to Draft), then
+                 uncomment this block (delete header/footer, keep the
+                 object literal(s) + trailing commas).
+    ====================================================================
     {
       id: "garba",
       title: "Navratri Garba Night",
@@ -119,6 +146,7 @@
       gallery: [],
       description: "The festival of lights, PISA-style - diyas, a full dinner spread and a dance floor that doesn't stop."
     },
+    @@COMMENTED-OUT-END: migrated-garba-diwali ========== */
     /* @@COMMENTED-OUT-START: events-non-2026-semesters-a ================
        DATE:     2026-08-31
        WHY:      Requested: Our Journey / semester filters should show
@@ -372,8 +400,10 @@
      Replace photoSeed with a real image path once you have
      headshots - see README.md.
   --------------------------------------------------------- */
-  /* Teams are keyed by semester so members can be browsed term-by-term. */
-  const TEAMS_BY_SEM = {
+  /* Teams are keyed by semester so members can be browsed term-by-term.
+     `let` (not `const`) because loadLiveTeamData() adds a semester entry
+     once the admin-managed roster loads from Supabase (see loadLiveTeamData). */
+  let TEAMS_BY_SEM = {
     "Fall 2026": {
       groups: [
         {
@@ -836,6 +866,41 @@
   /* ===========================================================
      HOME PAGE RENDER
   =========================================================== */
+  /* ---------------------------------------------------------
+     HAPPENING NEXT slider - arrows, dots, swipe (native scroll-snap)
+     and a gentle autoplay that pauses on hover/focus/touch and is
+     off entirely for visitors who prefer reduced motion.
+  --------------------------------------------------------- */
+  const HN_WINDOW_DAYS = 25;
+  const HN_MAX_SLIDES = 2;
+  const HN_AUTOPLAY_MS = 12000;
+  let hnTimer = null;
+
+  function initHappeningSlider(card, count) {
+    const track = $("#hnTrack", card);
+    const dots = $$(".hn-dot", card);
+    const index = () => Math.round(track.scrollLeft / track.clientWidth);
+    const goTo = (i) => track.scrollTo({ left: ((i % count) + count) % count * track.clientWidth, behavior: "smooth" });
+    const sync = () => dots.forEach((d, i) => d.classList.toggle("is-active", i === index()));
+
+    track.addEventListener("scroll", sync, { passive: true });
+    $$("[data-hn]", card).forEach((b) => b.addEventListener("click", () => goTo(index() + Number(b.dataset.hn))));
+    dots.forEach((d) => d.addEventListener("click", () => goTo(Number(d.dataset.hnDot))));
+    track.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") { e.preventDefault(); goTo(index() + 1); }
+      if (e.key === "ArrowLeft") { e.preventDefault(); goTo(index() - 1); }
+    });
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let paused = false;
+    ["mouseenter", "focusin", "touchstart", "pointerdown"].forEach((t) => card.addEventListener(t, () => (paused = true), { passive: true }));
+    ["mouseleave", "focusout"].forEach((t) => card.addEventListener(t, () => (paused = false)));
+    hnTimer = setInterval(() => {
+      if (!document.body.contains(card) || currentRoute !== "home") { clearInterval(hnTimer); hnTimer = null; return; }
+      if (!paused && !document.hidden) goTo(index() + 1);
+    }, HN_AUTOPLAY_MS);
+  }
+
   function renderHome() {
     const upcoming = EVENTS.filter((e) => getStatus(e) !== "closed").sort((a, b) => new Date(a.date) - new Date(b.date));
     const next = upcoming[0];
@@ -843,26 +908,45 @@
     // Boarding-pass hero - wire fields to the real next departure
     paintBoardingPass(next);
 
-    // Happening Next
+    // Happening Next - slider of up to 2 events that are live now or start within
+    // 25 days, so each gets a full marketing window. Falls back to the single
+    // nearest event if nothing is inside the window, so the section is never empty.
     const card = $("#happeningCard");
-    if (next) {
-      const status = getStatus(next);
+    const horizon = Date.now() + HN_WINDOW_DAYS * 864e5;
+    let featured = upcoming.filter((e) => getStatus(e) === "live" || new Date(e.date) <= horizon).slice(0, HN_MAX_SLIDES);
+    if (!featured.length && next) featured = [next];
+    if (hnTimer) { clearInterval(hnTimer); hnTimer = null; }
+
+    if (featured.length) {
+      const slide = (ev, i) => `
+        <article class="hn-slide" role="group" aria-roledescription="slide" aria-label="${i + 1} of ${featured.length}">
+          <div>
+            <span class="happening-card__badge"><span class="dot"></span>${getStatus(ev) === "live" ? "Live Now" : i === 0 ? "Next Up" : "Coming Up"}</span>
+            <h3>${ev.title}</h3>
+            <p class="tagline">${ev.tagline}</p>
+            <div class="happening-card__meta">
+              <span>🗓 ${fmtDate(ev.date)}</span>
+              <span>⏰ ${fmtTime(ev.date)}</span>
+              <span>📍 ${ev.location}</span>
+            </div>
+            <div class="happening-card__ctas">
+              <a class="btn btn--primary" href="${ev.registerLink}" target="_blank" rel="noopener">Register Now →</a>
+              <a class="btn btn--ghost" href="/events" data-route="events">View Details</a>
+            </div>
+          </div>
+          <div class="happening-card__visual">${upcomingPosterMarkup(ev)}</div>
+        </article>`;
+      const multi = featured.length > 1;
       card.innerHTML = `
-        <div>
-          <span class="happening-card__badge"><span class="dot"></span>${status === "live" ? "Live Now" : "Next Up"}</span>
-          <h3>${next.title}</h3>
-          <p class="tagline">${next.tagline}</p>
-          <div class="happening-card__meta">
-            <span>🗓 ${fmtDate(next.date)}</span>
-            <span>⏰ ${fmtTime(next.date)}</span>
-            <span>📍 ${next.location}</span>
-          </div>
-          <div class="happening-card__ctas">
-            <a class="btn btn--primary" href="${next.registerLink}" target="_blank" rel="noopener">Register Now →</a>
-            <a class="btn btn--ghost" href="/events" data-route="events">View Details</a>
-          </div>
-        </div>
-        <div class="happening-card__visual${next.posterWide ? " is-wide" : ""}">${upcomingPosterMarkup(next)}</div>`;
+        <div class="hn-slider" role="region" aria-roledescription="carousel" aria-label="Happening next">
+          <div class="hn-track" id="hnTrack" tabindex="0">${featured.map(slide).join("")}</div>
+          ${multi ? `<button class="hn-arrow hn-arrow--prev" type="button" data-hn="-1" aria-label="Previous event">&#8249;</button>
+          <button class="hn-arrow hn-arrow--next" type="button" data-hn="1" aria-label="Next event">&#8250;</button>
+          <div class="hn-controls">
+            <div class="hn-dots">${featured.map((_, i) => `<button class="hn-dot${i === 0 ? " is-active" : ""}" type="button" data-hn-dot="${i}" aria-label="Show event ${i + 1}"></button>`).join("")}</div>
+          </div>` : ""}
+        </div>`;
+      if (multi) initHappeningSlider(card, featured.length);
     } else {
       card.innerHTML = `<p>No upcoming events right now - check back soon.</p>`;
     }
@@ -1066,6 +1150,82 @@
     const active = select ? select.value || semesters[0] : semesters[0];
     if (select) select.value = active;
     paintTeam(active);
+  }
+
+  /* ---------------------------------------------------------
+     LIVE DATA - team members and events added through the admin
+     panel (admin/dashboard.html -> Supabase). Public/anon reads are
+     allowed by RLS (see supabase/schema.sql). Loaded once, before
+     the first render (see DOMContentLoaded), and merged into the
+     hardcoded data above. If Supabase is slow or unreachable the
+     site just renders the hardcoded data, so it never breaks.
+  --------------------------------------------------------- */
+  function toTeamCardShape(m) {
+    return {
+      name: m.name,
+      role: m.role,
+      quote: m.quote || undefined,
+      photo: m.storage_key ? photoUrl(m.storage_key) : undefined,
+      photoSeed: m.id,
+      instagram: m.instagram || "#",
+      linkedin: m.linkedin || "#"
+    };
+  }
+
+  function toEventShape(row) {
+    const photos = (row.event_photos || []).slice().sort((a, b) => a.sort_order - b.sort_order);
+    const posterRow = photos.find((p) => p.is_poster) || photos[0];
+    const poster = posterRow ? photoUrl(posterRow.storage_key) : undefined;
+    return {
+      id: row.id,
+      title: row.title,
+      tagline: row.tagline || "",
+      date: row.event_date,
+      endDate: row.end_date || undefined,
+      location: row.location || "",
+      registerLink: row.register_link || "#",
+      poster,
+      showPoster: !!poster,
+      gallery: photos.filter((p) => p !== posterRow).map((p) => photoUrl(p.storage_key)),
+      description: row.description || ""
+    };
+  }
+
+  async function loadLiveTeamData() {
+    const { data: members, error } = await supabaseClient
+      .from("team_members")
+      .select("*")
+      .order("sort_order", { ascending: true });
+    if (error || !members || !members.length) return;
+
+    const exec = members.filter((m) => m.section === "exec").map(toTeamCardShape);
+    const committee = members.filter((m) => m.section === "committee").map(toTeamCardShape);
+    // "Live YYYY" (not a real term name) so semesterSortKey() sorts it to the
+    // top of the dropdown without colliding with a real semester key.
+    TEAMS_BY_SEM = { [`Live ${new Date().getFullYear() + 1}`]: { exec, committee }, ...TEAMS_BY_SEM };
+  }
+
+  async function loadLiveEventsData() {
+    const { data: rows, error } = await supabaseClient
+      .from("events")
+      .select("*, event_photos(storage_key, is_poster, sort_order)")
+      .eq("status", "published");
+    if (error || !rows || !rows.length) return;
+
+    // A live event replaces a hardcoded one with the same id; otherwise it's added.
+    rows.map(toEventShape).forEach((live) => {
+      const i = EVENTS.findIndex((e) => e.id === live.id);
+      if (i >= 0) EVENTS[i] = live;
+      else EVENTS.push(live);
+    });
+  }
+
+  // Resolves once both loads finish or after `ms`, whichever comes first, and
+  // never rejects - so a slow/failed Supabase call can't block the first render.
+  function loadLiveData(ms = 3000) {
+    if (typeof supabaseClient === "undefined") return Promise.resolve();
+    const both = Promise.all([loadLiveTeamData(), loadLiveEventsData()]).catch(() => {});
+    return Promise.race([both, new Promise((resolve) => setTimeout(resolve, ms))]);
   }
 
   /* ===========================================================
@@ -1534,12 +1694,14 @@
   /* ===========================================================
      INIT
   =========================================================== */
-  document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", async () => {
+    const liveData = loadLiveData(); // start fetching now, await just before first render
     initIntro();
     $("#year").textContent = new Date().getFullYear();
     resetScrollPosition();
     updateGateProgress();
     updateNavChrome();
+    await liveData;
     navigate(resolveRoute(), { replace: true });
     requestAnimationFrame(resetScrollPosition);
     observeReveals();

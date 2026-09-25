@@ -12,32 +12,57 @@ async function init() {
     `${auth.session.user.email} · ${currentProfile.role}`;
   if (currentProfile.role === "admin") {
     document.getElementById("usersTabBtn").style.display = "";
+    document.getElementById("adminSideLabel").style.display = "";
   }
 
   document.getElementById("signOutBtn").addEventListener("click", signOut);
-  document.querySelectorAll(".admin-nav button[data-tab]").forEach((btn) => {
+  document.querySelectorAll(".admin-side button[data-tab]").forEach((btn) => {
     btn.addEventListener("click", () => switchTab(btn.dataset.tab));
   });
+  document.querySelectorAll("[data-goto]").forEach((btn) => {
+    btn.addEventListener("click", () => switchTab(btn.dataset.goto));
+  });
+  document.getElementById("homePreviewReload").addEventListener("click", () => loadHomePreview(true));
+  window.addEventListener("hashchange", () => switchTab(currentTabFromHash(), { updateHash: false }));
 
   document.getElementById("newEventBtn").addEventListener("click", () => openEventModal(null));
   document.getElementById("eventModalCancel").addEventListener("click", closeEventModal);
   document.getElementById("eventForm").addEventListener("submit", saveEvent);
 
+  document.getElementById("photosModalClose").addEventListener("click", closePhotosModal);
+  document.getElementById("photosUploadInput").addEventListener("change", handlePhotoUpload);
+
   document.getElementById("newMemberBtn").addEventListener("click", () => openMemberModal(null));
   document.getElementById("memberModalCancel").addEventListener("click", closeMemberModal);
   document.getElementById("memberForm").addEventListener("submit", saveMember);
 
-  await loadEvents();
-  await loadTeam();
+  switchTab(currentTabFromHash(), { updateHash: false });
+  await Promise.all([loadEvents(), loadTeam(), initLiveEvents()]);
 }
 
-function switchTab(tab) {
-  document.querySelectorAll(".admin-nav button[data-tab]").forEach((btn) => {
+const TABS = ["home", "live", "events", "team", "users"];
+
+// Tabs are routes: /admin/dashboard.html#live etc. so refresh, Back and shared links keep your place.
+function currentTabFromHash() {
+  const t = location.hash.replace("#", "");
+  return TABS.includes(t) ? t : "home";
+}
+
+function switchTab(tab, { updateHash = true } = {}) {
+  if (tab === "users" && currentProfile?.role !== "admin") tab = "home";
+  document.querySelectorAll(".admin-side button[data-tab]").forEach((btn) => {
     btn.classList.toggle("active", btn.dataset.tab === tab);
   });
-  ["events", "team", "users"].forEach((name) => {
+  TABS.forEach((name) => {
     document.getElementById(`panel-${name}`).classList.toggle("admin-hidden", name !== tab);
   });
+  if (updateHash && location.hash !== `#${tab}`) history.pushState(null, "", `#${tab}`);
+  if (tab === "home") loadHomePreview();
+}
+
+function loadHomePreview(force = false) {
+  const frame = document.getElementById("homeFrame");
+  if (force || !frame.getAttribute("src")) frame.setAttribute("src", "/");
 }
 
 // ---------------------------------------------------------------------------
@@ -74,6 +99,7 @@ async function loadEvents() {
       <td><span class="admin-badge admin-badge--${ev.status}">${ev.status}</span></td>
       <td>${photoCount}</td>
       <td class="admin-row-actions">
+        <button data-action="photos" data-id="${ev.id}">Photos</button>
         <button data-action="edit" data-id="${ev.id}">Edit</button>
         <button data-action="delete" data-id="${ev.id}">Delete</button>
       </td>
@@ -86,6 +112,9 @@ async function loadEvents() {
   });
   tbody.querySelectorAll('button[data-action="delete"]').forEach((btn) => {
     btn.addEventListener("click", () => deleteEvent(btn.dataset.id));
+  });
+  tbody.querySelectorAll('button[data-action="photos"]').forEach((btn) => {
+    btn.addEventListener("click", () => openPhotosModal(btn.dataset.id));
   });
 }
 
@@ -178,15 +207,139 @@ async function deleteEvent(id) {
 }
 
 // ---------------------------------------------------------------------------
+// Event photos
+// ---------------------------------------------------------------------------
+
+let currentPhotosEventId = null;
+
+async function openPhotosModal(eventId) {
+  currentPhotosEventId = eventId;
+  document.getElementById("photosModalTitle").textContent = `Photos — ${eventId}`;
+  document.getElementById("photosUploadStatus").textContent = "";
+  document.getElementById("photosUploadInput").value = "";
+  document.getElementById("photosModalBackdrop").classList.remove("admin-hidden");
+  await loadPhotos();
+}
+
+function closePhotosModal() {
+  document.getElementById("photosModalBackdrop").classList.add("admin-hidden");
+  currentPhotosEventId = null;
+}
+
+async function loadPhotos() {
+  const { data: photos, error } = await supabaseClient
+    .from("event_photos")
+    .select("*")
+    .eq("event_id", currentPhotosEventId)
+    .order("sort_order", { ascending: true });
+
+  const grid = document.getElementById("photosGrid");
+  const empty = document.getElementById("photosEmpty");
+  grid.innerHTML = "";
+
+  if (error) {
+    grid.innerHTML = `<p>Failed to load photos: ${escapeHtml(error.message)}</p>`;
+    return;
+  }
+
+  if (!photos.length) {
+    empty.classList.remove("admin-hidden");
+    await loadEvents(); // keep the table's photo count in sync
+    return;
+  }
+  empty.classList.add("admin-hidden");
+
+  for (const p of photos) {
+    const cell = document.createElement("div");
+    cell.style.cssText = "position:relative; border:1px solid var(--brown-line); border-radius:8px; overflow:hidden;";
+    cell.innerHTML = `
+      <img src="${photoUrl(p.storage_key)}" style="width:100%; height:100px; object-fit:cover; display:block;" />
+      <div style="padding:6px; display:flex; flex-direction:column; gap:4px;">
+        ${p.is_poster ? '<span class="admin-badge admin-badge--published">Poster</span>' : `<button data-action="poster" data-id="${p.id}" style="font-size:0.75rem; text-decoration:underline; background:none; border:none; color:var(--brown-mid); cursor:pointer;">Set as poster</button>`}
+        <button data-action="delete-photo" data-id="${p.id}" data-key="${p.storage_key}" style="font-size:0.75rem; text-decoration:underline; background:none; border:none; color:#B3432E; cursor:pointer;">Delete</button>
+      </div>
+    `;
+    grid.appendChild(cell);
+  }
+
+  grid.querySelectorAll('button[data-action="poster"]').forEach((btn) => {
+    btn.addEventListener("click", () => setAsPoster(btn.dataset.id));
+  });
+  grid.querySelectorAll('button[data-action="delete-photo"]').forEach((btn) => {
+    btn.addEventListener("click", () => deleteEventPhoto(btn.dataset.id, btn.dataset.key));
+  });
+
+  await loadEvents(); // keep the table's photo count in sync
+}
+
+async function handlePhotoUpload(e) {
+  const files = Array.from(e.target.files || []);
+  if (!files.length) return;
+  const status = document.getElementById("photosUploadStatus");
+
+  const { count } = await supabaseClient
+    .from("event_photos")
+    .select("id", { count: "exact", head: true })
+    .eq("event_id", currentPhotosEventId);
+  let nextSortOrder = count ?? 0;
+  const isFirstEver = nextSortOrder === 0;
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    status.textContent = `Uploading ${i + 1} of ${files.length}…`;
+    try {
+      const { storageKey } = await uploadImage("event", currentPhotosEventId, file);
+      const { error } = await supabaseClient.from("event_photos").insert({
+        event_id: currentPhotosEventId,
+        storage_key: storageKey,
+        sort_order: nextSortOrder++,
+        is_poster: isFirstEver && i === 0,
+      });
+      if (error) throw error;
+    } catch (err) {
+      status.textContent = `Failed on file ${i + 1}: ${err.message}`;
+      await loadPhotos();
+      return;
+    }
+  }
+
+  status.textContent = "";
+  e.target.value = "";
+  await loadPhotos();
+}
+
+async function setAsPoster(photoId) {
+  await supabaseClient.from("event_photos").update({ is_poster: false }).eq("event_id", currentPhotosEventId);
+  const { error } = await supabaseClient.from("event_photos").update({ is_poster: true }).eq("id", photoId);
+  if (error) {
+    alert(`Failed to set poster: ${error.message}`);
+    return;
+  }
+  await loadPhotos();
+}
+
+async function deleteEventPhoto(photoId, storageKey) {
+  if (!confirm("Delete this photo?")) return;
+  const { error } = await supabaseClient.from("event_photos").delete().eq("id", photoId);
+  if (error) {
+    alert(`Failed to delete: ${error.message}`);
+    return;
+  }
+  deleteImage(storageKey).catch(() => {}); // best-effort cleanup
+  await loadPhotos();
+}
+
+// ---------------------------------------------------------------------------
 // Team list
 // ---------------------------------------------------------------------------
 
 let editingMemberId = null; // null = creating a new member
+let editingMemberStorageKey = null; // current photo's R2 key, if any
 
 async function loadTeam() {
   const { data: members, error } = await supabaseClient
     .from("team_members")
-    .select("id, name, role, section, sort_order")
+    .select("id, name, role, section, sort_order, storage_key")
     .order("section", { ascending: true })
     .order("sort_order", { ascending: true });
 
@@ -207,7 +360,11 @@ async function loadTeam() {
 
   for (const m of members) {
     const tr = document.createElement("tr");
+    const thumb = m.storage_key
+      ? `<img src="${photoUrl(m.storage_key)}" style="width:32px; height:32px; border-radius:50%; object-fit:cover;" />`
+      : "";
     tr.innerHTML = `
+      <td>${thumb}</td>
       <td>${escapeHtml(m.name)}</td>
       <td>${escapeHtml(m.role)}</td>
       <td>${m.section === "exec" ? "Executive board" : "Committee"}</td>
@@ -230,9 +387,13 @@ async function loadTeam() {
 
 async function openMemberModal(id) {
   editingMemberId = id;
+  editingMemberStorageKey = null;
   const form = document.getElementById("memberForm");
   form.reset();
   document.getElementById("memberFormError").textContent = "";
+  const preview = document.getElementById("tm_photo_preview");
+  preview.classList.add("admin-hidden");
+  preview.src = "";
 
   if (id) {
     document.getElementById("memberModalTitle").textContent = "Edit team member";
@@ -248,6 +409,11 @@ async function openMemberModal(id) {
     document.getElementById("tm_linkedin").value = m.linkedin ?? "";
     document.getElementById("tm_quote").value = m.quote ?? "";
     document.getElementById("tm_sort_order").value = m.sort_order;
+    if (m.storage_key) {
+      editingMemberStorageKey = m.storage_key;
+      preview.src = photoUrl(m.storage_key);
+      preview.classList.remove("admin-hidden");
+    }
   } else {
     document.getElementById("memberModalTitle").textContent = "New team member";
     document.getElementById("tm_section").value = "committee";
@@ -268,6 +434,10 @@ async function saveMember(e) {
   errorEl.textContent = "";
   const saveBtn = document.getElementById("memberModalSave");
   saveBtn.disabled = true;
+  saveBtn.textContent = "Saving…";
+
+  const id = editingMemberId || crypto.randomUUID();
+  const file = document.getElementById("tm_photo").files[0];
 
   const record = {
     name: document.getElementById("tm_name").value.trim(),
@@ -279,29 +449,47 @@ async function saveMember(e) {
     sort_order: parseInt(document.getElementById("tm_sort_order").value, 10) || 0,
   };
 
-  let error;
-  if (editingMemberId) {
-    ({ error } = await supabaseClient.from("team_members").update(record).eq("id", editingMemberId));
-  } else {
-    ({ error } = await supabaseClient.from("team_members").insert(record));
-  }
+  try {
+    if (file) {
+      saveBtn.textContent = "Uploading photo…";
+      const { storageKey } = await uploadImage("team", id, file);
+      record.storage_key = storageKey;
+      if (editingMemberStorageKey) {
+        deleteImage(editingMemberStorageKey).catch(() => {}); // best-effort cleanup
+      }
+    }
 
-  saveBtn.disabled = false;
-  if (error) {
-    errorEl.textContent = error.message;
+    saveBtn.textContent = "Saving…";
+    let error;
+    if (editingMemberId) {
+      ({ error } = await supabaseClient.from("team_members").update(record).eq("id", editingMemberId));
+    } else {
+      ({ error } = await supabaseClient.from("team_members").insert({ id, ...record }));
+    }
+    if (error) throw error;
+  } catch (err) {
+    errorEl.textContent = err.message;
+    saveBtn.disabled = false;
+    saveBtn.textContent = "Save";
     return;
   }
 
+  saveBtn.disabled = false;
+  saveBtn.textContent = "Save";
   closeMemberModal();
   await loadTeam();
 }
 
 async function deleteMember(id) {
   if (!confirm("Delete this team member?")) return;
+  const { data: existing } = await supabaseClient.from("team_members").select("storage_key").eq("id", id).single();
   const { error } = await supabaseClient.from("team_members").delete().eq("id", id);
   if (error) {
     alert(`Failed to delete: ${error.message}`);
     return;
+  }
+  if (existing?.storage_key) {
+    deleteImage(existing.storage_key).catch(() => {}); // best-effort cleanup
   }
   await loadTeam();
 }

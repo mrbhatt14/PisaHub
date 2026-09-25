@@ -661,7 +661,6 @@ svg{ display:block; }
   /* warm color-scheme gradient (brown → saffron) instead of the dotted texture */
   background:linear-gradient(122deg, var(--brown) 0%, #6b3a24 52%, var(--saffron-deep) 118%);
   color:var(--ivory-soft); padding:clamp(2rem,5vw,3.6rem);
-  display:grid; grid-template-columns:1.1fr .9fr; gap:2.5rem; align-items:center;
   box-shadow:0 30px 60px -20px rgba(46,32,19,.4), 0 0 0 1.5px rgba(224,138,60,.3);
   animation:nextPulse 3.2s ease-in-out infinite;
 }
@@ -684,15 +683,48 @@ svg{ display:block; }
 .happening-card__ctas{ display:flex; gap:1rem; flex-wrap:wrap; }
 .happening-card__ctas .btn--ghost{ color:var(--ivory-soft); border-color:rgba(251,248,241,.55); }
 .happening-card__ctas .btn--ghost:hover{ background:var(--saffron); border-color:var(--saffron); color:var(--brown); }
+/* Poster frame uses the site-wide poster ratio and fills edge-to-edge (no letterbox). */
 .happening-card__visual{
-  position:relative; z-index:1; aspect-ratio:4/5; border-radius:20px; overflow:hidden;
+  position:relative; z-index:1; aspect-ratio:var(--poster-ratio, 3 / 2); border-radius:20px; overflow:hidden;
   background:var(--sand-soft);
 }
-.happening-card__visual img{ width:100%; height:100%; object-fit:cover; }
+.happening-card__visual img,
+.happening-card__visual .poster-fit{ width:100%; height:100%; object-fit:cover !important; background:none; display:block; }
+
+/* Slider: up to 2 events starting within 25 days. Native scroll-snap = free swipe support. */
+/* Not positioned on purpose: the arrows are absolute children of .happening-card so they
+   sit in its side gutters; container-type lets the mobile rule size against poster width. */
+.hn-slider{ z-index:1; container-type:inline-size; }
+.hn-track{
+  display:flex; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none;
+  -webkit-overflow-scrolling:touch; overscroll-behavior-x:contain;
+}
+.hn-track::-webkit-scrollbar{ display:none; }
+.hn-slide{
+  flex:0 0 100%; scroll-snap-align:start; min-width:0;
+  display:grid; grid-template-columns:1.1fr .9fr; gap:2.5rem; align-items:center;
+}
+.hn-controls{ display:flex; align-items:center; justify-content:center; gap:1rem; margin-top:1.8rem; }
+.hn-arrow{
+  position:absolute; top:calc(50% - 2.2rem); transform:translateY(-50%); z-index:3;
+  width:40px; height:40px; border-radius:50%; border:1px solid rgba(251,248,241,.45); background:rgba(20,10,8,.35);
+  backdrop-filter:blur(4px); color:var(--ivory-soft); font-size:1.3rem; line-height:1; cursor:pointer;
+  transition:background .2s, color .2s, border-color .2s;
+}
+.hn-arrow--prev{ left:.55rem; }
+.hn-arrow--next{ right:.55rem; }
+.hn-arrow:hover{ background:var(--saffron); border-color:var(--saffron); color:var(--brown); }
+.hn-dots{ display:flex; gap:.5rem; }
+.hn-dot{ width:9px; height:9px; padding:0; border:0; border-radius:999px; background:rgba(251,248,241,.35); cursor:pointer; transition:width .25s, background .25s; }
+.hn-dot.is-active{ width:26px; background:var(--saffron); }
 
 @media (max-width:760px){
-  .happening-card{ grid-template-columns:1fr; }
-  .happening-card__visual{ order:-1; aspect-ratio:16/10; }
+  .hn-slide{ grid-template-columns:1fr; gap:1.6rem; }
+  .hn-slide .happening-card__visual{ order:-1; }
+  /* poster is stacked on top on phones, so centre the arrows on the poster instead of the card */
+  .hn-arrow{ top:calc(1.5rem + 100cqw / 3); width:36px; height:36px; font-size:1.15rem; }
+  .hn-arrow--prev{ left:.4rem; }
+  .hn-arrow--next{ right:.4rem; }
 }
 
 /* =========================================================
@@ -720,7 +752,6 @@ svg{ display:block; }
 
 /* Landscape posters (posterWide): the container adopts the poster's own
    3:2 ratio so the image fills the banner edge-to-edge with no letterbox. */
-.happening-card__visual.is-wide{ aspect-ratio:3/2; }
 .event-card__img.is-wide{ aspect-ratio:3/2; }
 .is-wide .poster-fit{ object-fit:cover !important; }
 
@@ -1227,21 +1258,35 @@ svg{ display:block; }
    LIVE EVENTS
 ========================================================= */
 .events-list{ max-width:1100px; margin:0 auto; padding:5rem 1.5rem 7rem; display:flex; flex-direction:column; gap:1.6rem; }
+/* Every live-event card is identical: the poster column is locked to the
+   site-wide poster ratio (--poster-ratio, 3:2 - the admin poster cropper
+   outputs exactly this), the image fills it edge-to-edge (no letterbox),
+   and the text column is a fixed structure so all cards match in height. */
+:root{ --poster-ratio: 3 / 2; }
 .live-card{
-  display:grid; grid-template-columns:.85fr 1.15fr; gap:0; border-radius:20px; overflow:hidden;
+  display:grid; grid-template-columns:1.2fr 1fr; gap:0; border-radius:20px; overflow:hidden;
   border:1px solid var(--brown-line); background:var(--card);
 }
-.live-card__img{ position:relative; min-height:200px; background:var(--sand-soft); }
-.live-card__img img{ width:100%; height:100%; object-fit:cover; }
-.live-card__body{ padding:1.5rem clamp(1.2rem,2.6vw,2rem); display:flex; flex-direction:column; gap:.7rem; }
+/* The ::before spacer gives the frame a 3:2 minimum height while still letting
+   it stretch to the card's full height, so there is never an empty strip. */
+.live-card__img{ position:relative; background:var(--sand-soft); overflow:hidden; }
+.live-card__img::before{ content:""; display:block; padding-top:66.6667%; }
+.live-card__img img,
+.live-card__img .poster-fit{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover !important; background:none; display:block; }
+.live-card__body{ padding:1.2rem clamp(1.1rem,2vw,1.5rem); display:flex; flex-direction:column; gap:.5rem; min-width:0; }
+.live-card__body h3,
+.live-card__tagline{ overflow:hidden; display:-webkit-box; -webkit-box-orient:vertical; }
+.live-card__body h3{ -webkit-line-clamp:1; line-clamp:1; }
+.live-card__tagline{ -webkit-line-clamp:2; line-clamp:2; min-height:calc(2 * 1.6em); line-height:1.6; }
 .live-card__top{ display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
 /* .status-chip is position:absolute by default (for overlaying a poster image);
    here it sits in a plain flex row with no image to overlay, so keep it in flow. */
 .live-card__top .status-chip{ position:static; }
 .live-card__body h3{ font-size:1.25rem; }
 .live-card__tagline{ color:var(--brown-mid); margin:0; }
-.live-card__meta{ display:flex; flex-wrap:wrap; gap:1.2rem; font-family:var(--font-mono); font-size:.82rem; color:var(--brown-mid); }
+.live-card__meta{ display:flex; flex-wrap:wrap; gap:.3rem 1.2rem; font-family:var(--font-mono); font-size:.82rem; color:var(--brown-mid); }
 .live-card__meta span{ display:flex; align-items:center; gap:.4em; }
+.live-card__meta span:last-child{ flex-basis:100%; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; }
 
 .flip-timer{ display:flex; gap:.45rem; margin:.35rem 0; perspective:520px; }
 .flip-unit{ text-align:center; }
@@ -1272,7 +1317,8 @@ svg{ display:block; }
   .flip-unit__face.flip{ animation:none; }
 }
 
-.live-card__ctas{ display:flex; gap:1rem; flex-wrap:wrap; margin-top:.4rem; }
+.live-card__ctas{ display:flex; gap:.6rem; flex-wrap:nowrap; margin-top:auto; padding-top:.3rem; }
+.live-card__ctas .btn{ padding:.75rem 1rem; font-size:.84rem; white-space:nowrap; flex:1 1 auto; justify-content:center; }
 .live-card.is-closed{ opacity:.6; filter:grayscale(.4); }
 
 /* =========================================================
@@ -1359,7 +1405,7 @@ svg{ display:block; }
 
 @media (max-width:640px){
   .live-card{ grid-template-columns:1fr; }
-  .live-card__img{ min-height:200px; }
+  .live-card__ctas{ flex-wrap:wrap; }
 }
 
 /* =========================================================

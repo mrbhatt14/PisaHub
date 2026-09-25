@@ -1,0 +1,10 @@
+{
+  "name": "pisa-hub",
+  "private": true,
+  "description": "PISA Hub website — static site with Vercel serverless functions under /api for R2 image uploads.",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.686.0",
+    "@aws-sdk/s3-request-presigner": "^3.686.0",
+    "@supabase/supabase-js": "^2.45.4"
+  }
+}

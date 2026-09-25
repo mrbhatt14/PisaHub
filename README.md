@@ -93,9 +93,15 @@ Currently all content (events, team roster, images) lives hardcoded in `js/main.
 - [x] Admin login (`admin/index.html`) — tested in browser, works.
 - [x] Events CRUD (`admin/dashboard.html`, Events tab) — create/edit/delete tested end-to-end in browser, works.
 - [x] Team CRUD (`admin/dashboard.html`, Team tab) — create/edit/delete tested end-to-end in browser, works.
-- [ ] Event + team photo upload/reorder (needs the R2 presigned-upload serverless function — not built yet).
+- [x] Team headshot upload to R2 — tested end-to-end in browser, works.
+- [ ] Event photos modal (upload / set poster / delete) is built but **not yet tested in a browser**; drag-to-reorder isn't built (photos order by upload order).
 - [ ] User management UI (admin promoting/demoting maintainers — Users tab is currently a placeholder; use the SQL bootstrap statement in `supabase/schema.sql` for now).
-- [ ] Public site (`js/main.js`) switched from hardcoded `EVENTS`/`TEAM` arrays to fetching from Supabase.
+- [x] Public site: Team and Events now also pull live data from Supabase (`loadLiveData()` in `js/main.js`). Published events are merged into the hardcoded `EVENTS` array (same `id` = live version wins, otherwise added), so they appear on Live Events, Our Journey, Gallery and Home automatically; team members appear as a "Live YYYY" semester. Both load *before* the first render (3s timeout, falls back to hardcoded data if Supabase is slow/down). Tested with mocked Supabase responses.
+- [x] **Module 1 - Live Events** (admin sidebar -> Live Events; public `/events`). Public cards are now identical (same size, height, fonts): every poster sits in one 3:2 frame (`--poster-ratio` in `css/style.css`) that it fills edge-to-edge - the old dark letterbox (`object-fit: contain` on a black backdrop) is gone. In the admin, the editor shows a live preview built from the *same markup/CSS as the public card*, and posters go through a cropper that outputs exactly 1500x1000 (3:2) so a wrong-shaped upload can never reintroduce black bars. Verified with mocked-session browser tests (list, preview, cropper output size, validation); **saving/uploading against the real database still needs a manual test.**
+- [x] Home **Happening Next** is now a slider (`renderHome` / `initHappeningSlider` in `js/main.js`): up to 2 events that are live now or start within 25 days (`HN_WINDOW_DAYS`, `HN_MAX_SLIDES` constants), earliest first, so each gets a full marketing window; falls back to the single nearest event if none are inside the window. Side arrows (left/right of the card), dots, swipe, keyboard arrows, 12s autoplay (`HN_AUTOPLAY_MS`) that pauses on hover/touch and is disabled for `prefers-reduced-motion`. Poster frame is the same 3:2 as Live Events.
+- [x] **Live events migrated to the database (2026-09-25).** `conversation-group-2026`, `garba` and `diwali` were moved from the hardcoded `EVENTS` array into Supabase (posters center-cropped to 3:2 / 1500x1000 and uploaded to R2; times converted from naive local time to the real New York instant, so visitors in other time zones see the right time). The originals are commented out in `js/main.js` in restore-able `@@COMMENTED-OUT` blocks - otherwise a deleted event would reappear from the hardcoded copy. Downside to know: if Supabase is unreachable, these events don't show (the site itself still loads). The 3 Garba "gallery" images were identical placeholders, so they were not migrated. **The `garba` (Navratri Garba Night) event was then deliberately deleted on 2026-09-25 - "Navratri with PISA" replaces it.** Migration script was one-time and not kept in the repo.
+- [x] Admin: **Home Page** tab (section map showing which module feeds each home section + live iframe preview of `/`), tab **routes** (`/admin/dashboard.html#home|live|events|team|users` - refresh/Back/shared links keep your place), and a **View website** link in the top bar. Sign-out now uses `location.replace` and also reacts to `SIGNED_OUT` from another tab / expired session and to bfcache restores, so you always land on the sign-in page and Back can't reopen the dashboard.
+- [ ] Modules still to build in the admin, one at a time: Our Journey, Gallery, Team (redesign), Home (hero/boarding pass), About, Volunteer roles, Users.
 - [ ] Existing 134 images + hardcoded content migrated into the new system.
 - [ ] Old image blobs purged from git history (`.git` is 101MB from committed photos).
 
@@ -103,12 +109,37 @@ Currently all content (events, team roster, images) lives hardcoded in `js/main.
 
 - `.env.example` — variable names for Supabase + R2 credentials (copy to `.env`, never commit `.env`).
 - `supabase/schema.sql` — `profiles` (roles), `events`, `event_photos`, `team_members` tables with Row-Level Security and table grants: public reads only `published` events / all team members; `maintainer`/`admin` roles can write; only `admin` manages other users' roles. Safe to re-run (every statement is idempotent). Bootstrap your own account to `admin` using the commented `update` statement at the bottom of the file.
+- `js/supabase-client.js` and `js/r2-config.js` (top-level, not under `js/admin/`) hold the public Supabase/R2 config shared by both the admin panel and the public site's `js/main.js` — one source of truth instead of duplicating credentials in two places.
 - `admin/index.html` + `admin/dashboard.html` — the admin panel itself. Plain HTML/JS like the rest of the site, no build step. `js/admin/supabase-client.js` holds the public Supabase URL/anon key (safe to expose — protected by RLS); `js/admin/auth.js` is the session/role guard every admin page calls first; `js/admin/dashboard.js` has the Events CRUD logic.
-- To run the admin panel locally: same as the main site — `python3 -m http.server 8000` from the repo root, then visit `http://localhost:8000/admin/`.
+- `api/upload-url.js` and `api/delete-object.js` are Vercel serverless functions (Node) that hold the R2 secret credentials — the browser never sees them. `upload-url` verifies the caller is a maintainer/admin via their Supabase session, then returns a short-lived presigned R2 PUT URL; `delete-object` removes an R2 object when a photo is deleted in the admin UI, so storage doesn't accumulate orphaned files. Shared logic lives in `api/_lib/` (files/folders prefixed `_` aren't treated as routes by Vercel).
+- `package.json` at the repo root declares the serverless functions' npm dependencies (`@aws-sdk/client-s3`, `@aws-sdk/s3-request-presigner`, `@supabase/supabase-js`) — run `npm install` once locally. The rest of the site still has no build step.
+- **To run the admin panel locally with photo upload working**, you need the real serverless functions, not just a static file server: `npx vercel dev` (the project is already linked to the `pisa-hub` Vercel project) serves both the static site and `/api/*` together at `http://localhost:3000`. Plain `python3 -m http.server` only works for pages that don't touch `/api` (e.g. testing Events/Team text CRUD, or the public site's Supabase reads).
+- **R2 bucket needs a CORS policy** for browser uploads to work at all — see "R2 CORS policy" below. Without it, uploads fail with a CORS error in the browser console (not a code bug — R2 blocks all cross-origin requests by default).
+
+### R2 CORS policy
+
+Set once in Cloudflare dashboard → R2 → `pisa-hub-images` → Settings → CORS Policy (needed because browsers block direct-to-R2 uploads without it; the "Object Read & Write" scoped API token can't set this via script, only the dashboard):
+
+```json
+[
+  {
+    "AllowedOrigins": [
+      "http://localhost:3000",
+      "http://localhost:8123",
+      "https://*.vercel.app",
+      "https://pacepisa.org",
+      "https://www.pacepisa.org"
+    ],
+    "AllowedMethods": ["PUT", "GET"],
+    "AllowedHeaders": ["*"],
+    "MaxAgeSeconds": 3600
+  }
+]
+```
 
 ### Changelog
 
-- **2026-09-21** — Decided on Supabase + Cloudflare R2; ruled out base64 and Google Drive hotlinking (see "Why this design" above). Created `.env.example` and `supabase/schema.sql`. Supabase project and R2 bucket created; both fully configured (API tokens, public access, `.env` filled in). Fixed a schema bug where table-level GRANTs to `anon`/`authenticated`/`service_role` were missing — RLS policies alone don't grant access in Postgres, so every query failed with "permission denied" until grants were added. Built and browser-tested the admin login page and Events CRUD (create/edit/delete) — confirmed working end-to-end. Added Team CRUD (same pattern as Events) — also confirmed working end-to-end.
+- **2026-09-21** — Decided on Supabase + Cloudflare R2; ruled out base64 and Google Drive hotlinking (see "Why this design" above). Created `.env.example` and `supabase/schema.sql`. Supabase project and R2 bucket created; both fully configured (API tokens, public access, `.env` filled in). Fixed a schema bug where table-level GRANTs to `anon`/`authenticated`/`service_role` were missing — RLS policies alone don't grant access in Postgres, so every query failed with "permission denied" until grants were added. Built and browser-tested the admin login page and Events CRUD (create/edit/delete) — confirmed working end-to-end. Added Team CRUD (same pattern as Events) — also confirmed working end-to-end. Built R2 photo upload: `api/upload-url.js` (presigned PUT URLs) and `api/delete-object.js`, wired into both the Team headshot field and a new per-event Photos modal (upload/set-poster/delete). Found and fixed a real bug where the R2 bucket had no CORS policy, which blocks all browser uploads — documented the fix. Wired the public Team page to also read live data from Supabase (`loadLiveTeamData()`), tested locally with a real admin-added member appearing correctly. Moved shared Supabase/R2 config out of `js/admin/` into top-level `js/` files so the public site and admin panel share one source of truth. **2026-09-25** — Module 1 (Live Events): fixed the public poster frame to 3:2 with identical cards, redesigned the admin into a module sidebar and built the Live Events editor with live preview + 3:2 poster cropper (`js/admin/live-events.js`). Also earlier that day: Wired the public Events/Gallery/Home pages to Supabase the same way as Team, and changed the loader to run before the first render (replacing the earlier dropdown-rebuild workaround). Tested with mocked Supabase responses so no live data was touched.
 
 ## Notes on placeholders
 
