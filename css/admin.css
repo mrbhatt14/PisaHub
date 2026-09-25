@@ -388,3 +388,12 @@ a.admin-btn{ text-decoration:none; }
 .adm-group h3{ font-family:var(--font-display); font-size:1.15rem; margin:0; }
 .adm-group h3 span{ font-family:var(--font-mono); font-size:.72rem; background:var(--sand-soft); border-radius:999px; padding:2px 9px; margin-left:6px; vertical-align:middle; }
 .adm-group p{ margin:0; color:var(--brown-mid); font-size:.85rem; }
+
+/* Users module */
+.adm-cred{ display:flex; gap:8px; margin:10px 0 14px; }
+.adm-cred input{ flex:1; font-family:var(--font-mono); font-size:1.05rem; letter-spacing:.06em; padding:10px 12px; border-radius:8px; border:1px solid var(--brown-line); background:var(--ivory); color:var(--ink); }
+.adm-you{ font-family:var(--font-mono); font-size:.66rem; letter-spacing:.06em; text-transform:uppercase; background:var(--sand-soft); border-radius:999px; padding:2px 8px; margin-left:8px; }
+.admin-badge--admin{ background:rgba(224,138,60,.2); color:var(--saffron-deep); }
+.admin-badge--maintainer{ background:rgba(92,122,84,0.16); color:var(--green-deep); }
+.adm-link{ color:var(--brown-mid); font-size:.88rem; text-decoration:underline; }
+.adm-link:hover{ color:var(--saffron-deep); }

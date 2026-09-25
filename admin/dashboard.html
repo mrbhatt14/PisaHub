@@ -15,6 +15,7 @@
       <div style="display:flex; align-items:center; gap:16px;">
         <a class="admin-btn admin-btn--ghost" href="/" target="_blank" rel="noopener">View website &#8599;</a>
         <span class="who" id="whoami"></span>
+        <button class="admin-btn admin-btn--ghost" id="changePwBtn" type="button">Change password</button>
         <button class="admin-btn admin-btn--ghost" id="signOutBtn">Sign out</button>
       </div>
     </div>
@@ -138,10 +139,20 @@
         <p class="admin-empty admin-hidden" id="teamEmpty">No team members for this semester yet.</p>
       </div>
 
-      <!-- Users panel (admin only, next phase) -->
+      <!-- Users module (admins only) -->
       <div id="panel-users" class="admin-hidden">
-        <div class="admin-panel-header"><h2>Users</h2></div>
-        <p class="admin-empty">Maintainer/admin account management is coming in the next phase.</p>
+        <div class="admin-panel-header">
+          <div>
+            <h2>Users</h2>
+            <p class="admin-lede"><strong>Maintainers</strong> can edit Live Events, Gallery and Team. <strong>Admins</strong> can also manage users here. Accounts are created by an admin &mdash; there is no public sign-up.</p>
+          </div>
+          <button class="admin-btn" id="newUserBtn">+ Add user</button>
+        </div>
+        <table class="admin-table">
+          <thead><tr><th>Name</th><th>Username</th><th>Email</th><th>Role</th><th>Added</th><th>Last sign-in</th><th></th></tr></thead>
+          <tbody id="usersTableBody"></tbody>
+        </table>
+        <p class="admin-error" id="usersError"></p>
       </div>
     </div>
     </div><!-- /admin-layout -->
@@ -271,6 +282,63 @@
     </div>
   </div>
 
+  <!-- Add user -->
+  <div class="admin-modal-backdrop admin-hidden" id="userModalBackdrop">
+    <div class="admin-modal" style="max-width:460px;">
+      <h3>Add a user</h3>
+      <form id="userForm" novalidate>
+        <div class="admin-field"><label for="usr_name">Name</label><input type="text" id="usr_name" maxlength="80" required autocomplete="off" placeholder="e.g. Priya Sharma" /></div>
+        <div class="admin-field"><label for="usr_username">Username (they can sign in with this)</label><input type="text" id="usr_username" maxlength="30" required autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="e.g. PriyaSharma" /><small class="adm-hint" style="display:block; margin:4px 0 0;">3&ndash;30 characters: letters, numbers, dots and underscores. Not case-sensitive.</small></div>
+        <div class="admin-field"><label for="usr_email">Email (password reset links go here)</label><input type="email" id="usr_email" required autocomplete="off" /></div>
+        <div class="admin-field">
+          <label for="usr_role">Role</label>
+          <select id="usr_role"><option value="maintainer">Maintainer &mdash; edits content</option><option value="admin">Admin &mdash; edits content and manages users</option></select>
+        </div>
+        <p class="adm-hint">A temporary password is generated for you to share with them. They can change it after signing in.</p>
+        <p class="admin-error" id="userFormError"></p>
+        <div class="admin-modal-actions">
+          <button type="button" class="admin-btn admin-btn--ghost" id="userCancel">Cancel</button>
+          <button type="submit" class="admin-btn" id="userSave">Create user</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Temporary password + ready-to-send message (shown once) -->
+  <div class="admin-modal-backdrop admin-hidden" id="credBackdrop" style="z-index:110;">
+    <div class="admin-modal" style="max-width:560px;">
+      <h3 id="credTitle">Message to send</h3>
+      <p class="adm-hint" id="credWho"></p>
+      <label class="adm-section-label" for="credMessage" style="display:block;">Copy this and send it to them &mdash; you can edit it first</label>
+      <textarea id="credMessage" rows="14" style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--brown-line); background:var(--ivory); color:var(--ink); font-family:var(--font-body); font-size:.9rem; line-height:1.5;"></textarea>
+      <div class="adm-cred" style="margin-top:10px;">
+        <input type="text" id="credPassword" readonly aria-label="Temporary password" />
+        <button type="button" class="admin-btn admin-btn--ghost" id="credCopy">Copy password</button>
+      </div>
+      <p class="adm-notice">Shown only once &mdash; after you close this the password can't be seen again (you can always reset it). Send it privately, not in a group chat.</p>
+      <div class="admin-modal-actions">
+        <button type="button" class="admin-btn admin-btn--ghost" id="credDone">Done</button>
+        <button type="button" class="admin-btn" id="credCopyMsg">Copy message</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Change my password -->
+  <div class="admin-modal-backdrop admin-hidden" id="pwBackdrop">
+    <div class="admin-modal" style="max-width:420px;">
+      <h3>Change password</h3>
+      <form id="pwForm" novalidate>
+        <div class="admin-field"><label for="pw_new">New password (at least 10 characters)</label><input type="password" id="pw_new" autocomplete="new-password" /></div>
+        <div class="admin-field"><label for="pw_confirm">Confirm new password</label><input type="password" id="pw_confirm" autocomplete="new-password" /></div>
+        <p class="admin-error" id="pwError" role="alert"></p>
+        <div class="admin-modal-actions">
+          <button type="button" class="admin-btn admin-btn--ghost" id="pwCancel">Cancel</button>
+          <button type="submit" class="admin-btn" id="pwSave">Update password</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Gallery photo manager -->
   <div class="admin-modal-backdrop admin-hidden" id="galModalBackdrop">
     <div class="admin-modal admin-modal--xl">
@@ -382,6 +450,8 @@
   <script src="/js/admin/live-events.js"></script>
   <script src="/js/admin/gallery.js"></script>
   <script src="/js/admin/team.js"></script>
+  <script src="/js/admin/users.js"></script>
+  <script src="/js/admin/account.js"></script>
   <script src="/js/admin/dashboard.js"></script>
 </body>
 </html>

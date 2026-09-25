@@ -11,12 +11,14 @@
 <body class="admin-body">
   <div class="admin-card">
     <h1>PISA Hub Admin</h1>
-    <p class="sub">Sign in with your maintainer or admin account.</p>
+    <p class="sub">Sign in with your username or email.</p>
+
+    <p class="adm-notice admin-hidden" id="resetDone" role="status">Password updated. Sign in with your new password.</p>
 
     <form id="loginForm">
       <div class="admin-field">
-        <label for="email">Email</label>
-        <input type="email" id="email" required autocomplete="username" />
+        <label for="email">Username or email</label>
+        <input type="text" id="email" required autocomplete="username" autocapitalize="none" spellcheck="false" />
       </div>
       <div class="admin-field">
         <label for="password">Password</label>
@@ -24,6 +26,19 @@
       </div>
       <button type="submit" class="admin-btn" id="loginBtn" style="width:100%;">Sign in</button>
       <p class="admin-error" id="loginError"></p>
+      <p style="text-align:center; margin:14px 0 0;"><a href="#forgot" id="forgotLink" class="adm-link">Forgot password?</a></p>
+    </form>
+
+    <form id="forgotForm" class="admin-hidden" novalidate>
+      <p class="sub" style="margin-top:-8px;">Enter your username or email and we'll send a link to your account's email address to set a new password.</p>
+      <div class="admin-field">
+        <label for="forgotEmail">Username or email</label>
+        <input type="text" id="forgotEmail" required autocomplete="username" autocapitalize="none" spellcheck="false" />
+      </div>
+      <button type="submit" class="admin-btn" id="forgotBtn" style="width:100%;">Send reset link</button>
+      <p class="admin-error" id="forgotError" role="alert"></p>
+      <p class="adm-notice admin-hidden" id="forgotSent" role="status"></p>
+      <p style="text-align:center; margin:14px 0 0;"><a href="#" id="backToLogin" class="adm-link">&larr; Back to sign in</a></p>
     </form>
   </div>
 
@@ -33,6 +48,57 @@
     const form = document.getElementById("loginForm");
     const errorEl = document.getElementById("loginError");
     const btn = document.getElementById("loginBtn");
+
+    // ---- forgot password -------------------------------------------------
+    const loginForm = document.getElementById("loginForm");
+    const forgotForm = document.getElementById("forgotForm");
+    const showForgot = (on) => {
+      loginForm.classList.toggle("admin-hidden", on);
+      forgotForm.classList.toggle("admin-hidden", !on);
+      document.querySelector(".admin-card .sub").classList.toggle("admin-hidden", on);
+      if (on) document.getElementById("forgotEmail").value = document.getElementById("email").value;
+    };
+    document.getElementById("forgotLink").addEventListener("click", (e) => { e.preventDefault(); showForgot(true); });
+    document.getElementById("backToLogin").addEventListener("click", (e) => { e.preventDefault(); showForgot(false); });
+    if (location.hash === "#forgot") showForgot(true);
+    if (new URLSearchParams(location.search).get("reset") === "1") document.getElementById("resetDone").classList.remove("admin-hidden");
+
+    forgotForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const errEl = document.getElementById("forgotError"), sentEl = document.getElementById("forgotSent"), btn = document.getElementById("forgotBtn");
+      errEl.textContent = ""; sentEl.classList.add("admin-hidden");
+      const email = document.getElementById("forgotEmail").value.trim();
+      const isEmail = email.includes("@");
+      if (isEmail ? !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) : !/^[A-Za-z0-9._]{3,30}$/.test(email)) { errEl.textContent = "Enter your username or a valid email address."; return; }
+      btn.disabled = true; btn.textContent = "Sending…";
+      let error = null;
+      if (isEmail) {
+        ({ error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: `${location.origin}/admin/reset-password.html` }));
+      } else {
+        try {
+          const res = await fetch("/api/auth-username", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "forgot", identifier: email }) });
+          if (!res.ok) error = { status: res.status, message: (await res.json().catch(() => ({}))).error || "failed" };
+        } catch (err) { error = { message: "network" }; }
+      }
+      if (error && (error.status === 429 || /rate limit|too many/i.test(error.message))) {
+        errEl.textContent = "Too many requests right now. Please wait a few minutes and try again.";
+        btn.disabled = false; btn.textContent = "Send reset link"; return;
+      }
+      if (error) {
+        errEl.textContent = "We couldn't send the email. Please try again in a few minutes, or ask an admin to reset your password.";
+        btn.disabled = false; btn.textContent = "Send reset link"; return;
+      }
+      // Same message whether or not the email has an account, so this can't be used to discover who has one.
+      sentEl.textContent = `If an account exists for “${email}”, a reset link is on its way to its email address. It can take a minute - check your spam folder. The link works for one hour.`;
+      sentEl.classList.remove("admin-hidden");
+      let left = 60; // short cooldown so it can't be spammed
+      btn.textContent = `Send again in ${left}s`;
+      const tick = setInterval(() => {
+        left--;
+        if (left <= 0) { clearInterval(tick); btn.disabled = false; btn.textContent = "Send reset link"; }
+        else btn.textContent = `Send again in ${left}s`;
+      }, 1000);
+    });
 
     // Already signed in? Skip straight to the dashboard.
     supabaseClient.auth.getSession().then(({ data: { session } }) => {
@@ -45,17 +111,33 @@
       btn.disabled = true;
       btn.textContent = "Signing in…";
 
-      const email = document.getElementById("email").value.trim();
+      const identifier = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value;
-
-      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-
-      if (error) {
-        errorEl.textContent = error.message;
+      const fail = (msg) => {
+        errorEl.textContent = msg;
         btn.disabled = false;
         btn.textContent = "Sign in";
-        return;
+      };
+
+      let data, error;
+      if (identifier.includes("@")) {
+        ({ data, error } = await supabaseClient.auth.signInWithPassword({ email: identifier, password }));
+      } else {
+        // A username: the server works out the email (the browser never sees it) and signs in for us.
+        try {
+          const res = await fetch("/api/auth-username", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "login", identifier, password }),
+          });
+          const body = await res.json().catch(() => ({}));
+          if (!res.ok) return fail(body.error || "Something went wrong. Please try again.");
+          ({ data, error } = await supabaseClient.auth.setSession({ access_token: body.access_token, refresh_token: body.refresh_token }));
+        } catch (err) {
+          return fail("Couldn't reach the server. Check your connection and try again.");
+        }
       }
+      if (error || !data || !data.user) return fail(error ? error.message : "Sign-in failed. Please try again.");
 
       // Confirm the account has a maintainer/admin profile row before letting them in.
       const { data: profile } = await supabaseClient

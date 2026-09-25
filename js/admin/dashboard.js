@@ -9,7 +9,7 @@ async function init() {
   currentProfile = auth.profile;
 
   document.getElementById("whoami").textContent =
-    `${auth.session.user.email} · ${currentProfile.role}`;
+    `${currentProfile.display_name && currentProfile.display_name !== auth.session.user.email ? `${currentProfile.display_name} (${auth.session.user.email})` : auth.session.user.email} · ${currentProfile.role}`;
   if (currentProfile.role === "admin") {
     document.getElementById("usersTabBtn").style.display = "";
     document.getElementById("adminSideLabel").style.display = "";
@@ -34,7 +34,7 @@ async function init() {
 
 
   switchTab(currentTabFromHash(), { updateHash: false });
-  await Promise.all([loadEvents(), initTeam(), initLiveEvents(), initGallery()]);
+  await Promise.all([loadEvents(), initTeam(), initLiveEvents(), initGallery(), initUsers(), initAccount()]);
 }
 
 const TABS = ["home", "live", "gallery", "events", "team", "users"];

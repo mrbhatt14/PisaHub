@@ -13,21 +13,13 @@ create table if not exists public.profiles (
   created_at timestamptz not null default now()
 );
 
--- Auto-create a profile row whenever someone signs up, defaulting to maintainer.
--- Promote the first real user to admin manually afterwards (see bottom of this file).
-create or replace function public.handle_new_user()
-returns trigger as $$
-begin
-  insert into public.profiles (user_id, display_name)
-  values (new.id, new.email);
-  return new;
-end;
-$$ language plpgsql security definer;
-
+-- SECURITY: profiles are created only by an admin (Users tab -> /api/users, which uses the
+-- service-role key). There is deliberately NO trigger that gives new sign-ups a profile:
+-- an earlier version made every new auth user a "maintainer", which - with Supabase's public
+-- sign-up enabled - would let anyone on the internet create an account with edit access.
+-- Someone without a profile row has no access at all (has_role() is false for them).
 drop trigger if exists on_auth_user_created on auth.users;
-create trigger on_auth_user_created
-  after insert on auth.users
-  for each row execute function public.handle_new_user();
+drop function if exists public.handle_new_user();
 
 -- Helper used inside RLS policies below: does the current user have at least `min_role`?
 create or replace function public.has_role(min_role text)
@@ -144,12 +136,13 @@ alter default privileges in schema public grant all on tables to anon, authentic
 alter default privileges in schema public grant all on sequences to anon, authenticated, service_role;
 
 -- ---------------------------------------------------------------------------
--- One-time bootstrap: after you sign up your own admin account through the
--- app once, run this (with your real email) to promote yourself to admin —
--- every other maintainer/admin account is then managed from the admin UI.
+-- One-time bootstrap of the FIRST admin on a brand-new project: create the user in the
+-- Supabase dashboard (Authentication -> Users -> Add user), then run this with their email.
+-- Every other account is created from the admin portal's Users tab.
 -- ---------------------------------------------------------------------------
--- update public.profiles set role = 'admin'
--- where user_id = (select id from auth.users where email = 'you@example.com');
+-- insert into public.profiles (user_id, display_name, role)
+-- select id, email, 'admin' from auth.users where email = 'you@example.com'
+-- on conflict (user_id) do update set role = 'admin';
 
 -- ---------------------------------------------------------------------------
 -- Gallery thumbnails (added with the Gallery module). Admin uploads store a
@@ -189,3 +182,16 @@ alter table public.team_members
   add column if not exists term text check (term in ('spring','fall')),
   add column if not exists year int check (year between 2006 and 2100),
   add column if not exists group_title text;
+
+-- ---------------------------------------------------------------------------
+-- Usernames: people can sign in with a username instead of an email. Supabase only knows
+-- emails, so /api/auth-username resolves the username to the account's email on the server.
+-- username_key is a lower-cased copy, so "ShivamBhatt" and "shivambhatt" are the same login
+-- and only one of them can exist. Existing accounts have no username until an admin sets one
+-- (Users tab); they keep signing in with their email in the meantime.
+-- ---------------------------------------------------------------------------
+alter table public.profiles
+  add column if not exists username text check (username ~ '^[A-Za-z0-9._]{3,30}$');
+alter table public.profiles
+  add column if not exists username_key text generated always as (lower(username)) stored;
+create unique index if not exists profiles_username_key_idx on public.profiles (username_key);
