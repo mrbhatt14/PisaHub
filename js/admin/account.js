@@ -1,5 +1,5 @@
 // "Change password" for whoever is signed in (used to replace the temporary password an admin gave them).
-const MIN_PASSWORD = 10;
+const MIN_PASSWORD = 8;
 
 function initAccount() {
   const $ = (id) => document.getElementById(id);

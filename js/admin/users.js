@@ -118,7 +118,7 @@ Temporary password: ${password}
 
 Next steps:
 1. Open the link above and sign in with your ${username ? "username (or email)" : "email"} and the temporary password.
-2. Click "Change password" at the top right and choose your own password (at least 10 characters).
+2. Click "Change password" at the top right and choose your own password (at least 8 characters).
 3. If you ever forget it, use "Forgot password?" on the sign-in page - a reset link will be emailed to you.
 
 Please don't share the temporary password - it stops mattering as soon as you change it.`;
