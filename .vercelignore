@@ -1,0 +1,4 @@
+# Internal files that should not be served from the public website
+supabase/
+README.md
+.claude/

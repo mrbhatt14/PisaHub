@@ -3,15 +3,16 @@ const { createUsersService, HttpError } = require("./_lib/users-service");
 
 const service = createUsersService(supabaseAdmin);
 
-// Admin-only account management. Listing is GET; every change is a POST with an
+// Account management. Admins manage everyone; maintainers may only manage contributors
+// (enforced in api/_lib/users-service.js). Contributors have no access at all. Listing is GET; every change is a POST with an
 // `action` (create | setName | setUsername | setRole | resetPassword | remove) so it works the same on any host.
 module.exports = async function handler(req, res) {
-  const actor = await requireRole(req, res, "admin");
+  const actor = await requireRole(req, res, "maintainer");
   if (!actor) return; // 401/403 already sent
 
   try {
     if (req.method === "GET") {
-      res.status(200).json({ users: await service.list(), you: actor.id });
+      res.status(200).json({ users: await service.list(actor), you: actor.id, myRole: actor.role });
       return;
     }
     if (req.method !== "POST") {
@@ -21,22 +22,22 @@ module.exports = async function handler(req, res) {
     const body = req.body || {};
     switch (body.action) {
       case "create":
-        res.status(201).json(await service.create(body));
+        res.status(201).json(await service.create(actor, body));
         return;
       case "setUsername":
-        res.status(200).json(await service.setUsername(body));
+        res.status(200).json(await service.setUsername(actor, body));
         return;
       case "setName":
-        res.status(200).json(await service.setName(body));
+        res.status(200).json(await service.setName(actor, body));
         return;
       case "setRole":
-        res.status(200).json(await service.setRole(actor.id, body));
+        res.status(200).json(await service.setRole(actor, body));
         return;
       case "resetPassword":
-        res.status(200).json(await service.resetPassword(body));
+        res.status(200).json(await service.resetPassword(actor, body));
         return;
       case "remove":
-        res.status(200).json(await service.remove(actor.id, body));
+        res.status(200).json(await service.remove(actor, body));
         return;
       default:
         res.status(400).json({ error: "Unknown action." });

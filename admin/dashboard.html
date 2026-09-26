@@ -24,12 +24,13 @@
     <nav class="admin-side" aria-label="Website modules">
       <p class="admin-side__label">Website modules</p>
       <button class="active" data-tab="home"><span>Home Page</span><small>overview &amp; preview</small></button>
-      <button data-tab="live"><span>Live Events</span></button>
+      <button data-tab="approvals" id="approvalsTabBtn" style="display:none;"><span>Approvals <b class="adm-badge-count admin-hidden" id="approvalsCount"></b></span><small>review contributions</small></button>
+      <button data-tab="live" id="liveTabBtn"><span>Live Events</span></button>
       <button data-tab="gallery"><span>Gallery</span><small>photo albums</small></button>
       <button data-tab="events"><span>All Events</span><small>archive &amp; photos</small></button>
       <button data-tab="team"><span>Team</span></button>
       <p class="admin-side__label" id="adminSideLabel" style="display:none;">Administration</p>
-      <button data-tab="users" id="usersTabBtn" style="display:none;"><span>Users</span></button>
+      <button data-tab="users" id="usersTabBtn" style="display:none;"><span id="usersTabLabel">Users</span></button>
     </nav>
 
     <div class="admin-main">
@@ -41,6 +42,14 @@
             <p class="admin-lede">The home page is assembled from your other modules &mdash; change the source below and the home page updates by itself.</p>
           </div>
           <a class="admin-btn" href="/" target="_blank" rel="noopener">Open home page &#8599;</a>
+        </div>
+        <div class="adm-notice admin-hidden" id="contribHelp">
+          <strong>You're a contributor.</strong> You can create events and upload photos, but nothing goes live until a maintainer or admin approves it.
+          <ol style="margin:.5rem 0 0 1.2rem; padding:0;">
+            <li>Create an event in <strong>Live Events</strong> and press <em>Submit for review</em> &mdash; or upload photos to an existing event in <strong>Gallery</strong>.</li>
+            <li>A maintainer or admin reviews it. Approved items go live automatically; you can see the status on each item.</li>
+            <li>If something is sent back you'll see a note explaining what to change.</li>
+          </ol>
         </div>
         <div class="adm-map">
           <article class="adm-map__item">
@@ -71,12 +80,29 @@
         <iframe class="adm-frame" id="homeFrame" title="Home page preview" loading="lazy"></iframe>
       </div>
 
+      <!-- Approvals module (maintainers and admins) -->
+      <div id="panel-approvals" class="admin-hidden">
+        <div class="admin-panel-header">
+          <div>
+            <h2>Approvals</h2>
+            <p class="admin-lede">Everything contributors add waits here. <strong>Nothing goes live until you approve it.</strong></p>
+          </div>
+        </div>
+        <p class="admin-error" id="apprError"></p>
+        <h3 class="adm-approve-h">Events waiting for review <span class="adm-count-pill" id="apprEventsCount">0</span></h3>
+        <div id="apprEvents"></div>
+        <p class="admin-empty admin-hidden" id="apprEventsEmpty">No events are waiting.</p>
+        <h3 class="adm-approve-h">Photos waiting for review <span class="adm-count-pill" id="apprPhotosCount">0</span></h3>
+        <div id="apprPhotos"></div>
+        <p class="admin-empty admin-hidden" id="apprPhotosEmpty">No photos are waiting.</p>
+      </div>
+
       <!-- Live Events module -->
       <div id="panel-live" class="admin-hidden">
         <div class="admin-panel-header">
           <div>
-            <h2>Live Events</h2>
-            <p class="admin-lede">Everything here appears on the public <strong>Live Events</strong> page while it is upcoming or happening. Once an event ends it moves to Our Journey automatically.</p>
+            <h2 id="liveTitle">Live Events</h2>
+            <p class="admin-lede" id="liveLede">Everything here appears on the public <strong>Live Events</strong> page while it is upcoming or happening. Once an event ends it moves to Our Journey automatically.</p>
           </div>
           <button class="admin-btn" id="newLiveBtn">+ New live event</button>
         </div>
@@ -143,8 +169,8 @@
       <div id="panel-users" class="admin-hidden">
         <div class="admin-panel-header">
           <div>
-            <h2>Users</h2>
-            <p class="admin-lede"><strong>Maintainers</strong> can edit Live Events, Gallery and Team. <strong>Admins</strong> can also manage users here. Accounts are created by an admin &mdash; there is no public sign-up.</p>
+            <h2 id="usersTitle">Users</h2>
+            <p class="admin-lede" id="usersLede"><strong>Contributors</strong> add events and photos that need approval. <strong>Maintainers</strong> edit content and approve contributions. <strong>Admins</strong> can also manage users. Accounts are created here &mdash; there is no public sign-up.</p>
           </div>
           <button class="admin-btn" id="newUserBtn">+ Add user</button>
         </div>
@@ -292,7 +318,11 @@
         <div class="admin-field"><label for="usr_email">Email (password reset links go here)</label><input type="email" id="usr_email" required autocomplete="off" /></div>
         <div class="admin-field">
           <label for="usr_role">Role</label>
-          <select id="usr_role"><option value="maintainer">Maintainer &mdash; edits content</option><option value="admin">Admin &mdash; edits content and manages users</option></select>
+          <select id="usr_role">
+            <option value="contributor">Contributor &mdash; adds events &amp; photos, needs approval</option>
+            <option value="maintainer">Maintainer &mdash; edits and approves content</option>
+            <option value="admin">Admin &mdash; everything, including users</option>
+          </select>
         </div>
         <p class="adm-hint">A temporary password is generated for you to share with them. They can change it after signing in.</p>
         <p class="admin-error" id="userFormError"></p>
@@ -409,14 +439,16 @@
             <label for="lv_description">Description &mdash; shown in Our Journey after the event ends</label>
             <textarea id="lv_description" rows="4"></textarea>
           </div>
-          <div class="admin-field adm-span-2 adm-status">
+          <div class="admin-field adm-span-2 adm-status" id="lv_status_wrap">
             <label class="adm-switch"><input type="checkbox" id="lv_published" /><span class="adm-switch__track"></span><span id="lv_published_label">Draft &mdash; hidden from the public site</span></label>
           </div>
         </div>
+        <p class="adm-notice admin-hidden" id="lv_status_note"></p>
         <p class="admin-error" id="liveFormError"></p>
         <div class="admin-modal-actions">
           <button type="button" class="admin-btn admin-btn--ghost" id="liveCancel">Cancel</button>
           <button type="submit" class="admin-btn" id="liveSave">Save event</button>
+          <button type="submit" class="admin-btn admin-hidden" id="liveSubmitReview" data-status="pending">Submit for review</button>
         </div>
       </form>
     </div>
@@ -451,6 +483,7 @@
   <script src="/js/admin/gallery.js"></script>
   <script src="/js/admin/team.js"></script>
   <script src="/js/admin/users.js"></script>
+  <script src="/js/admin/approvals.js"></script>
   <script src="/js/admin/account.js"></script>
   <script src="/js/admin/dashboard.js"></script>
 </body>

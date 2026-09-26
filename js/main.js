@@ -626,6 +626,12 @@
     const d = new Date(iso);
     return d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
   }
+  /* SECURITY: event / team text comes from the database, and contributors can write some of it.
+     Everything that goes into an HTML template is escaped with esc(), and links go through
+     safeUrl() so a "javascript:" address can never become a clickable link. */
+  const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const safeUrl = (u) => (/^https?:\/\//i.test(String(u || "").trim()) ? String(u).trim() : "#");
+
   function semesterOf(iso) {
     const d = new Date(iso);
     const m = d.getMonth() + 1; // 1-12
@@ -657,20 +663,20 @@
     const raw = (url || "").trim();
     // No link on file → send visitors to the team page instead.
     if (!raw || raw === "#" || raw.toUpperCase() === "NA") {
-      return `<a href="/team" data-route="team" aria-label="${name} — see the PISA team">${ICONS[network]}</a>`;
+      return `<a href="/team" data-route="team" aria-label="${esc(name)} — see the PISA team">${ICONS[network]}</a>`;
     }
     // Normalize handles saved without a scheme (e.g. "www.linkedin.com/…").
     const href = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
-    return `<a href="${href}" target="_blank" rel="noopener" aria-label="${name} on ${network === "instagram" ? "Instagram" : "LinkedIn"}">${ICONS[network]}</a>`;
+    return `<a href="${esc(href)}" target="_blank" rel="noopener" aria-label="${esc(name)} on ${network === "instagram" ? "Instagram" : "LinkedIn"}">${ICONS[network]}</a>`;
   }
   function teamCardMarkup(member, small) {
     return `
       <article class="team-card">
-        <div class="team-card__photo"><img src="${member.photo || avatarUrl(member.photoSeed)}" alt="${member.name}" loading="lazy"${member.fit ? ` style="object-fit:${member.fit}${member.focus ? `;object-position:${member.focus}` : ""}"` : member.focus ? ` style="object-position:${member.focus}"` : ""}></div>
-        <span class="team-card__role">${member.role}</span>
+        <div class="team-card__photo"><img src="${esc(member.photo || avatarUrl(member.photoSeed))}" alt="${esc(member.name)}" loading="lazy"${member.fit ? ` style="object-fit:${member.fit}${member.focus ? `;object-position:${member.focus}` : ""}"` : member.focus ? ` style="object-position:${member.focus}"` : ""}></div>
+        <span class="team-card__role">${esc(member.role)}</span>
         <div class="team-card__body">
-          <h3>${member.name}</h3>
-          ${member.quote ? `<p class="team-card__quote">"${member.quote}"</p>` : ""}
+          <h3>${esc(member.name)}</h3>
+          ${member.quote ? `<p class="team-card__quote">"${esc(member.quote)}"</p>` : ""}
           <div class="team-card__socials">
             ${socialLink(member.instagram, member.name, "instagram")}
             ${socialLink(member.linkedin, member.name, "linkedin")}
@@ -831,10 +837,10 @@
      "poster coming soon" placeholder so the layout stays intact. */
   function upcomingPosterMarkup(ev) {
     if (ev.showPoster && ev.poster) {
-      return `<img class="poster-fit" src="${ev.poster}" alt="${ev.title}" loading="lazy">`;
+      return `<img class="poster-fit" src="${esc(ev.poster)}" alt="${esc(ev.title)}" loading="lazy">`;
     }
     return `<div class="poster-tba">
-        <span class="poster-tba__title">${ev.title}</span>
+        <span class="poster-tba__title">${esc(ev.title)}</span>
         <span class="poster-tba__tag">Poster coming soon</span>
       </div>`;
   }
@@ -915,8 +921,11 @@
   function initHappeningSlider(card, count) {
     const track = $("#hnTrack", card);
     const dots = $$(".hn-dot", card);
-    const index = () => Math.round(track.scrollLeft / track.clientWidth);
-    const goTo = (i) => track.scrollTo({ left: ((i % count) + count) % count * track.clientWidth, behavior: "smooth" });
+    const slides = $$(".hn-slide", card);
+    // slides are separated by a gap (see .hn-track), so measure real positions instead of assuming width * index
+    const stops = () => slides.map((sl) => sl.offsetLeft - slides[0].offsetLeft);
+    const index = () => { const at = track.scrollLeft; const s = stops(); return s.reduce((best, x, i) => (Math.abs(x - at) < Math.abs(s[best] - at) ? i : best), 0); };
+    const goTo = (i) => track.scrollTo({ left: stops()[((i % count) + count) % count], behavior: "smooth" });
     const sync = () => dots.forEach((d, i) => d.classList.toggle("is-active", i === index()));
 
     track.addEventListener("scroll", sync, { passive: true });
@@ -958,15 +967,15 @@
         <article class="hn-slide" role="group" aria-roledescription="slide" aria-label="${i + 1} of ${featured.length}">
           <div>
             <span class="happening-card__badge"><span class="dot"></span>${getStatus(ev) === "live" ? "Live Now" : i === 0 ? "Next Up" : "Coming Up"}</span>
-            <h3>${ev.title}</h3>
-            <p class="tagline">${ev.tagline}</p>
+            <h3>${esc(ev.title)}</h3>
+            <p class="tagline">${esc(ev.tagline)}</p>
             <div class="happening-card__meta">
               <span>🗓 ${fmtDate(ev.date)}</span>
               <span>⏰ ${fmtTime(ev.date)}</span>
-              <span>📍 ${ev.location}</span>
+              <span>📍 ${esc(ev.location)}</span>
             </div>
             <div class="happening-card__ctas">
-              <a class="btn btn--primary" href="${ev.registerLink}" target="_blank" rel="noopener">Register Now →</a>
+              <a class="btn btn--primary" href="${esc(safeUrl(ev.registerLink))}" target="_blank" rel="noopener">Register Now →</a>
               <a class="btn btn--ghost" href="/events" data-route="events">View Details</a>
             </div>
           </div>
@@ -1001,10 +1010,10 @@
     const strip = $("#journeyStrip");
     strip.innerHTML = history.map((ev, i) => `
       <a class="journey-card" href="/history" data-route="history">
-        <div class="journey-card__img"><img src="${ev.poster || ev.gallery[0]}" alt="${ev.title}" loading="lazy"></div>
+        <div class="journey-card__img"><img src="${esc(ev.poster || ev.gallery[0])}" alt="${esc(ev.title)}" loading="lazy"></div>
         <div class="journey-card__body">
           <span class="num">0${i + 1}</span>
-          <h4>${ev.title}</h4>
+          <h4>${esc(ev.title)}</h4>
         </div>
       </a>`).join("") || `<p style="color:var(--brown-mid)">Our first completed event will appear here once it wraps up.</p>`;
 
@@ -1016,17 +1025,17 @@
     const statusLabel = status === "live" ? "Live Now" : status === "upcoming" ? "Open for Registration" : "Closed";
     return `
       <article class="event-card">
-        <div class="event-card__img${ev.posterWide ? " is-wide" : ""}">
+        <div class="event-card__img">
           ${upcomingPosterMarkup(ev)}
           <span class="status-chip status-chip--${status}">${statusLabel}</span>
         </div>
         <div class="event-card__body">
-          <h3>${ev.title}</h3>
+          <h3>${esc(ev.title)}</h3>
           <p class="event-card__meta">${fmtDate(ev.date)} · ${fmtTime(ev.date)}</p>
-          <p class="tagline">${ev.tagline}</p>
+          <p class="tagline">${esc(ev.tagline)}</p>
           <div class="event-card__foot">
             <a class="text-link" href="/events" data-route="events">Details →</a>
-            <a class="text-link" href="${ev.registerLink}" target="_blank" rel="noopener">Register ↗</a>
+            <a class="text-link" href="${esc(safeUrl(ev.registerLink))}" target="_blank" rel="noopener">Register ↗</a>
           </div>
         </div>
       </article>`;
@@ -1068,12 +1077,12 @@
       <div class="timeline__semester">
         <p class="timeline__semester-label">${sem}</p>
         ${items.map((ev, i) => `
-          <div class="timeline-item" data-id="${ev.id}">
+          <div class="timeline-item" data-id="${esc(ev.id)}">
             <p class="timeline-item__num">0${i + 1}</p>
             <div class="timeline-item__head">
               <div>
-                <h3>${ev.title}</h3>
-                <p class="timeline-item__meta">${fmtDate(ev.date)} · ${ev.location}</p>
+                <h3>${esc(ev.title)}</h3>
+                <p class="timeline-item__meta">${fmtDate(ev.date)} · ${esc(ev.location)}</p>
               </div>
             </div>
           </div>`).join("")}
@@ -1097,9 +1106,9 @@
                       <div class="timeline-item__panel">
                         <div class="timeline-item__panel-inner">
                           <div class="timeline-item__gallery">
-                            ${ev.gallery.map((src, gi) => `<img src="${(ev.galleryThumbs || ev.gallery)[gi]}" alt="${ev.title} photo ${gi + 1}" data-gallery-open="${ev.id}" data-index="${gi}" loading="lazy" decoding="async">`).join("")}
+                            ${ev.gallery.map((src, gi) => `<img src="${esc((ev.galleryThumbs || ev.gallery)[gi])}" alt="${esc(ev.title)} photo ${gi + 1}" data-gallery-open="${esc(ev.id)}" data-index="${gi}" loading="lazy" decoding="async">`).join("")}
                           </div>
-                          <p>${ev.description}</p>
+                          <p>${esc(ev.description)}</p>
                         </div>
                       </div>
                  3) Uncomment the two listener blocks below.
@@ -1169,7 +1178,7 @@
       const fewClass = members.length && members.length <= 2 ? " team-grid--few" : "";
       return `
         <section class="team-section${i === 0 ? "" : " team-section--committee"}">
-          <p class="eyebrow eyebrow--center">${g.title.toUpperCase()}</p>
+          <p class="eyebrow eyebrow--center">${esc(g.title.toUpperCase())}</p>
           <div class="team-grid team-grid--committee${fewClass}">${grid}</div>
         </section>`;
     }).join("");
@@ -1265,7 +1274,8 @@
     if (error || !rows || !rows.length) return;
 
     // A live event replaces a hardcoded one with the same id; otherwise it's added.
-    rows.map(toEventShape).forEach((live) => {
+    // Rows with an odd-looking id are ignored (ids are plain lowercase slugs).
+    rows.filter((r) => /^[a-z0-9][a-z0-9-]{0,80}$/.test(r.id)).map(toEventShape).forEach((live) => {
       const i = EVENTS.findIndex((e) => e.id === live.id);
       if (i >= 0) EVENTS[i] = live;
       else EVENTS.push(live);
@@ -1308,15 +1318,15 @@
     grid.innerHTML = events.map((ev) => `
       <section class="gallery-group">
         <div class="gallery-group__head">
-          <h3>${ev.title}</h3>
-          <span>${fmtDate(ev.date)} · ${ev.location}</span>
+          <h3>${esc(ev.title)}</h3>
+          <span>${fmtDate(ev.date)} · ${esc(ev.location)}</span>
         </div>
         <div class="gallery-carousel">
           <button class="gallery-nav gallery-nav--prev" aria-label="Previous photos">&#8249;</button>
           <div class="gallery-track">
             ${ev.gallery.map((src, gi) => `
-              <button class="gallery-tile" data-gallery-open="${ev.id}" data-index="${gi}" aria-label="Open ${ev.title} photo ${gi + 1}">
-                <img src="${(ev.galleryThumbs || ev.gallery)[gi]}" alt="${ev.title} photo ${gi + 1}" loading="lazy" decoding="async">
+              <button class="gallery-tile" data-gallery-open="${esc(ev.id)}" data-index="${gi}" aria-label="Open ${esc(ev.title)} photo ${gi + 1}">
+                <img src="${esc((ev.galleryThumbs || ev.gallery)[gi])}" alt="${esc(ev.title)} photo ${gi + 1}" loading="lazy" decoding="async">
                 <span class="gallery-tile__glow"></span>
               </button>`).join("")}
           </div>
@@ -1473,20 +1483,20 @@
     }
 
     wrap.innerHTML = list.map((ev) => `
-      <article class="live-card" data-id="${ev.id}">
+      <article class="live-card" data-id="${esc(ev.id)}">
         <div class="live-card__img">${upcomingPosterMarkup(ev)}</div>
         <div class="live-card__body">
           <div class="live-card__top">
-            <span class="status-chip status-chip--${getStatus(ev)}" data-status-chip="${ev.id}">${getStatus(ev) === "live" ? "Live Now" : "Open for Registration"}</span>
+            <span class="status-chip status-chip--${getStatus(ev)}" data-status-chip="${esc(ev.id)}">${getStatus(ev) === "live" ? "Live Now" : "Open for Registration"}</span>
           </div>
-          <h3>${ev.title}</h3>
-          <p class="live-card__tagline">${ev.tagline}</p>
+          <h3>${esc(ev.title)}</h3>
+          <p class="live-card__tagline">${esc(ev.tagline)}</p>
           <div class="live-card__meta">
             <span>🗓 ${fmtDate(ev.date)}</span>
             <span>⏰ ${fmtTime(ev.date)}</span>
-            <span>📍 ${ev.location}</span>
+            <span>📍 ${esc(ev.location)}</span>
           </div>
-          <div class="flip-timer" id="flip-${ev.id}" data-date="${ev.date}">
+          <div class="flip-timer" id="flip-${esc(ev.id)}" data-date="${esc(ev.date)}">
             ${["Days", "Hrs", "Min", "Sec"].map((label) => `
               <div class="flip-unit">
                 <div class="flip-unit__face" data-unit="${label}">00</div>
@@ -1494,7 +1504,7 @@
               </div>`).join("")}
           </div>
           <div class="live-card__ctas">
-            <a class="btn btn--primary" href="${ev.registerLink}" target="_blank" rel="noopener">Register on Settersync ↗</a>
+            <a class="btn btn--primary" href="${esc(safeUrl(ev.registerLink))}" target="_blank" rel="noopener">Register on Settersync ↗</a>
             <a class="btn btn--ghost" href="/volunteer" data-route="volunteer">Volunteer for this event</a>
           </div>
         </div>
@@ -1570,7 +1580,7 @@
     $("#modalMeta").textContent = `${fmtDate(ev.date)} · ${ev.location}`;
     $("#modalDesc").textContent = ev.description;
 
-    carouselTrack.innerHTML = ev.gallery.map((src, i) => `<img src="${src}" alt="${ev.title} photo ${i + 1}" loading="lazy" decoding="async">`).join("");
+    carouselTrack.innerHTML = ev.gallery.map((src, i) => `<img src="${esc(src)}" alt="${esc(ev.title)} photo ${i + 1}" loading="lazy" decoding="async">`).join("");
     carouselDots.innerHTML = ev.gallery.map((_, i) => `<span data-dot="${i}"></span>`).join("");
     carouselLength = ev.gallery.length;
     carouselIndex = Math.min(startIndex, carouselLength - 1);
@@ -1691,8 +1701,8 @@
     setTimeout(() => {
       showToast({
         emoji: "🎉",
-        title: `Register for ${ev.title}`,
-        msg: `${ev.tagline} - ${when}. Grab your spot.`,
+        title: `Register for ${esc(ev.title)}`,
+        msg: `${esc(ev.tagline)} - ${when}. Grab your spot.`,
         ctaText: "Register now →", ctaHref: ev.registerLink, dur: 14000
       });
     }, 6000);

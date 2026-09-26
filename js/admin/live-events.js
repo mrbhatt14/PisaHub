@@ -7,6 +7,7 @@ const POSTER_W = 1500;
 const POSTER_H = 1000;
 
 let liveEditingId = null; // null = creating
+let liveEditingStatus = null; // status the event had when the editor opened
 const posterState = { blob: null, blobUrl: null, existingKey: null, removed: false };
 
 const $id = (id) => document.getElementById(id);
@@ -44,18 +45,34 @@ async function loadLiveEvents() {
   }
 
   const now = new Date();
-  // Drafts always show here (even if their date has passed) so unfinished work is never lost;
-  // published events show while they are live or upcoming.
-  const drafts = data.filter((ev) => ev.status === "draft");
-  const published = data.filter((ev) => ev.status !== "draft" && eventEnd(ev) >= now);
-  empty.classList.toggle("admin-hidden", drafts.length + published.length > 0);
+  // Contributors only ever see their own events here; everyone else sees all of them.
+  const mine = isContributor() ? data.filter((ev) => ev.created_by === currentUserId) : data;
+  // Drafts (incl. ones sent back) always show, even if their date has passed, so unfinished work
+  // is never lost. Pending = waiting for a maintainer/admin. Published shows while live/upcoming.
+  const drafts = mine.filter((ev) => ev.status === "draft");
+  const pending = mine.filter((ev) => ev.status === "pending");
+  const published = mine.filter((ev) => ev.status === "published" && (isContributor() || eventEnd(ev) >= now));
+  empty.classList.toggle("admin-hidden", drafts.length + pending.length + published.length > 0);
 
   const cardHtml = (ev) => {
     const poster = (ev.event_photos || []).find((p) => p.is_poster);
     const isDraft = ev.status === "draft";
+    const isPending = ev.status === "pending";
     const started = new Date(ev.event_date) <= now;
     const passed = eventEnd(ev) < now;
-    const chip = isDraft ? ["draft", "Draft"] : started ? ["live", "Live now"] : ["", "Open for registration"];
+    const chip = isDraft ? ["draft", ev.review_note ? "Sent back" : "Draft"] : isPending ? ["pending", "Pending review"] : started ? ["live", "Live now"] : ["", "Open for registration"];
+    let actions;
+    if (isContributor()) {
+      actions = isDraft
+        ? `<button class="admin-btn" data-edit="${escapeHtml(ev.id)}">${ev.review_note ? "Fix & resubmit" : "Continue editing"}</button><button class="admin-btn admin-btn--ghost" data-del="${escapeHtml(ev.id)}">Delete</button>`
+        : isPending
+          ? `<button class="admin-btn admin-btn--ghost" data-withdraw="${escapeHtml(ev.id)}">Withdraw to edit</button>`
+          : `<span class="adm-hint" style="margin:0">Live — changes need a maintainer</span>`;
+    } else if (isPending) {
+      actions = `<button class="admin-btn" data-goto-approvals>Review</button><button class="admin-btn admin-btn--ghost" data-del="${escapeHtml(ev.id)}">Delete</button>`;
+    } else {
+      actions = `<button class="admin-btn" data-edit="${escapeHtml(ev.id)}">${isDraft ? "Continue editing" : "Edit"}</button><button class="admin-btn admin-btn--ghost" data-del="${escapeHtml(ev.id)}">Delete</button>`;
+    }
     return `
       <article class="adm-ev">
         <div class="adm-ev__poster">
@@ -66,19 +83,23 @@ async function loadLiveEvents() {
           <h3>${escapeHtml(ev.title)}</h3>
           <div class="adm-ev__meta">${escapeHtml(fmtWhen(ev.event_date))}${isDraft && passed ? " · date has passed" : ""}</div>
           <div class="adm-ev__meta">${escapeHtml(ev.location || "No location")}</div>
-          <div class="adm-ev__actions">
-            <button class="admin-btn" data-edit="${ev.id}">${isDraft ? "Continue editing" : "Edit"}</button>
-            <button class="admin-btn admin-btn--ghost" data-del="${ev.id}">Delete</button>
-          </div>
+          ${isDraft && ev.review_note ? `<div class="adm-ev__meta" style="white-space:normal; color:#B3432E;">Note: ${escapeHtml(ev.review_note)}</div>` : ""}
+          <div class="adm-ev__actions">${actions}</div>
         </div>
       </article>`;
   };
   const group = (title, hint, list) => list.length
     ? `<div class="adm-group"><h3>${title} <span>${list.length}</span></h3><p>${hint}</p></div>${list.map(cardHtml).join("")}`
     : "";
-  grid.innerHTML =
-    group("Drafts", "Not visible on the website. Turn on “Published” in the editor to put one live.", drafts) +
-    group("Live &amp; upcoming", "Visible on the public Live Events page.", published);
+  grid.innerHTML = isContributor()
+    ? group("Drafts", "Only you can see these. Submit one when it's ready.", drafts) +
+      group("Waiting for review", "A maintainer or admin will approve or send it back.", pending) +
+      group("Live", "Approved and visible on the website.", published)
+    : group("Waiting for review", "Submitted by contributors — approve or send back in the Approvals tab.", pending) +
+      group("Drafts", "Not visible on the website. Turn on “Published” in the editor to put one live.", drafts) +
+      group("Live &amp; upcoming", "Visible on the public Live Events page.", published);
+  grid.querySelectorAll("[data-goto-approvals]").forEach((b) => b.addEventListener("click", () => switchTab("approvals")));
+  grid.querySelectorAll("[data-withdraw]").forEach((b) => b.addEventListener("click", () => withdrawEvent(b.dataset.withdraw)));
   grid.querySelectorAll("[data-edit]").forEach((b) => b.addEventListener("click", () => openLiveEditor(b.dataset.edit)));
   grid.querySelectorAll("[data-del]").forEach((b) => b.addEventListener("click", () => deleteLiveEvent(b.dataset.del)));
 }
@@ -94,15 +115,23 @@ function fmtWhen(iso) {
 }
 
 async function deleteLiveEvent(id) {
-  if (!confirm("Delete this event and its poster? This removes it from the public site.")) return;
+  if (!confirm(isContributor() ? "Delete this draft and its poster?" : "Delete this event and its poster? This removes it from the public site.")) return;
   const { data: photos } = await supabaseClient.from("event_photos").select("storage_key, thumb_key").eq("event_id", id);
+  const keys = (photos || []).flatMap((p) => [p.storage_key, p.thumb_key].filter(Boolean));
+  // A contributor's right to delete a file is proven by their still-existing photo row, so remove the
+  // files first; for maintainers/admins the row goes first so a failed delete never leaves a dead link.
+  if (isContributor()) await Promise.all(keys.map((k) => deleteImage(k).catch(() => {})));
   const { error } = await supabaseClient.from("events").delete().eq("id", id);
   if (error) return alert(`Failed to delete: ${error.message}`);
-  (photos || []).forEach((p) => {
-    deleteImage(p.storage_key).catch(() => {});
-    if (p.thumb_key) deleteImage(p.thumb_key).catch(() => {});
-  });
-  await Promise.all([loadLiveEvents(), loadEvents()]);
+  if (!isContributor()) keys.forEach((k) => deleteImage(k).catch(() => {}));
+  await Promise.all([loadLiveEvents(), isContributor() ? Promise.resolve() : loadEvents()]);
+}
+
+async function withdrawEvent(id) {
+  if (!confirm("Withdraw this event from review so you can edit it? You'll need to submit it again afterwards.")) return;
+  const { error } = await supabaseClient.from("events").update({ status: "draft" }).eq("id", id);
+  if (error) return alert(`Couldn't withdraw: ${error.message}`);
+  await loadLiveEvents();
 }
 
 // ---------------------------------------------------------------------------
@@ -111,6 +140,7 @@ async function deleteLiveEvent(id) {
 
 async function openLiveEditor(id) {
   liveEditingId = id;
+  liveEditingStatus = null;
   $id("liveForm").reset();
   $id("liveFormError").textContent = "";
   resetPosterState();
@@ -127,14 +157,40 @@ async function openLiveEditor(id) {
     $id("lv_register").value = ev.register_link ?? "";
     $id("lv_description").value = ev.description ?? "";
     $id("lv_published").checked = ev.status === "published";
+    liveEditingStatus = ev.status;
+    reviewNote = ev.review_note || "";
     const poster = (ev.event_photos || []).find((p) => p.is_poster);
     posterState.existingKey = poster ? poster.storage_key : null;
   } else {
-    $id("liveModalTitle").textContent = "New live event";
+    $id("liveModalTitle").textContent = isContributor() ? "New event" : "New live event";
     $id("lv_published").checked = false;
+    reviewNote = "";
   }
+  configureEditorForRole();
   renderLivePreview();
   $id("liveModalBackdrop").classList.remove("admin-hidden");
+}
+
+let reviewNote = "";
+
+// Contributors get "Save draft" + "Submit for review" instead of the Published switch, and an
+// event that is waiting for review (opened by a maintainer) keeps that status until approved.
+function configureEditorForRole() {
+  const note = $id("lv_status_note");
+  const hideSwitch = isContributor() || liveEditingStatus === "pending";
+  $id("lv_status_wrap").classList.toggle("admin-hidden", hideSwitch);
+  $id("liveSubmitReview").classList.toggle("admin-hidden", !isContributor());
+  $id("liveSave").textContent = isContributor() ? "Save draft" : "Save event";
+  let text = "";
+  if (isContributor()) {
+    text = reviewNote
+      ? `Sent back by a reviewer: “${reviewNote}”. Make the changes and submit again.`
+      : "This is saved as a draft that only you can see. Press “Submit for review” when it's ready — it goes live only after a maintainer or admin approves it.";
+  } else if (liveEditingStatus === "pending") {
+    text = "This event is waiting for review. Saving keeps it pending — approve or send it back in the Approvals tab.";
+  }
+  note.textContent = text;
+  note.classList.toggle("admin-hidden", !text);
 }
 
 function closeLiveEditor() {
@@ -242,6 +298,8 @@ function slugify(s) {
 
 async function uniqueEventId(title, start) {
   const base = `${slugify(title)}-${start.getFullYear()}`;
+  // A contributor can't see other people's drafts, so probing for a free id could miss one - use a random suffix.
+  if (isContributor()) return `${base}-${crypto.randomUUID().slice(0, 6)}`;
   for (let n = 0; n < 20; n++) {
     const candidate = n === 0 ? base : `${base}-${n + 1}`;
     const { data } = await supabaseClient.from("events").select("id").eq("id", candidate).maybeSingle();
@@ -265,12 +323,19 @@ async function saveLiveEvent(e) {
   if (!/^https?:\/\//i.test(register)) return (errorEl.textContent = "Registration link must start with http:// or https://");
   const endVal = $id("lv_end_date").value;
   if (endVal && new Date(endVal) <= new Date(startVal)) return (errorEl.textContent = "End time must be after the start time.");
-  if ($id("lv_published").checked && !currentPosterUrl() &&
-      !confirm("This event has no poster — visitors will see the “Poster coming soon” placeholder. Publish anyway?")) return;
+  // What status is being saved? Contributors: draft, or pending if they pressed Submit. Everyone else:
+  // the Published switch (an event already waiting for review stays pending until it is approved).
+  const submitting = isContributor() && e.submitter && e.submitter.id === "liveSubmitReview";
+  const status = isContributor()
+    ? (submitting ? "pending" : "draft")
+    : liveEditingStatus === "pending" ? "pending" : $id("lv_published").checked ? "published" : "draft";
+  if (submitting && !confirm("Submit this event for review? You won't be able to edit it while it's waiting (you can withdraw it).")) return;
+  if ((status === "published" || submitting) && !currentPosterUrl() &&
+      !confirm(`This event has no poster — visitors will see the “Poster coming soon” placeholder. ${submitting ? "Submit" : "Publish"} anyway?`)) return;
 
-  const saveBtn = $id("liveSave");
-  saveBtn.disabled = true;
-  saveBtn.textContent = "Saving…";
+  const saveBtn = $id("liveSave"), submitBtn = $id("liveSubmitReview");
+  saveBtn.disabled = true; submitBtn.disabled = true;
+  (submitting ? submitBtn : saveBtn).textContent = "Saving…";
   try {
     const start = new Date(startVal);
     const id = liveEditingId || (await uniqueEventId(title, start));
@@ -282,7 +347,7 @@ async function saveLiveEvent(e) {
       location,
       register_link: register,
       description: $id("lv_description").value.trim() || null,
-      status: $id("lv_published").checked ? "published" : "draft",
+      status,
       updated_at: new Date().toISOString(),
     };
     const { error } = liveEditingId
@@ -292,12 +357,14 @@ async function saveLiveEvent(e) {
 
     await savePoster(id);
     closeLiveEditor();
-    await Promise.all([loadLiveEvents(), loadEvents()]);
+    await Promise.all([loadLiveEvents(), isContributor() ? Promise.resolve() : loadEvents()]);
+    if (typeof refreshApprovalsBadge === "function") refreshApprovalsBadge();
   } catch (err) {
     errorEl.textContent = err.message || String(err);
   } finally {
-    saveBtn.disabled = false;
-    saveBtn.textContent = "Save event";
+    saveBtn.disabled = false; submitBtn.disabled = false;
+    saveBtn.textContent = isContributor() ? "Save draft" : "Save event";
+    submitBtn.textContent = "Submit for review";
   }
 }
 
@@ -317,7 +384,8 @@ async function savePoster(eventId) {
     if (error) throw error;
   }
   for (const row of old || []) {
+    if (isContributor()) await deleteImage(row.storage_key).catch(() => {}); // row still proves ownership
     await supabaseClient.from("event_photos").delete().eq("id", row.id);
-    deleteImage(row.storage_key).catch(() => {});
+    if (!isContributor()) deleteImage(row.storage_key).catch(() => {});
   }
 }

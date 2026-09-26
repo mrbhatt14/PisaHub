@@ -16,7 +16,13 @@ async function usersApi(method, body) {
 }
 
 async function initUsers() {
-  if (currentProfile?.role !== "admin") return; // the tab is hidden for maintainers anyway
+  if (!canReview()) return; // contributors never see this tab (and the API refuses them anyway)
+  if (currentProfile.role === "maintainer") {
+    // maintainers may only add contributors
+    uEl("usr_role").innerHTML = '<option value="contributor">Contributor — adds events &amp; photos, needs approval</option>';
+    uEl("usersTitle").textContent = "Contributors";
+    uEl("usersLede").innerHTML = "Add helpers who can create events and upload photos, but <strong>nothing they add goes live until you approve it</strong> in the Approvals tab. Remove them when they're done.";
+  }
   uEl("newUserBtn").addEventListener("click", () => {
     uEl("userForm").reset();
     uEl("userFormError").textContent = "";
@@ -64,20 +70,21 @@ async function loadUsers() {
       <td>${u.name ? escapeHtml(u.name) : '<span class="adm-hint" style="margin:0">No name yet</span>'}${me ? '<span class="adm-you">You</span>' : ""}</td>
       <td>${u.username ? escapeHtml(u.username) : '<span class="adm-hint" style="margin:0">Not set</span>'}</td>
       <td>${escapeHtml(u.email)}</td>
-      <td><span class="admin-badge admin-badge--${u.role}">${u.role}</span></td>
+      <td>${currentProfile.role === "admin" && !me
+        ? `<select class="adm-select adm-role-select" data-rolesel="${escapeHtml(u.id)}" data-current="${escapeHtml(u.role)}" aria-label="Role for ${escapeHtml(u.email)}">${["contributor", "maintainer", "admin"].map((r) => `<option value="${r}"${r === u.role ? " selected" : ""}>${r}</option>`).join("")}</select>`
+        : `<span class="admin-badge admin-badge--${u.role}">${u.role}</span>`}</td>
       <td>${fmtDay(u.created_at)}</td>
       <td>${fmtDay(u.last_sign_in_at)}</td>
-      <td class="admin-row-actions"><button data-name="${u.id}">Edit name</button><button data-uname="${u.id}">${u.username ? "Change username" : "Set username"}</button>${me ? "" : `
-        <button data-role="${u.id}" data-to="${u.role === "admin" ? "maintainer" : "admin"}">${u.role === "admin" ? "Make maintainer" : "Make admin"}</button>
-        <button data-reset="${u.id}">Reset password</button>
-        <button data-remove="${u.id}">Remove</button>`}</td>
+      <td class="admin-row-actions"><button data-name="${escapeHtml(u.id)}">Edit name</button><button data-uname="${escapeHtml(u.id)}">${u.username ? "Change username" : "Set username"}</button>${me ? "" : `
+        <button data-reset="${escapeHtml(u.id)}">Reset password</button>
+        <button data-remove="${escapeHtml(u.id)}">Remove</button>`}</td>
     </tr>`;
   }).join("") || `<tr><td colspan="7" class="admin-empty">No users yet.</td></tr>`;
 
   const byId = (id) => usr.users.find((x) => x.id === id);
   document.querySelectorAll("[data-uname]").forEach((b) => b.addEventListener("click", () => editUsername(byId(b.dataset.uname))));
   document.querySelectorAll("[data-name]").forEach((b) => b.addEventListener("click", () => editName(byId(b.dataset.name))));
-  document.querySelectorAll("[data-role]").forEach((b) => b.addEventListener("click", () => changeRole(byId(b.dataset.role), b.dataset.to)));
+  document.querySelectorAll("[data-rolesel]").forEach((sel) => sel.addEventListener("change", () => changeRole(byId(sel.dataset.rolesel), sel.value, sel)));
   document.querySelectorAll("[data-reset]").forEach((b) => b.addEventListener("click", () => resetUserPassword(byId(b.dataset.reset))));
   document.querySelectorAll("[data-remove]").forEach((b) => b.addEventListener("click", () => removeUser(byId(b.dataset.remove))));
 }
@@ -92,12 +99,15 @@ function adminSignInUrl() {
 function buildInviteMessage({ kind, name, username, email, role, password }) {
   const first = (name || "").split(" ")[0] || "there";
   const login = username ? `Username: ${username}\n(or your email: ${email})` : `Email: ${email}`;
-  const what = role === "admin"
-    ? "As an admin you can edit Live Events, the Gallery and the Team, and manage other users."
-    : "As a maintainer you can edit Live Events, the Gallery and the Team.";
+  const what = {
+    admin: "As an admin you can edit everything, approve contributions, and manage users.",
+    maintainer: "As a maintainer you can edit Live Events, the Gallery and the Team, and approve what contributors add.",
+    contributor: "As a contributor you can create events and upload photos. They go live only after a maintainer or admin approves them, so nothing you add is public until then.",
+  }[role];
+  const roleName = { admin: "an admin", maintainer: "a maintainer", contributor: "a contributor" }[role];
   const intro = kind === "reset"
     ? "Your PISA Hub admin password has been reset. Here is your new temporary password."
-    : `You've been added to the PISA Hub admin portal as ${role === "admin" ? "an admin" : "a maintainer"}. ${what}`;
+    : `You've been added to the PISA Hub admin portal as ${roleName}. ${what}`;
   return `Hi ${first},
 
 ${intro}
@@ -152,10 +162,15 @@ async function editName(u) {
   catch (ex) { uEl("usersError").textContent = ex.message; }
 }
 
-async function changeRole(u, role) {
-  if (!confirm(`Make ${u.email} ${role === "admin" ? "an admin (they will be able to manage users)" : "a maintainer (they will lose access to the Users tab)"}?`)) return;
+async function changeRole(u, role, selectEl) {
+  const meaning = {
+    admin: "an admin (full access, including managing users)",
+    maintainer: "a maintainer (edits content and approves contributions, but can't manage users)",
+    contributor: "a contributor (can only add events and photos that need approval)",
+  }[role];
+  if (!confirm(`Make ${u.name || u.email} ${meaning}?`)) { if (selectEl) selectEl.value = u.role; return; }
   try { await usersApi("POST", { action: "setRole", id: u.id, role }); await loadUsers(); }
-  catch (ex) { uEl("usersError").textContent = ex.message; }
+  catch (ex) { uEl("usersError").textContent = ex.message; if (selectEl) selectEl.value = u.role; }
 }
 
 async function resetUserPassword(u) {

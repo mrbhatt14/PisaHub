@@ -11,8 +11,9 @@ async function initGallery() {
   galEl("galAddBtn").addEventListener("click", () => galEl("galFileInput").click());
   galEl("galFileInput").addEventListener("change", (e) => { addGalleryFiles([...e.target.files]); e.target.value = ""; });
   galEl("galSelectAll").addEventListener("click", () => {
-    const all = gal.selected.size === gal.photos.length;
-    gal.selected = new Set(all ? [] : gal.photos.map((p) => p.id));
+    const editable = gal.photos.filter((p) => !isContributor() || (p.created_by === currentUserId && p.approved === false));
+    const all = gal.selected.size === editable.length;
+    gal.selected = new Set(all ? [] : editable.map((p) => p.id));
     renderGalleryPhotos();
   });
   galEl("galDeleteBtn").addEventListener("click", deleteSelectedPhotos);
@@ -70,7 +71,7 @@ function renderGalleryEvents() {
           <h3>${escapeHtml(ev.title)}</h3>
           <div class="adm-ev__meta">${new Date(ev.event_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</div>
           <div class="adm-ev__meta adm-vis ${galEnded(ev) && ev.status === "published" ? "is-public" : ""}">${ev.status !== "published" ? "Draft — not public" : galEnded(ev) ? "Photos are public" : "Photos stay hidden until the event ends"}</div>
-          <div class="adm-ev__actions"><button class="admin-btn" data-gal="${ev.id}">Manage photos</button></div>
+          <div class="adm-ev__actions"><button class="admin-btn" data-gal="${escapeHtml(ev.id)}">Manage photos</button></div>
         </div>
       </article>`;
   }).join("");
@@ -88,10 +89,13 @@ async function openGalleryManager(eventId) {
   galEl("galModalTitle").textContent = ev ? ev.title : eventId;
   const note = galEl("galVisibility");
   const hidden = ev && (ev.status !== "published" || !galEnded(ev));
-  note.classList.toggle("admin-hidden", !hidden);
+  const contributorNote = isContributor() && !hidden;
+  note.classList.toggle("admin-hidden", !hidden && !contributorNote);
+  if (contributorNote) note.textContent = "Photos you add are hidden until a maintainer or admin approves them. You can remove your own pending photos; approved photos can't be changed here.";
   if (hidden) note.textContent = ev.status !== "published"
     ? "This event is a draft, so nothing here is public yet."
     : `Photos you add now stay hidden from visitors until the event ends (${new Date(ev.end_date || new Date(ev.event_date).getTime() + 6 * 3600 * 1000).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}), then appear automatically.`;
+  if (hidden && isContributor()) note.textContent += " They also need a maintainer's or admin's approval before going public.";
   galEl("galStatus").textContent = "";
   galEl("galModalBackdrop").classList.remove("admin-hidden");
   await loadGalleryPhotos();
@@ -118,22 +122,26 @@ function renderGalleryPhotos() {
   galEl("galCount").textContent = `${gal.photos.length} photo${gal.photos.length === 1 ? "" : "s"}`;
   galEl("galDeleteBtn").textContent = `Delete selected (${gal.selected.size})`;
   galEl("galDeleteBtn").disabled = gal.selected.size === 0;
-  galEl("galSelectAll").textContent = gal.selected.size === gal.photos.length && gal.photos.length ? "Clear selection" : "Select all";
+  galEl("galSelectAll").textContent = gal.selected.size && gal.selected.size === gal.photos.filter((p) => !isContributor() || (p.created_by === currentUserId && p.approved === false)).length ? "Clear selection" : "Select all";
   galEl("galPhotosEmpty").classList.toggle("admin-hidden", gal.photos.length > 0);
 
+  const mineToEdit = (p) => !isContributor() || (p.created_by === currentUserId && p.approved === false);
   box.innerHTML = gal.photos.map((p, i) => `
-    <div class="adm-photo${gal.selected.has(p.id) ? " is-selected" : ""}" draggable="true" data-id="${p.id}">
+    <div class="adm-photo${gal.selected.has(p.id) ? " is-selected" : ""}" ${isContributor() ? "" : 'draggable="true"'} data-id="${escapeHtml(p.id)}">
       <img src="${photoUrl(p.thumb_key || p.storage_key)}" alt="Photo ${i + 1}" loading="lazy" draggable="false">
       <span class="adm-photo__n">${i + 1}</span>
-      <label class="adm-photo__check"><input type="checkbox" ${gal.selected.has(p.id) ? "checked" : ""} aria-label="Select photo ${i + 1}"></label>
+      ${p.approved === false ? '<span class="adm-photo__pending">Pending</span>' : ""}
+      ${mineToEdit(p) ? `<label class="adm-photo__check"><input type="checkbox" ${gal.selected.has(p.id) ? "checked" : ""} aria-label="Select photo ${i + 1}"></label>` : ""}
     </div>`).join("");
 
   box.querySelectorAll(".adm-photo").forEach((tile) => {
     const id = tile.dataset.id;
-    tile.querySelector("input").addEventListener("change", (e) => {
+    const checkbox = tile.querySelector("input");
+    if (checkbox) checkbox.addEventListener("change", (e) => {
       e.target.checked ? gal.selected.add(id) : gal.selected.delete(id);
       renderGalleryPhotos();
     });
+    if (isContributor()) return; // contributors can't re-order (that would touch live photos)
     tile.addEventListener("dragstart", (e) => { gal.dragId = id; tile.classList.add("is-dragging"); e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", id); });
     tile.addEventListener("dragend", () => { gal.dragId = null; tile.classList.remove("is-dragging"); box.querySelectorAll(".is-drop").forEach((t) => t.classList.remove("is-drop")); });
     tile.addEventListener("dragover", (e) => { if (gal.dragId && gal.dragId !== id) { e.preventDefault(); tile.classList.add("is-drop"); } });
@@ -172,15 +180,15 @@ async function deleteSelectedPhotos() {
   if (!ids.length || !confirm(`Delete ${ids.length} photo${ids.length === 1 ? "" : "s"}? This also removes them from the public gallery.`)) return;
   const targets = gal.photos.filter((p) => gal.selected.has(p.id));
   galEl("galStatus").textContent = `Deleting ${targets.length}…`;
+  const keysOf = (p) => [p.storage_key, p.thumb_key].filter(Boolean);
+  if (isContributor()) await Promise.all(targets.flatMap(keysOf).map((k) => deleteImage(k).catch(() => {}))); // row still proves ownership
   const { error } = await supabaseClient.from("event_photos").delete().in("id", ids);
   if (error) { galEl("galStatus").textContent = `Failed to delete: ${error.message}`; return; }
-  targets.forEach((p) => {
-    deleteImage(p.storage_key).catch(() => {});
-    if (p.thumb_key) deleteImage(p.thumb_key).catch(() => {});
-  });
+  if (!isContributor()) targets.flatMap(keysOf).forEach((k) => deleteImage(k).catch(() => {}));
   gal.selected = new Set();
   galEl("galStatus").textContent = `Deleted ${targets.length}.`;
   await loadGalleryPhotos();
+  if (isContributor()) return;
   // renumber so sort_order stays contiguous
   gal.photos.forEach((p, i) => { if (p.sort_order !== i) supabaseClient.from("event_photos").update({ sort_order: i }).eq("id", p.id).then(() => {}); });
 }
@@ -227,6 +235,7 @@ async function addGalleryFiles(files) {
   gal.busy = false;
   status.textContent = errors.length
     ? `Finished with ${errors.length} problem${errors.length === 1 ? "" : "s"}: ${errors.slice(0, 3).join(" | ")}${errors.length > 3 ? " …" : ""}`
-    : `Uploaded ${images.length} photo${images.length === 1 ? "" : "s"}.`;
+    : `Uploaded ${images.length} photo${images.length === 1 ? "" : "s"}${isContributor() ? " — waiting for approval" : ""}.`;
+  if (typeof refreshApprovalsBadge === "function") refreshApprovalsBadge();
   if (gal.eventId === eventId) await loadGalleryPhotos();
 }

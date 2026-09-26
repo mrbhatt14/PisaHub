@@ -696,7 +696,7 @@ svg{ display:block; }
    sit in its side gutters; container-type lets the mobile rule size against poster width. */
 .hn-slider{ z-index:1; container-type:inline-size; }
 .hn-track{
-  display:flex; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none;
+  display:flex; gap:3rem; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none;
   -webkit-overflow-scrolling:touch; overscroll-behavior-x:contain;
 }
 .hn-track::-webkit-scrollbar{ display:none; }
@@ -742,18 +742,13 @@ svg{ display:block; }
   display:flex; flex-direction:column;
 }
 .event-card:hover{ transform:translateY(-6px); box-shadow:0 24px 44px -18px rgba(46,32,19,.25); }
-.event-card__img{ aspect-ratio:16/9; overflow:hidden; background:var(--sand-soft); position:relative; }
+.event-card__img{ aspect-ratio:var(--poster-ratio, 3 / 2); overflow:hidden; background:var(--sand-soft); position:relative; }
 .event-card__img img{ width:100%; height:100%; object-fit:cover; transition:transform .6s var(--ease); }
 .event-card:hover .event-card__img img{ transform:scale(1.06); }
 
-/* Posters flagged to show in full (no crop) - the whole image fits,
-   with a dark backdrop filling any letterbox space. */
-.poster-fit{ object-fit:contain !important; background:#140a08; }
-
-/* Landscape posters (posterWide): the container adopts the poster's own
-   3:2 ratio so the image fills the banner edge-to-edge with no letterbox. */
-.event-card__img.is-wide{ aspect-ratio:3/2; }
-.is-wide .poster-fit{ object-fit:cover !important; }
+/* Every poster fills its 3:2 frame edge-to-edge (--poster-ratio). No letterbox / dark backdrop:
+   the admin poster cropper already outputs exactly this ratio, so nothing is trimmed. */
+.poster-fit{ object-fit:cover !important; background:none; }
 
 /* Placeholder shown for upcoming events that don't have a poster yet. */
 .poster-tba{
@@ -781,7 +776,8 @@ svg{ display:block; }
 .event-card__body{ padding:1.1rem 1.2rem 1.3rem; display:flex; flex-direction:column; gap:.4rem; flex:1; }
 .event-card__body h3{ font-size:1.1rem; }
 .event-card__meta{ font-family:var(--font-mono); font-size:.76rem; color:var(--brown-mid); letter-spacing:.02em; }
-.event-card__body p.tagline{ font-size:.88rem; color:var(--brown-mid); margin:0; }
+.event-card__body p.tagline{ font-size:.88rem; color:var(--brown-mid); margin:0; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; line-clamp:2; overflow:hidden; }
+.event-card__body h3{ display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; line-clamp:2; overflow:hidden; }
 .event-card__foot{ margin-top:auto; padding-top:.8rem; display:flex; justify-content:space-between; align-items:center; }
 
 /* =========================================================

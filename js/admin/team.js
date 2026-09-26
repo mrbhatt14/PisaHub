@@ -67,8 +67,8 @@ function renderTeamTable() {
       <td>${semLabel(m) || `<span class="admin-badge admin-badge--draft">Not set — not public</span>`}</td>
       <td>${m.sort_order}</td>
       <td class="admin-row-actions">
-        <button data-edit="${m.id}">Edit</button>
-        <button data-del="${m.id}">Delete</button>
+        <button data-edit="${escapeHtml(m.id)}">Edit</button>
+        <button data-del="${escapeHtml(m.id)}">Delete</button>
       </td>
     </tr>`).join("");
   tEl("teamTableBody").querySelectorAll("[data-edit]").forEach((b) => b.addEventListener("click", () => openMemberModal(b.dataset.edit)));

@@ -1,5 +1,16 @@
 let currentProfile = null;
+let currentUserId = null;
 let editingEventId = null; // null = creating a new event
+
+// Which tabs each role can open. The database enforces the real limits (RLS); this just keeps
+// people from being shown screens that would only error.
+const ROLE_TABS = {
+  admin: ["home", "approvals", "live", "gallery", "events", "team", "users"],
+  maintainer: ["home", "approvals", "live", "gallery", "events", "team", "users"],
+  contributor: ["home", "live", "gallery"],
+};
+const isContributor = () => currentProfile?.role === "contributor";
+const canReview = () => ["admin", "maintainer"].includes(currentProfile?.role);
 
 init();
 
@@ -7,13 +18,11 @@ async function init() {
   const auth = await requireAuth("maintainer");
   if (!auth) return; // requireAuth already redirected
   currentProfile = auth.profile;
+  currentUserId = auth.session.user.id;
 
   document.getElementById("whoami").textContent =
     `${currentProfile.display_name && currentProfile.display_name !== auth.session.user.email ? `${currentProfile.display_name} (${auth.session.user.email})` : auth.session.user.email} · ${currentProfile.role}`;
-  if (currentProfile.role === "admin") {
-    document.getElementById("usersTabBtn").style.display = "";
-    document.getElementById("adminSideLabel").style.display = "";
-  }
+  applyRoleUI();
 
   document.getElementById("signOutBtn").addEventListener("click", signOut);
   document.querySelectorAll(".admin-side button[data-tab]").forEach((btn) => {
@@ -34,10 +43,33 @@ async function init() {
 
 
   switchTab(currentTabFromHash(), { updateHash: false });
-  await Promise.all([loadEvents(), initTeam(), initLiveEvents(), initGallery(), initUsers(), initAccount()]);
+  const jobs = [initLiveEvents(), initGallery(), initAccount()];
+  if (!isContributor()) jobs.push(loadEvents(), initTeam(), initUsers(), initApprovals());
+  await Promise.all(jobs);
 }
 
-const TABS = ["home", "live", "gallery", "events", "team", "users"];
+// Show only what this role may use, and word things for the audience.
+function applyRoleUI() {
+  const allowed = ROLE_TABS[currentProfile.role] || ["home"];
+  document.querySelectorAll(".admin-side button[data-tab]").forEach((btn) => {
+    btn.style.display = allowed.includes(btn.dataset.tab) ? "" : "none";
+  });
+  const showAdminGroup = allowed.includes("users");
+  document.getElementById("adminSideLabel").style.display = showAdminGroup ? "" : "none";
+  if (currentProfile.role === "maintainer") {
+    document.getElementById("usersTabLabel").textContent = "Contributors";
+    document.getElementById("adminSideLabel").textContent = "People";
+  }
+  if (isContributor()) {
+    document.getElementById("contribHelp").classList.remove("admin-hidden");
+    document.querySelector('[data-goto="events"]')?.closest(".adm-map__item")?.classList.add("admin-hidden");
+    document.getElementById("liveTitle").textContent = "My Events";
+    document.getElementById("liveLede").innerHTML = "Events you create appear here. Press <strong>Submit for review</strong> when one is ready &mdash; it goes live only after a maintainer or admin approves it.";
+    document.getElementById("newLiveBtn").textContent = "+ New event";
+  }
+}
+
+const TABS = ["home", "approvals", "live", "gallery", "events", "team", "users"];
 
 // Tabs are routes: /admin/dashboard.html#live etc. so refresh, Back and shared links keep your place.
 function currentTabFromHash() {
@@ -46,7 +78,7 @@ function currentTabFromHash() {
 }
 
 function switchTab(tab, { updateHash = true } = {}) {
-  if (tab === "users" && currentProfile?.role !== "admin") tab = "home";
+  if (!(ROLE_TABS[currentProfile?.role] || ["home"]).includes(tab)) tab = "home";
   document.querySelectorAll(".admin-side button[data-tab]").forEach((btn) => {
     btn.classList.toggle("active", btn.dataset.tab === tab);
   });
@@ -55,6 +87,7 @@ function switchTab(tab, { updateHash = true } = {}) {
   });
   if (updateHash && location.hash !== `#${tab}`) history.pushState(null, "", `#${tab}`);
   if (tab === "home") loadHomePreview();
+  if (tab === "approvals" && typeof loadApprovals === "function") loadApprovals();
 }
 
 function loadHomePreview(force = false) {
@@ -96,9 +129,9 @@ async function loadEvents() {
       <td><span class="admin-badge admin-badge--${ev.status}">${ev.status}</span></td>
       <td>${photoCount}</td>
       <td class="admin-row-actions">
-        <button data-action="photos" data-id="${ev.id}">Photos</button>
-        <button data-action="edit" data-id="${ev.id}">Edit</button>
-        <button data-action="delete" data-id="${ev.id}">Delete</button>
+        <button data-action="photos" data-id="${escapeHtml(ev.id)}">Photos</button>
+        <button data-action="edit" data-id="${escapeHtml(ev.id)}">Edit</button>
+        <button data-action="delete" data-id="${escapeHtml(ev.id)}">Delete</button>
       </td>
     `;
     tbody.appendChild(tr);
@@ -252,8 +285,8 @@ async function loadPhotos() {
     cell.innerHTML = `
       <img src="${photoUrl(p.storage_key)}" style="width:100%; height:100px; object-fit:cover; display:block;" />
       <div style="padding:6px; display:flex; flex-direction:column; gap:4px;">
-        ${p.is_poster ? '<span class="admin-badge admin-badge--published">Poster</span>' : `<button data-action="poster" data-id="${p.id}" style="font-size:0.75rem; text-decoration:underline; background:none; border:none; color:var(--brown-mid); cursor:pointer;">Set as poster</button>`}
-        <button data-action="delete-photo" data-id="${p.id}" data-key="${p.storage_key}" style="font-size:0.75rem; text-decoration:underline; background:none; border:none; color:#B3432E; cursor:pointer;">Delete</button>
+        ${p.is_poster ? '<span class="admin-badge admin-badge--published">Poster</span>' : `<button data-action="poster" data-id="${escapeHtml(p.id)}" style="font-size:0.75rem; text-decoration:underline; background:none; border:none; color:var(--brown-mid); cursor:pointer;">Set as poster</button>`}
+        <button data-action="delete-photo" data-id="${escapeHtml(p.id)}" data-key="${escapeHtml(p.storage_key)}" style="font-size:0.75rem; text-decoration:underline; background:none; border:none; color:#B3432E; cursor:pointer;">Delete</button>
       </div>
     `;
     grid.appendChild(cell);
@@ -330,10 +363,9 @@ async function deleteEventPhoto(photoId, storageKey) {
 // Helpers
 // ---------------------------------------------------------------------------
 
+// Escapes text for HTML *and* for attribute values (quotes included) - database text is untrusted.
 function escapeHtml(str) {
-  const div = document.createElement("div");
-  div.textContent = str ?? "";
-  return div.innerHTML;
+  return String(str ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
 // Convert a stored UTC ISO timestamp into the local value <input type="datetime-local"> expects.

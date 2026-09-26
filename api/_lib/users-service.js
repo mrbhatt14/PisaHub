@@ -7,7 +7,7 @@ class HttpError extends Error {
   }
 }
 
-const ROLES = ["maintainer", "admin"];
+const ROLES = ["contributor", "maintainer", "admin"];
 const cleanName = (n) => String(n || "").replace(/\s+/g, " ").trim();
 function validName(n) {
   const name = cleanName(n);
@@ -47,6 +47,13 @@ function createUsersService(db) {
     if (data.some((r) => r.user_id !== exceptId)) throw new HttpError(409, "That username is already taken.");
   }
 
+  // Admins manage everyone. Maintainers may only manage contributors (add, rename, reset, remove).
+  function assertCanManage(actor, target) {
+    if (actor.role === "admin") return;
+    if (actor.role === "maintainer" && target.role === "contributor") return;
+    throw new HttpError(403, "You can only manage contributors.");
+  }
+
   async function getProfile(id) {
     const { data, error } = await db.from("profiles").select("user_id, role").eq("user_id", id).maybeSingle();
     if (error) throw error;
@@ -55,12 +62,13 @@ function createUsersService(db) {
   }
 
   return {
-    async list() {
+    async list(actor) {
       const { data, error } = await db.auth.admin.listUsers({ page: 1, perPage: 1000 });
       if (error) throw error;
       const { data: profiles, error: pErr } = await db.from("profiles").select("user_id, role, display_name, username");
       if (pErr) throw pErr;
-      const byId = new Map(profiles.map((p) => [p.user_id, p]));
+      const visible = actor.role === "admin" ? profiles : profiles.filter((p) => p.role === "contributor");
+      const byId = new Map(visible.map((p) => [p.user_id, p]));
       return data.users
         .filter((u) => byId.has(u.id)) // only people who can use the admin portal
         .map((u) => {
@@ -72,13 +80,14 @@ function createUsersService(db) {
         .sort((a, b) => (a.name || a.email).localeCompare(b.name || b.email));
     },
 
-    async create({ name, username, email, role }) {
+    async create(actor, { name, username, email, role }) {
+      if (!ROLES.includes(role)) throw new HttpError(400, "Choose a role.");
+      if (actor.role !== "admin" && role !== "contributor") throw new HttpError(403, "You can only add contributors.");
       name = validName(name);
       username = validUsername(username);
       await assertUsernameFree(username);
       email = String(email || "").trim().toLowerCase();
       if (!EMAIL_RE.test(email)) throw new HttpError(400, "Enter a valid email address.");
-      if (!ROLES.includes(role)) throw new HttpError(400, "Role must be maintainer or admin.");
       const password = generatePassword();
       const { data, error } = await db.auth.admin.createUser({ email, password, email_confirm: true, user_metadata: { full_name: name } });
       if (error) {
@@ -95,9 +104,10 @@ function createUsersService(db) {
       return { user: { id: data.user.id, name, username, email, role }, tempPassword: password };
     },
 
-    async setRole(actorId, { id, role }) {
-      if (!ROLES.includes(role)) throw new HttpError(400, "Role must be maintainer or admin.");
-      if (id === actorId) throw new HttpError(403, "You can't change your own role.");
+    async setRole(actor, { id, role }) {
+      if (actor.role !== "admin") throw new HttpError(403, "Only an admin can change roles.");
+      if (!ROLES.includes(role)) throw new HttpError(400, "Choose a role.");
+      if (id === actor.id) throw new HttpError(403, "You can't change your own role.");
       const target = await getProfile(id);
       if (target.role === role) return { id, role };
       if (target.role === "admin" && role !== "admin" && (await adminCount()) <= 1) {
@@ -108,17 +118,17 @@ function createUsersService(db) {
       return { id, role };
     },
 
-    async setName({ id, name }) {
+    async setName(actor, { id, name }) {
       name = validName(name);
-      await getProfile(id);
+      assertCanManage(actor, await getProfile(id));
       const { error } = await db.from("profiles").update({ display_name: name }).eq("user_id", id);
       if (error) throw error;
       return { id, name };
     },
 
-    async setUsername({ id, username }) {
+    async setUsername(actor, { id, username }) {
       username = validUsername(username);
-      await getProfile(id);
+      assertCanManage(actor, await getProfile(id));
       await assertUsernameFree(username, id);
       const { error } = await db.from("profiles").update({ username }).eq("user_id", id);
       if (error) {
@@ -128,17 +138,18 @@ function createUsersService(db) {
       return { id, username };
     },
 
-    async resetPassword({ id }) {
-      await getProfile(id);
+    async resetPassword(actor, { id }) {
+      assertCanManage(actor, await getProfile(id));
       const password = generatePassword();
       const { error } = await db.auth.admin.updateUserById(id, { password });
       if (error) throw error;
       return { tempPassword: password };
     },
 
-    async remove(actorId, { id }) {
-      if (id === actorId) throw new HttpError(403, "You can't remove your own account.");
+    async remove(actor, { id }) {
+      if (id === actor.id) throw new HttpError(403, "You can't remove your own account.");
       const target = await getProfile(id);
+      assertCanManage(actor, target);
       if (target.role === "admin" && (await adminCount()) <= 1) throw new HttpError(409, "There must always be at least one admin.");
       const { error } = await db.auth.admin.deleteUser(id); // profile row cascades
       if (error) throw error;

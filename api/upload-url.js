@@ -13,13 +13,17 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  const user = await requireRole(req, res, "maintainer");
+  const user = await requireRole(req, res, "contributor");
   if (!user) return; // requireRole already wrote the error response
 
   const { scope, entityId, contentType } = req.body || {};
+  if (user.role === "contributor" && scope !== "event") {
+    res.status(403).json({ error: "Contributors can only upload event images." });
+    return;
+  }
   const ext = ALLOWED_CONTENT_TYPES[contentType];
 
-  if (!["event", "team"].includes(scope) || !entityId || !ext) {
+  if (!["event", "team"].includes(scope) || typeof entityId !== "string" || !/^[A-Za-z0-9-]{1,80}$/.test(entityId) || !ext) {
     res.status(400).json({ error: "Invalid scope, entityId, or contentType" });
     return;
   }
