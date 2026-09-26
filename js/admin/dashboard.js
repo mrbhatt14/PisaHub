@@ -9,6 +9,7 @@ const ROLE_TABS = {
   maintainer: ["home", "approvals", "live", "gallery", "events", "team", "users"],
   contributor: ["home", "live", "gallery"],
 };
+const roleLabel = (r) => (r ? r.charAt(0).toUpperCase() + r.slice(1) : "");
 const isContributor = () => currentProfile?.role === "contributor";
 const canReview = () => ["admin", "maintainer"].includes(currentProfile?.role);
 
@@ -21,7 +22,7 @@ async function init() {
   currentUserId = auth.session.user.id;
 
   document.getElementById("whoami").textContent =
-    `${currentProfile.display_name && currentProfile.display_name !== auth.session.user.email ? `${currentProfile.display_name} (${auth.session.user.email})` : auth.session.user.email} · ${currentProfile.role}`;
+    `${currentProfile.display_name && currentProfile.display_name !== auth.session.user.email ? `${currentProfile.display_name} (${auth.session.user.email})` : auth.session.user.email} · ${roleLabel(currentProfile.role)}`;
   applyRoleUI();
 
   document.getElementById("signOutBtn").addEventListener("click", signOut);
@@ -64,7 +65,7 @@ function applyRoleUI() {
     document.getElementById("contribHelp").classList.remove("admin-hidden");
     document.querySelector('[data-goto="events"]')?.closest(".adm-map__item")?.classList.add("admin-hidden");
     document.getElementById("liveTitle").textContent = "My Events";
-    document.getElementById("liveLede").innerHTML = "Events you create appear here. Press <strong>Submit for review</strong> when one is ready &mdash; it goes live only after a maintainer or admin approves it.";
+    document.getElementById("liveLede").innerHTML = "Events you create appear here. Press <strong>Submit for review</strong> when one is ready &mdash; it goes live only after a Maintainer or Admin approves it.";
     document.getElementById("newLiveBtn").textContent = "+ New event";
   }
 }

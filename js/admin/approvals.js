@@ -22,7 +22,7 @@ async function refreshApprovalsBadge() {
   badge.classList.toggle("admin-hidden", n === 0);
 }
 
-const who = (row) => (row.profiles && (row.profiles.display_name || row.profiles.username)) || "a contributor";
+const who = (row) => (row.profiles && (row.profiles.display_name || row.profiles.username)) || "a Contributor";
 const when = (iso) => (iso ? new Date(iso).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : "");
 
 async function loadApprovals() {

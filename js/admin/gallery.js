@@ -91,11 +91,11 @@ async function openGalleryManager(eventId) {
   const hidden = ev && (ev.status !== "published" || !galEnded(ev));
   const contributorNote = isContributor() && !hidden;
   note.classList.toggle("admin-hidden", !hidden && !contributorNote);
-  if (contributorNote) note.textContent = "Photos you add are hidden until a maintainer or admin approves them. You can remove your own pending photos; approved photos can't be changed here.";
+  if (contributorNote) note.textContent = "Photos you add are hidden until a Maintainer or Admin approves them. You can remove your own pending photos; approved photos can't be changed here.";
   if (hidden) note.textContent = ev.status !== "published"
     ? "This event is a draft, so nothing here is public yet."
     : `Photos you add now stay hidden from visitors until the event ends (${new Date(ev.end_date || new Date(ev.event_date).getTime() + 6 * 3600 * 1000).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}), then appear automatically.`;
-  if (hidden && isContributor()) note.textContent += " They also need a maintainer's or admin's approval before going public.";
+  if (hidden && isContributor()) note.textContent += " They also need a Maintainer's or Admin's approval before going public.";
   galEl("galStatus").textContent = "";
   galEl("galModalBackdrop").classList.remove("admin-hidden");
   await loadGalleryPhotos();

@@ -67,7 +67,7 @@ async function loadLiveEvents() {
         ? `<button class="admin-btn" data-edit="${escapeHtml(ev.id)}">${ev.review_note ? "Fix & resubmit" : "Continue editing"}</button><button class="admin-btn admin-btn--ghost" data-del="${escapeHtml(ev.id)}">Delete</button>`
         : isPending
           ? `<button class="admin-btn admin-btn--ghost" data-withdraw="${escapeHtml(ev.id)}">Withdraw to edit</button>`
-          : `<span class="adm-hint" style="margin:0">Live — changes need a maintainer</span>`;
+          : `<span class="adm-hint" style="margin:0">Live — changes need a Maintainer</span>`;
     } else if (isPending) {
       actions = `<button class="admin-btn" data-goto-approvals>Review</button><button class="admin-btn admin-btn--ghost" data-del="${escapeHtml(ev.id)}">Delete</button>`;
     } else {
@@ -93,9 +93,9 @@ async function loadLiveEvents() {
     : "";
   grid.innerHTML = isContributor()
     ? group("Drafts", "Only you can see these. Submit one when it's ready.", drafts) +
-      group("Waiting for review", "A maintainer or admin will approve or send it back.", pending) +
+      group("Waiting for review", "A Maintainer or Admin will approve or send it back.", pending) +
       group("Live", "Approved and visible on the website.", published)
-    : group("Waiting for review", "Submitted by contributors — approve or send back in the Approvals tab.", pending) +
+    : group("Waiting for review", "Submitted by Contributors — approve or send back in the Approvals tab.", pending) +
       group("Drafts", "Not visible on the website. Turn on “Published” in the editor to put one live.", drafts) +
       group("Live &amp; upcoming", "Visible on the public Live Events page.", published);
   grid.querySelectorAll("[data-goto-approvals]").forEach((b) => b.addEventListener("click", () => switchTab("approvals")));
@@ -185,7 +185,7 @@ function configureEditorForRole() {
   if (isContributor()) {
     text = reviewNote
       ? `Sent back by a reviewer: “${reviewNote}”. Make the changes and submit again.`
-      : "This is saved as a draft that only you can see. Press “Submit for review” when it's ready — it goes live only after a maintainer or admin approves it.";
+      : "This is saved as a draft that only you can see. Press “Submit for review” when it's ready — it goes live only after a Maintainer or Admin approves it.";
   } else if (liveEditingStatus === "pending") {
     text = "This event is waiting for review. Saving keeps it pending — approve or send it back in the Approvals tab.";
   }

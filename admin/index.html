@@ -85,7 +85,7 @@
         btn.disabled = false; btn.textContent = "Send reset link"; return;
       }
       if (error) {
-        errEl.textContent = "We couldn't send the email. Please try again in a few minutes, or ask an admin to reset your password.";
+        errEl.textContent = "We couldn't send the email. Please try again in a few minutes, or ask an Admin to reset your password.";
         btn.disabled = false; btn.textContent = "Send reset link"; return;
       }
       // Same message whether or not the email has an account, so this can't be used to discover who has one.

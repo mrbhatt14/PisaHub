@@ -51,7 +51,7 @@ function createUsersService(db) {
   function assertCanManage(actor, target) {
     if (actor.role === "admin") return;
     if (actor.role === "maintainer" && target.role === "contributor") return;
-    throw new HttpError(403, "You can only manage contributors.");
+    throw new HttpError(403, "You can only manage Contributors.");
   }
 
   async function getProfile(id) {
@@ -82,7 +82,7 @@ function createUsersService(db) {
 
     async create(actor, { name, username, email, role }) {
       if (!ROLES.includes(role)) throw new HttpError(400, "Choose a role.");
-      if (actor.role !== "admin" && role !== "contributor") throw new HttpError(403, "You can only add contributors.");
+      if (actor.role !== "admin" && role !== "contributor") throw new HttpError(403, "You can only add Contributors.");
       name = validName(name);
       username = validUsername(username);
       await assertUsernameFree(username);
@@ -105,13 +105,13 @@ function createUsersService(db) {
     },
 
     async setRole(actor, { id, role }) {
-      if (actor.role !== "admin") throw new HttpError(403, "Only an admin can change roles.");
+      if (actor.role !== "admin") throw new HttpError(403, "Only an Admin can change roles.");
       if (!ROLES.includes(role)) throw new HttpError(400, "Choose a role.");
       if (id === actor.id) throw new HttpError(403, "You can't change your own role.");
       const target = await getProfile(id);
       if (target.role === role) return { id, role };
       if (target.role === "admin" && role !== "admin" && (await adminCount()) <= 1) {
-        throw new HttpError(409, "There must always be at least one admin.");
+        throw new HttpError(409, "There must always be at least one Admin.");
       }
       const { error } = await db.from("profiles").update({ role }).eq("user_id", id);
       if (error) throw error;
@@ -150,7 +150,7 @@ function createUsersService(db) {
       if (id === actor.id) throw new HttpError(403, "You can't remove your own account.");
       const target = await getProfile(id);
       assertCanManage(actor, target);
-      if (target.role === "admin" && (await adminCount()) <= 1) throw new HttpError(409, "There must always be at least one admin.");
+      if (target.role === "admin" && (await adminCount()) <= 1) throw new HttpError(409, "There must always be at least one Admin.");
       const { error } = await db.auth.admin.deleteUser(id); // profile row cascades
       if (error) throw error;
       return { id };
