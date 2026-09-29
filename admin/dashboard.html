@@ -12,7 +12,7 @@
   <div class="admin-shell">
     <div class="admin-topbar">
       <div class="brand">PISA Hub Admin</div>
-      <div style="display:flex; align-items:center; gap:16px;">
+      <div class="admin-topbar__actions">
         <a class="admin-btn admin-btn--ghost" href="/" target="_blank" rel="noopener">View website &#8599;</a>
         <span class="who" id="whoami"></span>
         <button class="admin-btn admin-btn--ghost" id="changePwBtn" type="button">Change password</button>
@@ -129,6 +129,7 @@
           <h2>Events</h2>
           <button class="admin-btn" id="newEventBtn">+ New event</button>
         </div>
+        <div class="adm-table-scroll">
         <table class="admin-table" id="eventsTable">
           <thead>
             <tr>
@@ -141,6 +142,7 @@
           </thead>
           <tbody id="eventsTableBody"></tbody>
         </table>
+        </div>
         <p class="admin-empty admin-hidden" id="eventsEmpty">No events yet — create the first one.</p>
       </div>
 
@@ -156,12 +158,14 @@
             <button class="admin-btn" id="newMemberBtn">+ New member</button>
           </div>
         </div>
+        <div class="adm-table-scroll">
         <table class="admin-table" id="teamTable">
           <thead>
             <tr><th></th><th>Name</th><th>Role</th><th>Group</th><th>Semester</th><th>Order</th><th></th></tr>
           </thead>
           <tbody id="teamTableBody"></tbody>
         </table>
+        </div>
         <p class="admin-empty admin-hidden" id="teamEmpty">No team members for this semester yet.</p>
       </div>
 
@@ -174,10 +178,12 @@
           </div>
           <button class="admin-btn" id="newUserBtn">+ Add user</button>
         </div>
+        <div class="adm-table-scroll">
         <table class="admin-table">
           <thead><tr><th>Name</th><th>Username</th><th>Email</th><th>Role</th><th>Added</th><th>Last sign-in</th><th></th></tr></thead>
           <tbody id="usersTableBody"></tbody>
         </table>
+        </div>
         <p class="admin-error" id="usersError"></p>
       </div>
     </div>
