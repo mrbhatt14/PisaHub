@@ -465,3 +465,4 @@ a.admin-btn{ text-decoration:none; }
 .adm-log-tag--photo{ background:rgba(92,122,84,.18); color:var(--green-deep); }
 .adm-log-tag--team{ background:rgba(46,32,19,.12); color:var(--brown-mid); }
 .adm-log-tag--user{ background:rgba(107,74,50,.16); color:var(--brown-mid); }
+.adm-log-tag--about{ background:rgba(46,32,19,.18); color:var(--ink); }

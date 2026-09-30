@@ -54,11 +54,21 @@ function createUsersService(db) {
     return count ?? 0;
   }
 
-  // Usernames are unique ignoring case ("ShivamBhatt" and "shivambhatt" are the same login).
-  async function assertUsernameFree(username, exceptId) {
-    const { data, error } = await db.from("profiles").select("user_id").eq("username_key", username.toLowerCase());
+  // Usernames are unique ignoring case ("ShivamBhatt" and "shivambhatt" are the same login),
+  // enforced globally by a DB unique index (profiles_username_key_idx) since login-by-username
+  // has to resolve to exactly one account. This pre-check only confirms "taken" out loud for a
+  // conflict within accounts the actor can already see (a Maintainer only sees Contributors) -
+  // a conflict with someone outside that (e.g. an Admin's username) still blocks creation, but
+  // is left for the DB's unique-constraint fallback in create()/setUsername() to catch with a
+  // deliberately vaguer message, so a Maintainer can't use this as an oracle to enumerate who
+  // else - Admins included - has an account.
+  async function assertUsernameFree(username, exceptId, actor) {
+    const { data, error } = await db.from("profiles").select("user_id, role").eq("username_key", username.toLowerCase());
     if (error) throw error;
-    if (data.some((r) => r.user_id !== exceptId)) throw new HttpError(409, "That username is already taken.");
+    const conflict = data.find((r) => r.user_id !== exceptId);
+    if (!conflict) return;
+    const visibleRoles = actor && actor.role !== "admin" ? ["contributor"] : ROLES;
+    if (visibleRoles.includes(conflict.role)) throw new HttpError(409, "That username is already taken.");
   }
 
   // Admins manage everyone. Maintainers may only manage contributors (add, rename, reset, remove).
@@ -99,7 +109,7 @@ function createUsersService(db) {
       if (actor.role !== "admin" && role !== "contributor") throw new HttpError(403, "You can only add Contributors.");
       name = validName(name);
       username = validUsername(username);
-      await assertUsernameFree(username);
+      await assertUsernameFree(username, undefined, actor);
       email = String(email || "").trim().toLowerCase();
       if (!EMAIL_RE.test(email)) throw new HttpError(400, "Enter a valid email address.");
       const password = generatePassword();
@@ -112,7 +122,11 @@ function createUsersService(db) {
       const { error: pErr } = await db.from("profiles").upsert({ user_id: data.user.id, display_name: name, username, role });
       if (pErr) {
         await db.auth.admin.deleteUser(data.user.id); // don't leave a half-created account behind
-        if (pErr.code === "23505") throw new HttpError(409, "That username is already taken."); // lost a race
+        // Lost a race with someone else taking the username. For an Admin this is always the
+        // direct "taken" message; for a Maintainer, assertUsernameFree() already gave that
+        // message for a Contributor conflict, so reaching here means it collided with an
+        // Admin/Maintainer username outside what a Maintainer can see - keep that vague.
+        if (pErr.code === "23505") throw new HttpError(409, actor.role === "admin" ? "That username is already taken." : "Couldn't create that account. Try a different username.");
         throw pErr;
       }
       await logActivity(db, data.user.id, "user.created", data.user.id, `Added ${name} (${email}) as ${role}`);
@@ -145,10 +159,10 @@ function createUsersService(db) {
     async setUsername(actor, { id, username }) {
       username = validUsername(username);
       assertCanManage(actor, await getProfile(id));
-      await assertUsernameFree(username, id);
+      await assertUsernameFree(username, id, actor);
       const { error } = await db.from("profiles").update({ username }).eq("user_id", id);
       if (error) {
-        if (error.code === "23505") throw new HttpError(409, "That username is already taken.");
+        if (error.code === "23505") throw new HttpError(409, actor.role === "admin" ? "That username is already taken." : "Couldn't change that username. Try a different one.");
         throw error;
       }
       return { id, username };

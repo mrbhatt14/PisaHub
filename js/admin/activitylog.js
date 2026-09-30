@@ -20,7 +20,7 @@ async function initActivityLog() {
 const fmtLogTime = (iso) => new Date(iso).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
 
 function entityBadge(type) {
-  const map = { event: ["Event", "event"], event_photo: ["Photo", "photo"], team_member: ["Team", "team"], user: ["User", "user"] };
+  const map = { event: ["Event", "event"], event_photo: ["Photo", "photo"], team_member: ["Team", "team"], about_content: ["About page", "about"], user: ["User", "user"] };
   const [label, kind] = map[type] || [type, ""];
   return `<span class="adm-log-tag adm-log-tag--${kind}">${escapeHtml(label)}</span>`;
 }

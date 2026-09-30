@@ -528,3 +528,77 @@ $$ language plpgsql security definer;
 drop trigger if exists team_members_activity_log_trg on public.team_members;
 create trigger team_members_activity_log_trg after insert or update or delete on public.team_members
   for each row execute function public.team_members_activity_log();
+
+-- ===========================================================================
+-- ABOUT PAGE CONTENT - the /about page (index.html) used to be hardcoded HTML.
+-- This is a single-row "settings" table (id is always 1) holding every piece of
+-- copy on that page, editable from the admin portal's About tab. js/main.js
+-- reads it on load and merges it over its own hardcoded defaults (same
+-- resilience pattern as events/team_members: if this table is unreachable or
+-- empty, the page still renders the original copy, never a blank page).
+-- Column names are plain text on purpose (no HTML) - js/main.js always escapes
+-- them before inserting into the page, so there's no way to inject markup here.
+-- ===========================================================================
+create table if not exists public.about_content (
+  id int primary key default 1 check (id = 1), -- singleton: exactly one row, always id=1
+  banner_eyebrow text not null default 'PISA · EST. 2008',
+  banner_heading_1 text not null default 'Where every Pace festival',
+  banner_heading_2 text not null default 'feels like home.',
+  intro_eyebrow text not null default 'WHO WE ARE',
+  intro_heading_1 text not null default 'More than a club.',
+  intro_heading_2 text not null default 'A community - since 2008.',
+  intro_lead text not null default 'The Pace Indian Student Association (PISA) is a Lubin School of Business graduate student-led community at Pace University - dedicated to bringing Indian students together, celebrating Indian culture, and creating a sense of home away from home.',
+  intro_body text not null default 'Through cultural celebrations, social experiences, networking, guidance, collaborations, and community initiatives, PISA helps students connect, belong, and create lasting memories together. Established in 2008, PISA has become an integral part of the Pace University community.',
+  values_heading text not null default 'What PISA is built on',
+  values_lead text not null default 'Five ideas shape everything we do - from the biggest festival on campus to the smallest first hello.',
+  value_1_title text not null default 'Culture',
+  value_1_text text not null default 'Celebrating India''s diverse festivals, traditions, music, dance, food, fashion and heritage - and sharing it with the wider Pace community.',
+  value_2_title text not null default 'Community',
+  value_2_text text not null default 'Creating spaces for students to meet, make friends, celebrate together and build meaningful connections at Pace.',
+  value_3_title text not null default 'Support & Guidance',
+  value_3_text text not null default 'Connecting students with peers, alumni and community members for experiences, resources and guidance as they navigate university and life in New York.',
+  value_4_title text not null default 'Networking',
+  value_4_text text not null default 'Opportunities to connect with alumni, professionals, community leaders and organizations - relationships that extend well beyond Pace.',
+  value_5_title text not null default 'Belonging',
+  value_5_text text not null default 'At the heart of PISA is one simple idea: everyone deserves to feel at home. We bring students together across backgrounds to find their people, celebrate who they are, and make memories that last beyond university.',
+  beyond_eyebrow text not null default 'CONNECTED BEYOND PACE',
+  beyond_heading_1 text not null default 'Rooted at Pace.',
+  beyond_heading_2 text not null default 'Connected to New York.',
+  beyond_body text not null default 'PISA''s community extends beyond the university campus. We''ve built meaningful relationships with the Consulate General of India in New York, representatives of the New York State Assembly, Pace University leadership, faculty, alumni and the wider Indian-American community - bringing public officials and community representatives into PISA''s celebrations. PISA is part of a community much bigger than our campus.',
+  beyond_mantra text not null default 'Vasudhaiva Kutumbakam',
+  beyond_mantra_translation text not null default 'The world is one family.',
+  cta_eyebrow text not null default 'JOIN US',
+  cta_heading text not null default 'Find your home at Pace.',
+  updated_at timestamptz not null default now()
+);
+insert into public.about_content (id) values (1) on conflict (id) do nothing;
+
+alter table public.about_content enable row level security;
+-- public read always (it's public page content); only maintainers/admins can edit it, and only
+-- UPDATE - there's deliberately no insert/delete policy since the row (id=1) always exists.
+drop policy if exists "about_content_public_read" on public.about_content;
+create policy "about_content_public_read" on public.about_content
+  for select using (true);
+drop policy if exists "about_content_maintainer_write" on public.about_content;
+create policy "about_content_maintainer_write" on public.about_content
+  for update using (public.has_role('maintainer')) with check (public.has_role('maintainer'));
+
+create or replace function public.about_content_activity_log() returns trigger as $$
+begin
+  perform public.log_activity('about.updated', 'about_content', '1', 'Updated the About page content');
+  return new;
+end;
+$$ language plpgsql security definer;
+drop trigger if exists about_content_activity_log_trg on public.about_content;
+create trigger about_content_activity_log_trg after update on public.about_content
+  for each row execute function public.about_content_activity_log();
+
+-- ===========================================================================
+-- SECURITY HARDENING - fail-safe default role
+-- The original `profiles.role` column defaulted to 'maintainer'. No code path in this project
+-- ever relies on that default (api/_lib/users-service.js always sets role explicitly), but it's a
+-- landmine: any future insert that forgets to set a role - a manual dashboard fix, a new sign-up
+-- path - would silently grant maintainer (edit) access instead of failing loudly or landing on the
+-- least-privileged role. Flip it to the safe default.
+-- ===========================================================================
+alter table public.profiles alter column role set default 'contributor';

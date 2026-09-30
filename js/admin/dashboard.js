@@ -5,8 +5,8 @@ let editingEventId = null; // null = creating a new event
 // Which tabs each role can open. The database enforces the real limits (RLS); this just keeps
 // people from being shown screens that would only error.
 const ROLE_TABS = {
-  admin: ["home", "approvals", "live", "gallery", "events", "team", "users", "activity"],
-  maintainer: ["home", "approvals", "live", "gallery", "events", "team", "users", "activity"],
+  admin: ["home", "about", "live", "events", "gallery", "team", "approvals", "users", "activity"],
+  maintainer: ["home", "about", "live", "events", "gallery", "team", "approvals", "users", "activity"],
   contributor: ["home", "live", "gallery"],
 };
 const roleLabel = (r) => (r ? r.charAt(0).toUpperCase() + r.slice(1) : "");
@@ -45,7 +45,7 @@ async function init() {
 
   switchTab(currentTabFromHash(), { updateHash: false });
   const jobs = [initLiveEvents(), initGallery(), initAccount()];
-  if (!isContributor()) jobs.push(loadEvents(), initTeam(), initUsers(), initApprovals(), initActivityLog());
+  if (!isContributor()) jobs.push(loadEvents(), initTeam(), initAbout(), initUsers(), initApprovals(), initActivityLog());
   await Promise.all(jobs);
 }
 
@@ -70,7 +70,7 @@ function applyRoleUI() {
   }
 }
 
-const TABS = ["home", "approvals", "live", "gallery", "events", "team", "users", "activity"];
+const TABS = ["home", "about", "live", "events", "gallery", "team", "approvals", "users", "activity"];
 
 // Tabs are routes: /admin/dashboard.html#live etc. so refresh, Back and shared links keep your place.
 function currentTabFromHash() {

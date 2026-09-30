@@ -1,5 +1,5 @@
 // "Change password" for whoever is signed in (used to replace the temporary password an admin gave them).
-const MIN_PASSWORD = 8;
+const MIN_PASSWORD = 12; // NIST 800-63B floor is 8; this panel can publish content and manage accounts, so we set the bar higher.
 
 function initAccount() {
   const $ = (id) => document.getElementById(id);

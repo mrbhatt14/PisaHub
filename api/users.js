@@ -1,5 +1,6 @@
 const { supabaseAdmin, requireRole } = require("./_lib/auth");
 const { createUsersService, HttpError } = require("./_lib/users-service");
+const { enforceRateLimit } = require("./_lib/rate-limit");
 
 const service = createUsersService(supabaseAdmin);
 
@@ -7,6 +8,7 @@ const service = createUsersService(supabaseAdmin);
 // (enforced in api/_lib/users-service.js). Contributors have no access at all. Listing is GET; every change is a POST with an
 // `action` (create | setName | setUsername | setRole | resetPassword | remove) so it works the same on any host.
 module.exports = async function handler(req, res) {
+  if (await enforceRateLimit(req, res)) return;
   const actor = await requireRole(req, res, "maintainer");
   if (!actor) return; // 401/403 already sent
 

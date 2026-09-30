@@ -282,68 +282,59 @@
      PAGE: ABOUT US
 ========================================================= -->
     <section class="page page--about" id="page-about" data-page="about">
+      <!-- All text below is a JS-rendered placeholder (see ABOUT + renderAbout() in js/main.js),
+           overwritten on load from the about_content table if reachable, editable in the admin
+           portal's About tab. This copy is the safety-net default if Supabase is unreachable. -->
       <header class="page-banner page-banner--about">
-        <div class="about-banner__inner">and
-          <p class="eyebrow eyebrow--on-dark">ABOUT PISA · EST. 2008</p>
-          <h1>Where every Pace festival<br><em>feels like home.</em></h1>
-          <!-- <p class="page-banner__sub">Celebrate. Connect. Belong.</p> -->
+        <div class="about-banner__inner">
+          <p class="eyebrow eyebrow--on-dark" id="aboutBannerEyebrow">PISA · EST. 2008</p>
+          <h1 id="aboutBannerHeading">Where every Pace festival<br><em>feels like home.</em></h1>
         </div>
       </header>
 
       <section class="about-intro">
         <div class="about-intro__head">
-          <p class="eyebrow">WHO WE ARE</p>
-          <h2>More than a club.<br><em>A community</em> - since 2008.</h2>
+          <p class="eyebrow" id="aboutIntroEyebrow">WHO WE ARE</p>
+          <h2 id="aboutIntroHeading">More than a club.<br><em>A community - since 2008.</em></h2>
         </div>
         <div class="about-intro__body">
-          <p class="about-intro__lead">The Pace Indian Student Association (PISA) is a Lubin School of Business
-            graduate student-led community at Pace University - dedicated to bringing Indian students together,
-            celebrating Indian culture, and creating a sense of home away from home.</p>
-          <p>Through cultural celebrations, social experiences, networking, guidance, collaborations, and community
-            initiatives, PISA helps students connect, belong, and create lasting memories together. Established in 2008,
-            PISA has become an integral part of the Pace University community.</p>
+          <p class="about-intro__lead" id="aboutIntroLead"></p>
+          <p id="aboutIntroBody"></p>
         </div>
       </section>
 
       <section class="about-values">
         <div class="section-head about-values__head">
           <div>
-            <h2>What PISA is built on</h2>
+            <h2 id="aboutValuesHeading">What PISA is built on</h2>
           </div>
-          <p class="about-values__lead">Five ideas shape everything we do - from the biggest festival on campus to the
-            smallest first hello.</p>
+          <p class="about-values__lead" id="aboutValuesLead"></p>
         </div>
         <div class="values-grid">
           <article class="value-card">
             <span class="value-card__num">01</span>
-            <h3>Culture</h3>
-            <p>Celebrating India's diverse festivals, traditions, music, dance, food, fashion and heritage - and sharing
-              it with the wider Pace community.</p>
+            <h3 id="aboutValue1Title"></h3>
+            <p id="aboutValue1Text"></p>
           </article>
           <article class="value-card">
             <span class="value-card__num">02</span>
-            <h3>Community</h3>
-            <p>Creating spaces for students to meet, make friends, celebrate together and build meaningful connections at
-              Pace.</p>
+            <h3 id="aboutValue2Title"></h3>
+            <p id="aboutValue2Text"></p>
           </article>
           <article class="value-card">
             <span class="value-card__num">03</span>
-            <h3>Support &amp; Guidance</h3>
-            <p>Connecting students with peers, alumni and community members for experiences, resources and guidance as
-              they navigate university and life in New York.</p>
+            <h3 id="aboutValue3Title"></h3>
+            <p id="aboutValue3Text"></p>
           </article>
           <article class="value-card">
             <span class="value-card__num">04</span>
-            <h3>Networking</h3>
-            <p>Opportunities to connect with alumni, professionals, community leaders and organizations - relationships
-              that extend well beyond Pace.</p>
+            <h3 id="aboutValue4Title"></h3>
+            <p id="aboutValue4Text"></p>
           </article>
           <article class="value-card value-card--wide">
             <span class="value-card__num">05</span>
-            <h3>Belonging</h3>
-            <p>At the heart of PISA is one simple idea: everyone deserves to feel at home. We bring students together
-              across backgrounds to find their people, celebrate who they are, and make memories that last beyond
-              university.</p>
+            <h3 id="aboutValue5Title"></h3>
+            <p id="aboutValue5Text"></p>
           </article>
         </div>
       </section>
@@ -351,16 +342,12 @@
       <section class="about-beyond">
         <div class="about-beyond__inner">
           <div class="about-beyond__head">
-            <p class="eyebrow eyebrow--on-dark">CONNECTED BEYOND PACE</p>
-            <h2>Rooted at Pace.<br><em>Connected to New York.</em></h2>
+            <p class="eyebrow eyebrow--on-dark" id="aboutBeyondEyebrow">CONNECTED BEYOND PACE</p>
+            <h2 id="aboutBeyondHeading">Rooted at Pace.<br><em>Connected to New York.</em></h2>
           </div>
           <div class="about-beyond__body">
-            <p>PISA's community extends beyond the university campus. We've built meaningful relationships with the
-              Consulate General of India in New York, representatives of the New York State Assembly, Pace University
-              leadership, faculty, alumni and the wider Indian-American community - bringing public officials and
-              community representatives into PISA's celebrations. PISA is part of a community much bigger than our
-              campus.</p>
-            <p class="about-beyond__mantra">Vasudhaiva Kutumbakam - <em>“The world is one family.”</em></p>
+            <p id="aboutBeyondBody"></p>
+            <p class="about-beyond__mantra" id="aboutBeyondMantra"></p>
           </div>
         </div>
       </section>
@@ -368,8 +355,8 @@
       <section class="about-cta">
         <div class="about-cta__inner">
           <div class="about-cta__text">
-            <p class="eyebrow">JOIN US</p>
-            <h2>Find your home at Pace.</h2>
+            <p class="eyebrow" id="aboutCtaEyebrow">JOIN US</p>
+            <h2 id="aboutCtaHeading">Find your home at Pace.</h2>
           </div>
           <div class="about-cta__btns">
             <a href="/team" class="btn btn--primary" data-route="team">Meet the Team →</a>

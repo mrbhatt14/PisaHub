@@ -2,6 +2,7 @@ const { createClient } = require("@supabase/supabase-js");
 const { supabaseAdmin } = require("./_lib/auth");
 const { HttpError } = require("./_lib/users-service");
 const { createUsernameAuth } = require("./_lib/username-auth");
+const { enforceRateLimit } = require("./_lib/rate-limit");
 
 const auth = createUsernameAuth({
   db: supabaseAdmin,
@@ -17,6 +18,7 @@ module.exports = async function handler(req, res) {
     res.status(405).json({ error: "Method not allowed" });
     return;
   }
+  if (await enforceRateLimit(req, res)) return;
   const { action, identifier, password } = req.body || {};
   try {
     if (action === "login") {

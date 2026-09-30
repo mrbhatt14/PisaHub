@@ -418,6 +418,45 @@
   ];
 
   /* ---------------------------------------------------------
+     DATA - ABOUT PAGE
+     Hardcoded fallback copy for /about, overwritten by
+     loadLiveAboutData() from the about_content table if it's
+     reachable (edited from the admin portal's About tab). Keys
+     match that table's column names 1:1 so the merge is a plain
+     spread - see loadLiveAboutData() below.
+  --------------------------------------------------------- */
+  let ABOUT = {
+    banner_eyebrow: "PISA · EST. 2008",
+    banner_heading_1: "Where every Pace festival",
+    banner_heading_2: "feels like home.",
+    intro_eyebrow: "WHO WE ARE",
+    intro_heading_1: "More than a club.",
+    intro_heading_2: "A community - since 2008.",
+    intro_lead: "The Pace Indian Student Association (PISA) is a Lubin School of Business graduate student-led community at Pace University - dedicated to bringing Indian students together, celebrating Indian culture, and creating a sense of home away from home.",
+    intro_body: "Through cultural celebrations, social experiences, networking, guidance, collaborations, and community initiatives, PISA helps students connect, belong, and create lasting memories together. Established in 2008, PISA has become an integral part of the Pace University community.",
+    values_heading: "What PISA is built on",
+    values_lead: "Five ideas shape everything we do - from the biggest festival on campus to the smallest first hello.",
+    value_1_title: "Culture",
+    value_1_text: "Celebrating India's diverse festivals, traditions, music, dance, food, fashion and heritage - and sharing it with the wider Pace community.",
+    value_2_title: "Community",
+    value_2_text: "Creating spaces for students to meet, make friends, celebrate together and build meaningful connections at Pace.",
+    value_3_title: "Support & Guidance",
+    value_3_text: "Connecting students with peers, alumni and community members for experiences, resources and guidance as they navigate university and life in New York.",
+    value_4_title: "Networking",
+    value_4_text: "Opportunities to connect with alumni, professionals, community leaders and organizations - relationships that extend well beyond Pace.",
+    value_5_title: "Belonging",
+    value_5_text: "At the heart of PISA is one simple idea: everyone deserves to feel at home. We bring students together across backgrounds to find their people, celebrate who they are, and make memories that last beyond university.",
+    beyond_eyebrow: "CONNECTED BEYOND PACE",
+    beyond_heading_1: "Rooted at Pace.",
+    beyond_heading_2: "Connected to New York.",
+    beyond_body: "PISA's community extends beyond the university campus. We've built meaningful relationships with the Consulate General of India in New York, representatives of the New York State Assembly, Pace University leadership, faculty, alumni and the wider Indian-American community - bringing public officials and community representatives into PISA's celebrations. PISA is part of a community much bigger than our campus.",
+    beyond_mantra: "Vasudhaiva Kutumbakam",
+    beyond_mantra_translation: "The world is one family.",
+    cta_eyebrow: "JOIN US",
+    cta_heading: "Find your home at Pace."
+  };
+
+  /* ---------------------------------------------------------
      DATA - TEAM
      Replace photoSeed with a real image path once you have
      headshots - see README.md.
@@ -665,8 +704,11 @@
     if (!raw || raw === "#" || raw.toUpperCase() === "NA") {
       return `<a href="/team" data-route="team" aria-label="${esc(name)} — see the PISA team">${ICONS[network]}</a>`;
     }
-    // Normalize handles saved without a scheme (e.g. "www.linkedin.com/…").
-    const href = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+    // Normalize handles saved without a scheme (e.g. "www.linkedin.com/…"), then run the result
+    // through the same http(s)-only allowlist as every other admin-supplied link on the site -
+    // see safeUrl() above.
+    const normalized = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+    const href = safeUrl(normalized);
     return `<a href="${esc(href)}" target="_blank" rel="noopener" aria-label="${esc(name)} on ${network === "instagram" ? "Instagram" : "LinkedIn"}">${ICONS[network]}</a>`;
   }
   function teamCardMarkup(member, small) {
@@ -708,6 +750,7 @@
     updateNavChrome();
 
     if (route === "history") renderTimeline();
+    if (route === "about") renderAbout();
     if (route === "team") renderTeam();
     if (route === "volunteer") renderVolunteer();
     if (route === "events") renderLiveEvents();
@@ -1143,6 +1186,30 @@
     items.forEach((it) => tlObserver.observe(it));
   }
 
+  /* ===========================================================
+     ABOUT PAGE
+  =========================================================== */
+  function renderAbout() {
+    $("#aboutBannerEyebrow").textContent = ABOUT.banner_eyebrow;
+    $("#aboutBannerHeading").innerHTML = `${esc(ABOUT.banner_heading_1)}<br><em>${esc(ABOUT.banner_heading_2)}</em>`;
+    $("#aboutIntroEyebrow").textContent = ABOUT.intro_eyebrow;
+    $("#aboutIntroHeading").innerHTML = `${esc(ABOUT.intro_heading_1)}<br><em>${esc(ABOUT.intro_heading_2)}</em>`;
+    $("#aboutIntroLead").textContent = ABOUT.intro_lead;
+    $("#aboutIntroBody").textContent = ABOUT.intro_body;
+    $("#aboutValuesHeading").textContent = ABOUT.values_heading;
+    $("#aboutValuesLead").textContent = ABOUT.values_lead;
+    for (let n = 1; n <= 5; n++) {
+      $(`#aboutValue${n}Title`).textContent = ABOUT[`value_${n}_title`];
+      $(`#aboutValue${n}Text`).textContent = ABOUT[`value_${n}_text`];
+    }
+    $("#aboutBeyondEyebrow").textContent = ABOUT.beyond_eyebrow;
+    $("#aboutBeyondHeading").innerHTML = `${esc(ABOUT.beyond_heading_1)}<br><em>${esc(ABOUT.beyond_heading_2)}</em>`;
+    $("#aboutBeyondBody").textContent = ABOUT.beyond_body;
+    $("#aboutBeyondMantra").innerHTML = `${esc(ABOUT.beyond_mantra)} - <em>“${esc(ABOUT.beyond_mantra_translation)}”</em>`;
+    $("#aboutCtaEyebrow").textContent = ABOUT.cta_eyebrow;
+    $("#aboutCtaHeading").textContent = ABOUT.cta_heading;
+  }
+
   function renderTimeline() {
     const semesters = historySemesters();
     const select = $("#historySemSelect");
@@ -1282,11 +1349,19 @@
     });
   }
 
+  // The about_content table is a single row (id=1) edited from the admin portal's About tab.
+  // Column names match ABOUT's keys exactly, so merging live data in is just a spread.
+  async function loadLiveAboutData() {
+    const { data, error } = await supabaseClient.from("about_content").select("*").eq("id", 1).maybeSingle();
+    if (error || !data) return;
+    ABOUT = { ...ABOUT, ...data };
+  }
+
   // Resolves once both loads finish or after `ms`, whichever comes first, and
   // never rejects - so a slow/failed Supabase call can't block the first render.
   function loadLiveData(ms = 3000) {
     if (typeof supabaseClient === "undefined") return Promise.resolve();
-    const both = Promise.all([loadLiveTeamData(), loadLiveEventsData()]).catch(() => {});
+    const both = Promise.all([loadLiveTeamData(), loadLiveEventsData(), loadLiveAboutData()]).catch(() => {});
     return Promise.race([both, new Promise((resolve) => setTimeout(resolve, ms))]);
   }
 
