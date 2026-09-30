@@ -135,6 +135,8 @@ function showCredentials(title, info) {
 async function createUser(e) {
   e.preventDefault();
   const err = uEl("userFormError"); err.textContent = "";
+  const name = uEl("usr_name").value.trim();
+  if (!(await admConfirm(`Create an account for ${name || "this person"}?`))) return;
   const btn = uEl("userSave"); btn.disabled = true; btn.textContent = "Creating…";
   try {
     const r = await usersApi("POST", { action: "create", name: uEl("usr_name").value, username: uEl("usr_username").value, email: uEl("usr_email").value, role: uEl("usr_role").value });
@@ -149,15 +151,17 @@ async function createUser(e) {
 }
 
 async function editUsername(u) {
-  const username = prompt(`Username for ${u.name || u.email} (3-30 characters: letters, numbers, . and _):`, u.username || "");
+  const username = await admPrompt(`Username for ${u.name || u.email} (3-30 characters: letters, numbers, . and _):`, u.username || "");
   if (username === null) return;
+  if (!(await admConfirm(`Change the username for ${u.name || u.email} to "${username.trim()}"?`))) return;
   try { await usersApi("POST", { action: "setUsername", id: u.id, username: username.trim() }); await loadUsers(); }
   catch (ex) { uEl("usersError").textContent = ex.message; }
 }
 
 async function editName(u) {
-  const name = prompt(`Name for ${u.email}:`, u.name || "");
+  const name = await admPrompt(`Name for ${u.email}:`, u.name || "");
   if (name === null) return; // cancelled
+  if (!(await admConfirm(`Change the name for ${u.email} to "${name.trim()}"?`))) return;
   try { await usersApi("POST", { action: "setName", id: u.id, name }); await loadUsers(); }
   catch (ex) { uEl("usersError").textContent = ex.message; }
 }
@@ -168,19 +172,19 @@ async function changeRole(u, role, selectEl) {
     maintainer: "a Maintainer (edits content and approves contributions, but can't manage users)",
     contributor: "a Contributor (can only add events and photos that need approval)",
   }[role];
-  if (!confirm(`Make ${u.name || u.email} ${meaning}?`)) { if (selectEl) selectEl.value = u.role; return; }
+  if (!(await admConfirm(`Make ${u.name || u.email} ${meaning}?`))) { if (selectEl) selectEl.value = u.role; return; }
   try { await usersApi("POST", { action: "setRole", id: u.id, role }); await loadUsers(); }
   catch (ex) { uEl("usersError").textContent = ex.message; if (selectEl) selectEl.value = u.role; }
 }
 
 async function resetUserPassword(u) {
-  if (!confirm(`Reset the password for ${u.email}? Their current password stops working immediately.`)) return;
+  if (!(await admConfirm(`Reset the password for ${u.email}? Their current password stops working immediately.`))) return;
   try { const r = await usersApi("POST", { action: "resetPassword", id: u.id }); showCredentials("Password reset", { kind: "reset", name: u.name, username: u.username, email: u.email, role: u.role, password: r.tempPassword }); }
   catch (ex) { uEl("usersError").textContent = ex.message; }
 }
 
 async function removeUser(u) {
-  if (!confirm(`Remove ${u.email}? They will no longer be able to sign in to the admin portal. This can't be undone.`)) return;
+  if (!(await admConfirm(`Remove ${u.email}? They will no longer be able to sign in to the admin portal. This can't be undone.`, { danger: true }))) return;
   try { await usersApi("POST", { action: "remove", id: u.id }); await loadUsers(); }
   catch (ex) { uEl("usersError").textContent = ex.message; }
 }

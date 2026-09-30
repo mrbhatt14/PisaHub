@@ -101,8 +101,8 @@ async function openGalleryManager(eventId) {
   await loadGalleryPhotos();
 }
 
-function closeGalleryManager() {
-  if (gal.busy && !confirm("Uploads are still running. Close anyway?")) return;
+async function closeGalleryManager() {
+  if (gal.busy && !(await admConfirm("Uploads are still running. Close anyway?"))) return;
   galEl("galModalBackdrop").classList.add("admin-hidden");
   gal.eventId = null;
   loadGalleryEvents();
@@ -177,7 +177,7 @@ async function reorderPhoto(fromId, toId) {
 
 async function deleteSelectedPhotos() {
   const ids = [...gal.selected];
-  if (!ids.length || !confirm(`Delete ${ids.length} photo${ids.length === 1 ? "" : "s"}? This also removes them from the public gallery.`)) return;
+  if (!ids.length || !(await admConfirm(`Delete ${ids.length} photo${ids.length === 1 ? "" : "s"}? This also removes them from the public gallery.`, { danger: true }))) return;
   const targets = gal.photos.filter((p) => gal.selected.has(p.id));
   galEl("galStatus").textContent = `Deleting ${targets.length}…`;
   const keysOf = (p) => [p.storage_key, p.thumb_key].filter(Boolean);

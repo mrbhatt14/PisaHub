@@ -387,3 +387,144 @@ alter table public.team_members drop constraint if exists team_members_key_forma
 alter table public.team_members add constraint team_members_key_format check (
   storage_key is null or storage_key ~ '^team/[A-Za-z0-9._/-]+$'
 );
+
+-- ===========================================================================
+-- ACTIVITY LOG - a record of who did what, for maintainers/admins to review.
+-- Populated automatically by triggers on events/event_photos/team_members (so it
+-- can't be bypassed by any client, and every write path - Live Events, Gallery,
+-- Team, Approvals - is covered without touching each one), plus explicit calls
+-- from api/_lib/users-service.js for account management (create/role/reset/remove),
+-- since those go through the service-role key rather than a client-side write.
+-- Actor name/role are snapshotted at write time so the log stays readable even if
+-- that person is later renamed or removed.
+-- ===========================================================================
+create table if not exists public.activity_log (
+  id uuid primary key default gen_random_uuid(),
+  actor_id uuid,
+  actor_name text not null,
+  actor_role text not null,
+  action text not null,          -- e.g. 'event.published', 'photo.approved', 'user.removed'
+  entity_type text not null,     -- 'event' | 'event_photo' | 'team_member' | 'user'
+  entity_id text,
+  summary text not null,         -- human-readable, e.g. "Published event "Holi 2026""
+  created_at timestamptz not null default now()
+);
+create index if not exists activity_log_created_at_idx on public.activity_log (created_at desc);
+
+alter table public.activity_log enable row level security;
+drop policy if exists "activity_log_maintainer_read" on public.activity_log;
+create policy "activity_log_maintainer_read" on public.activity_log
+  for select using (public.has_role('maintainer'));
+-- Deliberately no insert/update/delete policy for anon/authenticated: rows are only ever
+-- written by the SECURITY DEFINER functions below (which run as the table owner and so
+-- bypass RLS), or via the service-role key from api/_lib/users-service.js. A contributor
+-- or maintainer's own client session cannot write or forge a log entry directly.
+
+create or replace function public.current_actor()
+returns table (id uuid, name text, role text) as $$
+  select p.user_id, coalesce(p.display_name, p.username, 'Someone'), p.role
+  from public.profiles p where p.user_id = auth.uid();
+$$ language sql security definer stable;
+
+create or replace function public.log_activity(p_action text, p_entity_type text, p_entity_id text, p_summary text)
+returns void as $$
+declare a record;
+begin
+  select * into a from public.current_actor();
+  if a.id is null then return; end if; -- system/service-role writes (e.g. migrations) are not logged
+  insert into public.activity_log (actor_id, actor_name, actor_role, action, entity_type, entity_id, summary)
+  values (a.id, a.name, a.role, p_action, p_entity_type, p_entity_id, p_summary);
+end;
+$$ language plpgsql security definer;
+
+create or replace function public.events_activity_log() returns trigger as $$
+begin
+  if tg_op = 'INSERT' then
+    if new.status = 'pending' then
+      perform public.log_activity('event.submitted', 'event', new.id, format('Submitted "%s" for review', new.title));
+    elsif new.status = 'published' then
+      perform public.log_activity('event.published', 'event', new.id, format('Published "%s"', new.title));
+    else
+      perform public.log_activity('event.created', 'event', new.id, format('Created a draft: "%s"', new.title));
+    end if;
+    return new;
+  end if;
+  if tg_op = 'DELETE' then
+    perform public.log_activity('event.deleted', 'event', old.id, format('Deleted "%s"', old.title));
+    return old;
+  end if;
+  -- UPDATE: report the most meaningful thing that changed
+  if new.status is distinct from old.status then
+    if old.status = 'draft' and new.status = 'pending' then
+      perform public.log_activity('event.submitted', 'event', new.id, format('Submitted "%s" for review', new.title));
+    elsif old.status = 'pending' and new.status = 'published' then
+      perform public.log_activity('event.published', 'event', new.id, format('Approved and published "%s"', new.title));
+    elsif new.status = 'draft' and new.review_note is not null and (old.review_note is distinct from new.review_note) then
+      perform public.log_activity('event.sent_back', 'event', new.id, format('Sent "%s" back for changes: %s', new.title, new.review_note));
+    elsif old.status = 'pending' and new.status = 'draft' then
+      perform public.log_activity('event.withdrawn', 'event', new.id, format('Withdrew "%s" from review', new.title));
+    elsif new.status = 'published' then
+      perform public.log_activity('event.published', 'event', new.id, format('Published "%s"', new.title));
+    else
+      perform public.log_activity('event.updated', 'event', new.id, format('Updated "%s"', new.title));
+    end if;
+  else
+    perform public.log_activity('event.updated', 'event', new.id, format('Edited "%s"', new.title));
+  end if;
+  return new;
+end;
+$$ language plpgsql security definer;
+drop trigger if exists events_activity_log_trg on public.events;
+create trigger events_activity_log_trg after insert or update or delete on public.events
+  for each row execute function public.events_activity_log();
+
+create or replace function public.event_photos_activity_log() returns trigger as $$
+declare ev_title text;
+begin
+  select title into ev_title from public.events where id = coalesce(new.event_id, old.event_id);
+  ev_title := coalesce(ev_title, 'an event');
+  if tg_op = 'INSERT' then
+    if new.is_poster then
+      perform public.log_activity('photo.poster_set', 'event_photo', new.id::text, format('Set the poster for "%s"', ev_title));
+    elsif new.approved then
+      perform public.log_activity('photo.uploaded', 'event_photo', new.id::text, format('Added a photo to "%s"', ev_title));
+    else
+      perform public.log_activity('photo.submitted', 'event_photo', new.id::text, format('Uploaded a photo to "%s", pending approval', ev_title));
+    end if;
+    return new;
+  end if;
+  if tg_op = 'DELETE' then
+    if old.approved = false then
+      perform public.log_activity('photo.rejected', 'event_photo', old.id::text, format('Rejected a pending photo on "%s"', ev_title));
+    else
+      perform public.log_activity('photo.deleted', 'event_photo', old.id::text, format('Removed a photo from "%s"', ev_title));
+    end if;
+    return old;
+  end if;
+  if old.approved = false and new.approved = true then
+    perform public.log_activity('photo.approved', 'event_photo', new.id::text, format('Approved a photo on "%s"', ev_title));
+  end if;
+  return new;
+end;
+$$ language plpgsql security definer;
+drop trigger if exists event_photos_activity_log_trg on public.event_photos;
+create trigger event_photos_activity_log_trg after insert or update or delete on public.event_photos
+  for each row execute function public.event_photos_activity_log();
+
+create or replace function public.team_members_activity_log() returns trigger as $$
+begin
+  if tg_op = 'INSERT' then
+    perform public.log_activity('team.created', 'team_member', new.id::text, format('Added %s to the team (%s)', new.name, coalesce(new.role, '')));
+    return new;
+  end if;
+  if tg_op = 'DELETE' then
+    perform public.log_activity('team.deleted', 'team_member', old.id::text, format('Removed %s from the team', old.name));
+    return old;
+  end if;
+  perform public.log_activity('team.updated', 'team_member', new.id::text, format('Updated %s''s profile', new.name));
+  return new;
+end;
+$$ language plpgsql security definer;
+drop trigger if exists team_members_activity_log_trg on public.team_members;
+create trigger team_members_activity_log_trg after insert or update or delete on public.team_members
+  for each row execute function public.team_members_activity_log();

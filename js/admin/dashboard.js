@@ -5,8 +5,8 @@ let editingEventId = null; // null = creating a new event
 // Which tabs each role can open. The database enforces the real limits (RLS); this just keeps
 // people from being shown screens that would only error.
 const ROLE_TABS = {
-  admin: ["home", "approvals", "live", "gallery", "events", "team", "users"],
-  maintainer: ["home", "approvals", "live", "gallery", "events", "team", "users"],
+  admin: ["home", "approvals", "live", "gallery", "events", "team", "users", "activity"],
+  maintainer: ["home", "approvals", "live", "gallery", "events", "team", "users", "activity"],
   contributor: ["home", "live", "gallery"],
 };
 const roleLabel = (r) => (r ? r.charAt(0).toUpperCase() + r.slice(1) : "");
@@ -45,7 +45,7 @@ async function init() {
 
   switchTab(currentTabFromHash(), { updateHash: false });
   const jobs = [initLiveEvents(), initGallery(), initAccount()];
-  if (!isContributor()) jobs.push(loadEvents(), initTeam(), initUsers(), initApprovals());
+  if (!isContributor()) jobs.push(loadEvents(), initTeam(), initUsers(), initApprovals(), initActivityLog());
   await Promise.all(jobs);
 }
 
@@ -70,7 +70,7 @@ function applyRoleUI() {
   }
 }
 
-const TABS = ["home", "approvals", "live", "gallery", "events", "team", "users"];
+const TABS = ["home", "approvals", "live", "gallery", "events", "team", "users", "activity"];
 
 // Tabs are routes: /admin/dashboard.html#live etc. so refresh, Back and shared links keep your place.
 function currentTabFromHash() {
@@ -89,6 +89,7 @@ function switchTab(tab, { updateHash = true } = {}) {
   if (updateHash && location.hash !== `#${tab}`) history.pushState(null, "", `#${tab}`);
   if (tab === "home") loadHomePreview();
   if (tab === "approvals" && typeof loadApprovals === "function") loadApprovals();
+  if (tab === "activity" && typeof loadActivityLog === "function") loadActivityLog(true);
 }
 
 function loadHomePreview(force = false) {
@@ -193,6 +194,8 @@ async function saveEvent(e) {
   e.preventDefault();
   const errorEl = document.getElementById("eventFormError");
   errorEl.textContent = "";
+  const title = document.getElementById("ev_title").value.trim();
+  if (!(await admConfirm(editingEventId ? `Save changes to "${title}"?` : `Create "${title}"?`))) return;
   const saveBtn = document.getElementById("eventModalSave");
   saveBtn.disabled = true;
 
@@ -228,7 +231,7 @@ async function saveEvent(e) {
 }
 
 async function deleteEvent(id) {
-  if (!confirm(`Delete "${id}"? This also deletes its photo records.`)) return;
+  if (!(await admConfirm(`Delete "${id}"? This also deletes its photo records.`, { danger: true }))) return;
   const { error } = await supabaseClient.from("events").delete().eq("id", id);
   if (error) {
     alert(`Failed to delete: ${error.message}`);
@@ -350,7 +353,7 @@ async function setAsPoster(photoId) {
 }
 
 async function deleteEventPhoto(photoId, storageKey) {
-  if (!confirm("Delete this photo?")) return;
+  if (!(await admConfirm("Delete this photo?", { danger: true }))) return;
   const { error } = await supabaseClient.from("event_photos").delete().eq("id", photoId);
   if (error) {
     alert(`Failed to delete: ${error.message}`);

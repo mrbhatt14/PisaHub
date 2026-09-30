@@ -87,7 +87,7 @@ function renderApprovalEvents() {
 async function approveEvent(id) {
   const ev = appr.events.find((e) => e.id === id);
   const noPoster = !(ev.event_photos || []).some((p) => p.is_poster);
-  if (!confirm(`Publish “${ev.title}”? It goes live on the website straight away.${noPoster ? "\n\nNote: it has no poster, so visitors will see a “Poster coming soon” placeholder." : ""}`)) return;
+  if (!(await admConfirm(`Publish “${ev.title}”? It goes live on the website straight away.${noPoster ? "\n\nNote: it has no poster, so visitors will see a “Poster coming soon” placeholder." : ""}`))) return;
   // photos first: if the second step failed the event would still be pending (invisible), never live without its poster
   const p = await supabaseClient.from("event_photos").update({ approved: true }).eq("event_id", id);
   if (p.error) return (aEl("apprError").textContent = p.error.message);
@@ -97,9 +97,12 @@ async function approveEvent(id) {
 }
 
 async function sendBackEvent(id) {
-  const note = prompt("Tell them what to change (they will see this note):", "");
+  const ev = appr.events.find((e) => e.id === id);
+  const note = await admPrompt("Tell them what to change (they will see this note):", "", {
+    validate: (v) => (!v.trim() ? "Please write a short note so they know what to fix." : ""),
+  });
   if (note === null) return;
-  if (!note.trim()) return alert("Please write a short note so they know what to fix.");
+  if (!(await admConfirm(`Send “${ev ? ev.title : "this event"}” back to ${who(ev || {})} with that note? They'll need to edit and resubmit it.`))) return;
   const { error } = await supabaseClient.from("events").update({ status: "draft", review_note: note.trim() }).eq("id", id);
   if (error) return (aEl("apprError").textContent = error.message);
   await afterReview();
@@ -135,7 +138,7 @@ function renderApprovalPhotos() {
 
 async function reviewPhotos(ids, approve) {
   if (!ids.length) return alert("Select at least one photo first.");
-  if (!approve && !confirm(`Reject and permanently delete ${ids.length} photo${ids.length === 1 ? "" : "s"}?`)) return;
+  if (!approve && !(await admConfirm(`Reject and permanently delete ${ids.length} photo${ids.length === 1 ? "" : "s"}?`, { danger: true }))) return;
   if (approve) {
     const { error } = await supabaseClient.from("event_photos").update({ approved: true }).in("id", ids);
     if (error) return (aEl("apprError").textContent = error.message);

@@ -31,6 +31,7 @@
       <button data-tab="team"><span>Team</span></button>
       <p class="admin-side__label" id="adminSideLabel" style="display:none;">Administration</p>
       <button data-tab="users" id="usersTabBtn" style="display:none;"><span id="usersTabLabel">Users</span></button>
+      <button data-tab="activity" id="activityTabBtn" style="display:none;"><span>Activity Log</span><small>who did what</small></button>
     </nav>
 
     <div class="admin-main">
@@ -185,6 +186,29 @@
         </table>
         </div>
         <p class="admin-error" id="usersError"></p>
+      </div>
+
+      <!-- Activity Log module (maintainers and admins) -->
+      <div id="panel-activity" class="admin-hidden">
+        <div class="admin-panel-header">
+          <div>
+            <h2>Activity Log</h2>
+            <p class="admin-lede">A record of what everyone has done &mdash; events, photos, team and user changes.</p>
+          </div>
+          <select id="logTypeFilter" class="adm-select" aria-label="Filter by type">
+            <option value="all">All activity</option>
+            <option value="event">Events</option>
+            <option value="event_photo">Photos</option>
+            <option value="team_member">Team</option>
+            <option value="user">Users</option>
+          </select>
+        </div>
+        <p class="admin-error" id="logError"></p>
+        <div id="logList"></div>
+        <p class="admin-empty admin-hidden" id="logEmpty">No activity yet.</p>
+        <div style="text-align:center; margin-top:16px;">
+          <button class="admin-btn admin-btn--ghost admin-hidden" id="logLoadMore">Load more</button>
+        </div>
       </div>
     </div>
     </div><!-- /admin-layout -->
@@ -478,10 +502,29 @@
     </div>
   </div>
 
+  <!-- Shared confirm/prompt dialog: replaces native confirm()/prompt() so every "are you sure?"
+       matches the admin's own look instead of a bare browser dialog. See js/admin/confirm.js
+       (admConfirm / admPrompt). Sits above every other modal (z-index 300) since it's often
+       triggered from inside one (e.g. confirming a save while the event editor is still open). -->
+  <div class="admin-modal-backdrop admin-hidden" id="admDialogBackdrop" style="z-index:300;">
+    <div class="admin-modal" style="max-width:440px;" role="alertdialog" aria-modal="true" aria-labelledby="admDialogMessage">
+      <p id="admDialogMessage" style="white-space:pre-line; margin:0;"></p>
+      <div class="admin-field admin-hidden" id="admDialogInputWrap" style="margin-top:14px; margin-bottom:0;">
+        <input type="text" id="admDialogInput" />
+      </div>
+      <p class="admin-error" id="admDialogError"></p>
+      <div class="admin-modal-actions">
+        <button type="button" class="admin-btn admin-btn--ghost" id="admDialogCancel">Cancel</button>
+        <button type="button" class="admin-btn" id="admDialogConfirm">Confirm</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="/js/supabase-client.js"></script>
   <script src="/js/r2-config.js"></script>
   <script src="/js/admin/auth.js"></script>
+  <script src="/js/admin/confirm.js"></script>
   <script src="/js/admin/upload.js"></script>
   <script src="/js/admin/image-tools.js"></script>
   <script src="/js/admin/cropper.js"></script>
@@ -490,6 +533,7 @@
   <script src="/js/admin/team.js"></script>
   <script src="/js/admin/users.js"></script>
   <script src="/js/admin/approvals.js"></script>
+  <script src="/js/admin/activitylog.js"></script>
   <script src="/js/admin/account.js"></script>
   <script src="/js/admin/dashboard.js"></script>
 </body>

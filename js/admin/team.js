@@ -193,6 +193,7 @@ async function saveMember(e) {
     const v = tEl(f).value.trim();
     if (v && !/^https?:\/\//i.test(v)) return (err.textContent = "Social links must be full URLs starting with https://");
   }
+  if (!(await admConfirm(team.editingId ? `Save changes to ${name}?` : `Add ${name} to the Team page?`))) return;
 
   const btn = tEl("memberModalSave");
   btn.disabled = true;
@@ -238,7 +239,7 @@ async function saveMember(e) {
 
 async function deleteMember(id) {
   const m = team.members.find((x) => x.id === id);
-  if (!confirm(`Delete ${m ? m.name : "this member"}? They will be removed from the Team page.`)) return;
+  if (!(await admConfirm(`Delete ${m ? m.name : "this member"}? They will be removed from the Team page.`, { danger: true }))) return;
   const { error } = await supabaseClient.from("team_members").delete().eq("id", id);
   if (error) return alert(`Failed to delete: ${error.message}`);
   if (m && m.storage_key) deleteImage(m.storage_key).catch(() => {});

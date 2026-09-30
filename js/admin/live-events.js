@@ -115,7 +115,7 @@ function fmtWhen(iso) {
 }
 
 async function deleteLiveEvent(id) {
-  if (!confirm(isContributor() ? "Delete this draft and its poster?" : "Delete this event and its poster? This removes it from the public site.")) return;
+  if (!(await admConfirm(isContributor() ? "Delete this draft and its poster?" : "Delete this event and its poster? This removes it from the public site.", { danger: true }))) return;
   const { data: photos } = await supabaseClient.from("event_photos").select("storage_key, thumb_key").eq("event_id", id);
   const keys = (photos || []).flatMap((p) => [p.storage_key, p.thumb_key].filter(Boolean));
   // A contributor's right to delete a file is proven by their still-existing photo row, so remove the
@@ -128,7 +128,7 @@ async function deleteLiveEvent(id) {
 }
 
 async function withdrawEvent(id) {
-  if (!confirm("Withdraw this event from review so you can edit it? You'll need to submit it again afterwards.")) return;
+  if (!(await admConfirm("Withdraw this event from review so you can edit it? You'll need to submit it again afterwards."))) return;
   const { error } = await supabaseClient.from("events").update({ status: "draft" }).eq("id", id);
   if (error) return alert(`Couldn't withdraw: ${error.message}`);
   await loadLiveEvents();
@@ -329,9 +329,10 @@ async function saveLiveEvent(e) {
   const status = isContributor()
     ? (submitting ? "pending" : "draft")
     : liveEditingStatus === "pending" ? "pending" : $id("lv_published").checked ? "published" : "draft";
-  if (submitting && !confirm("Submit this event for review? You won't be able to edit it while it's waiting (you can withdraw it).")) return;
+  if (submitting && !(await admConfirm("Submit this event for review? You won't be able to edit it while it's waiting (you can withdraw it)."))) return;
   if ((status === "published" || submitting) && !currentPosterUrl() &&
-      !confirm(`This event has no poster — visitors will see the “Poster coming soon” placeholder. ${submitting ? "Submit" : "Publish"} anyway?`)) return;
+      !(await admConfirm(`This event has no poster — visitors will see the “Poster coming soon” placeholder. ${submitting ? "Submit" : "Publish"} anyway?`))) return;
+  if (!submitting && !(await admConfirm(liveEditingId ? `Save changes to "${title}"?` : `Save "${title}" as a new ${status === "published" ? "published event" : "draft"}?`))) return;
 
   const saveBtn = $id("liveSave"), submitBtn = $id("liveSubmitReview");
   saveBtn.disabled = true; submitBtn.disabled = true;

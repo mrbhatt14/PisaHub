@@ -31,6 +31,20 @@ function generatePassword(length = 16) {
   return Array.from({ length }, () => PASSWORD_ALPHABET[crypto.randomInt(PASSWORD_ALPHABET.length)]).join("");
 }
 
+// Records a significant account-management action in the activity log. Best-effort: a logging
+// failure never blocks the action itself. Account creation/rename etc. go through the
+// service-role key (not a client-side write), so this is called explicitly rather than via
+// the database triggers that cover events/photos/team (see supabase/schema.sql).
+async function logActivity(db, actorId, action, entityId, summary) {
+  try {
+    const { data: prof } = await db.from("profiles").select("display_name, username, role").eq("user_id", actorId).maybeSingle();
+    const name = (prof && (prof.display_name || prof.username)) || "Someone";
+    await db.from("activity_log").insert({ actor_id: actorId, actor_name: name, actor_role: (prof && prof.role) || "admin", action, entity_type: "user", entity_id: entityId, summary });
+  } catch {
+    // logging must never break the actual action
+  }
+}
+
 // All account rules live here so they can be tested without a real database.
 // `db` is a Supabase client with the service-role key.
 function createUsersService(db) {
@@ -55,7 +69,7 @@ function createUsersService(db) {
   }
 
   async function getProfile(id) {
-    const { data, error } = await db.from("profiles").select("user_id, role").eq("user_id", id).maybeSingle();
+    const { data, error } = await db.from("profiles").select("user_id, role, display_name, username").eq("user_id", id).maybeSingle();
     if (error) throw error;
     if (!data) throw new HttpError(404, "That user doesn't exist.");
     return data;
@@ -101,6 +115,7 @@ function createUsersService(db) {
         if (pErr.code === "23505") throw new HttpError(409, "That username is already taken."); // lost a race
         throw pErr;
       }
+      await logActivity(db, data.user.id, "user.created", data.user.id, `Added ${name} (${email}) as ${role}`);
       return { user: { id: data.user.id, name, username, email, role }, tempPassword: password };
     },
 
@@ -115,6 +130,7 @@ function createUsersService(db) {
       }
       const { error } = await db.from("profiles").update({ role }).eq("user_id", id);
       if (error) throw error;
+      await logActivity(db, actor.id, "user.role_changed", id, `Changed ${target.display_name || target.username || id}'s role from ${target.role} to ${role}`);
       return { id, role };
     },
 
@@ -139,10 +155,12 @@ function createUsersService(db) {
     },
 
     async resetPassword(actor, { id }) {
-      assertCanManage(actor, await getProfile(id));
+      const target = await getProfile(id);
+      assertCanManage(actor, target);
       const password = generatePassword();
       const { error } = await db.auth.admin.updateUserById(id, { password });
       if (error) throw error;
+      await logActivity(db, actor.id, "user.password_reset", id, `Reset the password for ${target.display_name || target.username || id}`);
       return { tempPassword: password };
     },
 
@@ -151,8 +169,10 @@ function createUsersService(db) {
       const target = await getProfile(id);
       assertCanManage(actor, target);
       if (target.role === "admin" && (await adminCount()) <= 1) throw new HttpError(409, "There must always be at least one Admin.");
+      const label = target.display_name || target.username || id;
       const { error } = await db.auth.admin.deleteUser(id); // profile row cascades
       if (error) throw error;
+      await logActivity(db, actor.id, "user.removed", id, `Removed ${label}'s account`);
       return { id };
     },
   };
